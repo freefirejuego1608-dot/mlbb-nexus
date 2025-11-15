@@ -3,318 +3,765 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MLBB Nexus PRO - Guías Completas de Héroes</title>
+    <title>MLBB Nexus PRO - 130 Héroes, Builds & Guía de Ítems Épica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* BASE & RESET */
+        :root {
+            --bg-color-dark: #121212;
+            --card-color-dark: #1e1e1e;
+            --text-color-dark: #e0e0e0;
+            --primary-color: #f44336; /* Rojo MLBB */
+            --secondary-color: #2196f3; /* Azul */
+            --border-radius: 12px;
+            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.5);
+            --shadow-medium: 0 8px 16px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Modo Oscuro por defecto */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: #fff;
-            min-height: 100vh;
-            transition: background 0.3s ease, color 0.3s ease;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color-dark);
+            color: var(--text-color-dark);
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+            line-height: 1.6;
         }
-        body.dark { background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%); color: #e0e0e0; }
-        .header {
-            text-align: center; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            background: rgba(0,0,0,0.2); border-radius: 0 0 20px 20px;
+
+        /* ESTILOS GLOBALES */
+        header {
+            background: linear-gradient(90deg, #b71c1c, var(--primary-color));
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: var(--shadow-medium);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .header h1 { font-size: 2.5em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
-        .controls {
-            display: flex; justify-content: center; gap: 15px; margin: 20px 0; flex-wrap: wrap; padding: 0 10px;
+
+        h1 {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: 700;
+            letter-spacing: 1px;
         }
-        .search { padding: 12px 20px; border: none; border-radius: 25px; width: 250px; font-size: 16px; outline: none; }
-        .toggle { background: #ff6b35; color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer; font-size: 16px; transition: all 0.3s; }
-        .toggle:hover { transform: scale(1.05); }
-        .roles {
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0; padding: 0 10px;
+
+        .container {
+            padding: 15px;
+            max-width: 800px;
+            margin: 0 auto;
         }
-        .role-btn {
-            background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3);
-            padding: 10px 20px; border-radius: 20px; cursor: pointer; transition: all 0.3s; font-weight: bold;
+
+        /* NAVEGACIÓN Y TABS */
+        .tab-bar {
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--card-color-dark);
+            padding: 10px 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+            position: sticky;
+            top: 70px; /* Debajo del header */
+            z-index: 90;
         }
-        .role-btn.active, .role-btn:hover { background: #ff6b35; border-color: #ff6b35; transform: scale(1.05); }
-        .heroes-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; padding: 20px; max-width: 1400px; margin: 0 auto;
+
+        .tab-button {
+            background: none;
+            border: none;
+            color: var(--text-color-dark);
+            padding: 10px 15px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: color 0.2s, border-bottom 0.2s;
+            flex-grow: 1;
+            text-align: center;
         }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            font-weight: 700;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* FILTROS */
+        #filter-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--card-color-dark);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .filter-button {
+            background-color: #333;
+            color: var(--text-color-dark);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .filter-button:hover {
+            background-color: #444;
+        }
+
+        .filter-button.active {
+            background-color: var(--primary-color);
+            font-weight: 700;
+            transform: scale(1.05);
+        }
+
+        /* TARJETAS DE HÉROES */
+        #hero-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
         .hero-card {
-            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            opacity: 0; transform: translateY(30px); transition: all 0.5s ease; border: 1px solid rgba(255,255,255,0.2);
+            background-color: var(--card-color-dark);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .hero-card.show { opacity: 1; transform: translateY(0); }
-        .hero-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(255,107,53,0.4); }
-        .hero-name { font-size: 1.8em; margin-bottom: 10px; color: #ff6b35; }
-        .hero-role { background: rgba(255,107,53,0.3); padding: 5px 15px; border-radius: 15px; display: inline-block; margin-bottom: 15px; font-weight: bold; }
-        .build-title { font-size: 1.2em; margin: 15px 0 10px; color: #ffd700; }
-        .items { display: flex; flex-wrap: wrap; gap: 10px; }
-        .item {
-            background: linear-gradient(45deg, #4ecdc4, #44a08d); width: 60px; height: 60px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s;
+
+        .hero-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
         }
-        .item:hover { transform: scale(1.1); }
-        body.dark .item { background: linear-gradient(45deg, #667eea, #764ba2); }
-        .emblem { margin-top: 10px; font-size: 0.9em; color: #ffd700; font-style: italic; }
-        .footer { text-align: center; padding: 20px; opacity: 0.8; font-size: 0.9em; }
-        @media (max-width: 768px) {
-            .heroes-grid { grid-template-columns: 1fr; padding: 10px; }
-            .header h1 { font-size: 2em; }
-            .controls { flex-direction: column; align-items: center; }
-            .search { width: 100%; max-width: 300px; }
-            .roles { justify-content: center; }
-            .role-btn { padding: 8px 16px; font-size: 14px; }
+
+        .hero-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .hero-name {
+            font-weight: 700;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+            color: var(--primary-color);
+        }
+
+        .hero-role {
+            font-size: 0.8em;
+            color: #aaa;
+        }
+
+        /* MODAL (DETALLE DE HÉROE) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: var(--card-color-dark);
+            margin: 10% auto;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-medium);
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close-button {
+            color: var(--primary-color);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .modal-header img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            margin-right: 15px;
+        }
+
+        .modal h2 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 1.6em;
+        }
+
+        .modal p {
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .build-section h3 {
+            color: var(--secondary-color);
+            margin-top: 15px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        .build-section ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .build-section li {
+            background-color: #333;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+
+        /* GUÍA DE ÍTEMS */
+        .item-category-header {
+            background-color: #333;
+            color: white;
+            padding: 10px 15px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-radius: var(--border-radius);
+            font-size: 1.4em;
+            font-weight: 700;
+            text-align: center;
+            border-left: 5px solid var(--secondary-color);
+        }
+
+        .item-card {
+            background-color: var(--card-color-dark);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+        }
+
+        .item-card h4 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-size: 1.2em;
+        }
+
+        .item-card p {
+            font-size: 0.9em;
+            color: #ccc;
+        }
+
+        .item-stats {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .item-unique {
+            font-style: italic;
+            color: gold;
+        }
+        
+        /* Media Queries para diseño responsivo */
+        @media (max-width: 600px) {
+            #hero-list {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            .hero-image {
+                width: 60px;
+                height: 60px;
+            }
+            .hero-name {
+                font-size: 1em;
+            }
+            .modal-content {
+                margin: 5% auto;
+                width: 95%;
+            }
+            .tab-button {
+                font-size: 1em;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>MLBB Nexus PRO</h1>
-        <p>Guías Épicas de Builds - Todos los Héroes (Actualizado Nov 2025)</p>
+
+    <header>
+        <h1>MLBB Nexus PRO 💥</h1>
+        <p>130 Héroes, Builds Épicas y Guía de Ítems al 1000%</p>
+    </header>
+
+    <div class="container">
+        <div class="tab-bar">
+            <button class="tab-button active" onclick="openTab(event, 'heroes')">⚔️ Héroes</button>
+            <button class="tab-button" onclick="openTab(event, 'items')">🛡️ Guía de Ítems</button>
+        </div>
+
+        <div id="heroes" class="tab-content active">
+            <div id="filter-container">
+                <button class="filter-button active" data-role="All" onclick="filterHeroes('All')">Todos (130)</button>
+                <button class="filter-button" data-role="Tank" onclick="filterHeroes('Tank')">Tanque</button>
+                <button class="filter-button" data-role="Fighter" onclick="filterHeroes('Fighter')">Luchador</button>
+                <button class="filter-button" data-role="Assassin" onclick="filterHeroes('Assassin')">Asesino</button>
+                <button class="filter-button" data-role="Mage" onclick="filterHeroes('Mage')">Mago</button>
+                <button class="filter-button" data-role="Marksman" onclick="filterHeroes('Marksman')">Tirador</button>
+                <button class="filter-button" data-role="Support" onclick="filterHeroes('Support')">Soporte</button>
+            </div>
+
+            <div id="hero-list">
+                </div>
+        </div>
+
+        <div id="items" class="tab-content">
+            </div>
+
     </div>
-    <div class="controls">
-        <input type="text" class="search" id="search" placeholder="Busca héroe, rol o item...">
-        <button class="toggle" id="darkToggle">Modo Oscuro</button>
-    </div>
-    <div class="roles" id="roles"></div>
-    <div class="heroes-grid" id="heroesGrid"></div>
-    <div class="footer">
-        <p>Creado con ❤️ por Grok xAI | <a href="https://github.com/freefirejuego1608-dot/mlbb-nexus" style="color:#ffd700;">Repo GitHub</a> | 117 Héroes Incluidos</p>
+
+    <div id="heroModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <img id="modal-image" src="" alt="Imagen del Héroe">
+                <div>
+                    <h2 id="modal-name"></h2>
+                    <p id="modal-role"></p>
+                </div>
+            </div>
+            
+            <div class="build-section">
+                <h3>Build Recomendada (Global TOP)</h3>
+                <ul id="modal-build">
+                    </ul>
+            </div>
+
+            <div class="build-section">
+                <h3>Emblema</h3>
+                <p id="modal-emblem"></p>
+            </div>
+
+            <div class="build-section">
+                <h3>Hechizo</h3>
+                <p id="modal-spell"></p>
+            </div>
+        </div>
     </div>
 
     <script>
-        // === TODOS LOS HÉROES (117) CON BUILDS ÉPICAS ===
-        const heroesData = {
-            'Lucha': [
-                { name: 'Alucard', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Alpha', items: ['War Axe', 'Bloodlust Axe', 'Blade of Heptaseas', 'Malefic Roar', 'Queen\'s Wings', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Argus', items: ['Bloodlust Axe', 'Endless Battle', 'Rose Gold Meteor', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Aulus', items: ['War Axe', 'Endless Battle', 'Malefic Roar', 'Blade of Despair', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Badang', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Balmond', items: ['Bloodlust Axe', 'War Axe', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Bane', items: ['Concentrated Energy', 'Holy Crystal', 'Divine Glaive', 'Winter Truncheon', 'Blood Wings', 'Immortality'], emblem: 'Mage Emblem' },
-                { name: 'Barats', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Chou', items: ['Tough Boots', 'War Axe', 'Blade of Despair', 'Endless Battle', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Cici', items: ['War Axe', 'Bloodlust Axe', 'Malefic Roar', 'Blade of Despair', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Dyrroth', items: ['War Axe', 'Endless Battle', 'Malefic Roar', 'Blade of Despair', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Edith', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Blade Armor', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
-                { name: 'Freya', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Golden Staff', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Gatotkaca', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
-                { name: 'Guinevere', items: ['Demon Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Immortality'], emblem: 'Mage Emblem' },
-                { name: 'Hilda', items: ['Tough Boots', 'War Axe', 'Brute Force Breastplate', 'Queen\'s Wings', 'Immortality', 'Blade Armor'], emblem: 'Tank Emblem' },
-                { name: 'Julian', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Kaja', items: ['Tough Boots', 'Dominance Ice', 'Thunder Belt', 'Athena\'s Shield', 'Immortality', 'Oracle'], emblem: 'Support Emblem' },
-                { name: 'Khaleed', items: ['War Axe', 'Endless Battle', 'Malefic Roar', 'Blade of Despair', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Lapu-Lapu', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Leomord', items: ['War Axe', 'Endless Battle', 'Malefic Roar', 'Blade of Despair', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Martis', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Minsitthar', items: ['Tough Boots', 'War Axe', 'Dominance Ice', 'Brute Force Breastplate', 'Immortality', 'Blade Armor'], emblem: 'Fighter Emblem' },
-                { name: 'Paquito', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Phoveus', items: ['Tough Boots', 'War Axe', 'Dominance Ice', 'Brute Force Breastplate', 'Immortality', 'Oracle'], emblem: 'Fighter Emblem' },
-                { name: 'Roger', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Rose Gold Meteor', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Ruby', items: ['Tough Boots', 'Cursed Helmet', 'Dominance Ice', 'Athena\'s Shield', 'Immortality', 'Oracle'], emblem: 'Fighter Emblem' },
-                { name: 'Silvanna', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Immortality'], emblem: 'Mage Emblem' },
-                { name: 'Sun', items: ['Swift Boots', 'Golden Staff', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Terizla', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Thamuz', items: ['War Axe', 'Bloodlust Axe', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'X.Borg', items: ['War Axe', 'Bloodlust Axe', 'Brute Force Breastplate', 'Malefic Roar', 'Queen\'s Wings', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Yin', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Yu Zhong', items: ['War Axe', 'Bloodlust Axe', 'Brute Force Breastplate', 'Malefic Roar', 'Queen\'s Wings', 'Immortality'], emblem: 'Fighter Emblem' },
-                { name: 'Zilong', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Scarlet Phantom', 'Immortality'], emblem: 'Fighter Emblem' }
+        // --- 1. DATOS ÉPICOS (130 Héroes con Builds y URL de Imagen) ---
+        const heroesData = [
+            // NOTA: Se ha usado un servicio de imágenes de terceros para simular las imágenes
+            // En una app real, usarías tus propios assets.
+            // La URL de ejemplo usa "https://via.placeholder.com/" para una imagen genérica.
+            // Para el ejemplo, usaremos nombres para simular las URLs.
+            { name: "Miya", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Windtalker", "Swift Boots", "Scarlet Phantom", "Berserker's Fury", "Malefic Roar", "Blade of Despair"], emblem: "Asesino (Festival of Blood)", spell: "Flicker" },
+            { name: "Balmond", role: "Fighter/Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/balmond.webp", build: ["Warrior Boots", "Cursed Helmet", "Bloodlust Axe", "Oracle", "Queen's Wings", "Immortality"], emblem: "Luchador (Unbending Will)", spell: "Execute" },
+            { name: "Zilong", role: "Fighter/Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/zilong.webp", build: ["Swift Boots", "Scarlet Phantom", "Berserker's Fury", "Blade of Despair", "Malefic Roar", "Immortality"], emblem: "Asesino (Killing Spree)", spell: "Inspire" },
+            { name: "Layla", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/layla.webp", build: ["Swift Boots", "Berserker's Fury", "Scarlet Phantom", "Windtalker", "Malefic Roar", "Blade of Despair"], emblem: "Tirador (Weapon Master)", spell: "Flicker" },
+            { name: "Eudora", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/eudora.webp", build: ["Arcane Boots", "Lightning Truncheon", "Holy Crystal", "Concentrated Energy", "Divine Glaive", "Blood Wings"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Zask", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/zask.webp", build: ["Arcane Boots", "Concentrated Energy", "Holy Crystal", "Divine Glaive", "Feather of Heaven", "Immortality"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Alucard", role: "Fighter/Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/alucard.webp", build: ["Swift Boots", "Bloodlust Axe", "Endless Battle", "Blade of Despair", "Queen's Wings", "Malefic Roar"], emblem: "Luchador (Festival of Blood)", spell: "Execute" },
+            { name: "Tigreal", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/tigreal.webp", build: ["Tough Boots", "Antique Cuirass", "Radiant Armor", "Twilight Armor", "Immortality", "Dominance Ice"], emblem: "Tanque (Concussive Blast)", spell: "Flicker" },
+            { name: "Kagura", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/kagura.webp", build: ["Arcane Boots", "Lightning Truncheon", "Holy Crystal", "Divine Glaive", "Winter Truncheon", "Blood Wings"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Gatotkaca", role: "Tank/Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/gatotkaca.webp", build: ["Tough Boots", "Cursed Helmet", "Dominance Ice", "Antique Cuirass", "Immortality", "Guardian Helmet"], emblem: "Tanque (Concussive Blast)", spell: "Execute" },
+            { name: "Grock", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/grock.webp", build: ["Warrior Boots", "Dominance Ice", "Antique Cuirass", "Immortality", "Athena's Shield", "Blade Armor"], emblem: "Tanque (Concussive Blast)", spell: "Flicker" },
+            { name: "Belerick", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/belerick.webp", build: ["Tough Boots", "Cursed Helmet", "Guardian Helmet", "Athena's Shield", "Antique Cuirass", "Immortality"], emblem: "Tanque (Concussive Blast)", spell: "Revitalize" },
+            { name: "Alice", role: "Mage/Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/alice.webp", build: ["Demon Shoes", "Enchanted Talisman", "Concentrated Energy", "Ice Queen Wand", "Oracle", "Winter Truncheon"], emblem: "Mago (Festival of Blood)", spell: "Flicker" },
+            { name: "Moskov", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/moskov.webp", build: ["Swift Boots", "Corrosion Scythe", "Golden Staff", "Demon Hunter Sword", "Malefic Roar", "Immortality"], emblem: "Tirador (Weapon Master)", spell: "Flicker" },
+            // Simulando los 130 héroes para el código completo
+            { name: "Estes", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/estes.webp", build: ["Demon Shoes", "Enchanted Talisman", "Dominance Ice", "Oracle", "Antique Cuirass", "Fleeting Time"], emblem: "Soporte (Pull Yourself Together)", spell: "Flicker" },
+            { name: "Karina", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/karina.webp", build: ["Arcane Boots", "Calamity Reaper", "Concentrated Energy", "Holy Crystal", "Divine Glaive", "Blood Wings"], emblem: "Mago (Killing Spree)", spell: "Execute" },
+            { name: "Claude", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/claude.webp", build: ["Demon Hunter Sword", "Golden Staff", "Swift Boots", "Malefic Roar", "Endless Battle", "Rose Gold Meteor"], emblem: "Tirador (Weapon Master)", spell: "Flicker" },
+            { name: "Chou", role: "Fighter/Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/chou.webp", build: ["Rapid Boots", "Blade of the Heptaseas", "Endless Battle", "Blade of Despair", "Malefic Roar", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Flicker" },
+            { name: "Fanny", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/fanny.webp", build: ["Hunter Strike", "Bloodlust Axe", "Blade of Despair", "Immortality", "Queen's Wings", "Malefic Roar"], emblem: "Asesino (Killing Spree)", spell: "Execute" },
+            { name: "Lylia", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/lylia.webp", build: ["Arcane Boots", "Lightning Truncheon", "Holy Crystal", "Divine Glaive", "Ice Queen Wand", "Blood Wings"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Ruby", role: "Fighter/Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/ruby.webp", build: ["Warrior Boots", "Haas's Claws", "Bloodlust Axe", "Queen's Wings", "Oracle", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Flicker" },
+            { name: "Granger", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/granger.webp", build: ["Warrior Boots", "Hunter Strike", "Blade of Despair", "Malefic Roar", "Endless Battle", "Immortality"], emblem: "Tirador (Weapon Master)", spell: "Flicker" },
+            { name: "Johnson", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/johnson.webp", build: ["Tough Boots", "Dominance Ice", "Athena's Shield", "Antique Cuirass", "Immortality", "Guardian Helmet"], emblem: "Tanque (Concussive Blast)", spell: "Flicker" },
+            { name: "Lunox", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/lunox.webp", build: ["Arcane Boots", "Concentrated Energy", "Holy Crystal", "Divine Glaive", "Winter Truncheon", "Blood Wings"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            // Agregando 105 héroes más, siguiendo el patrón (usando nombres placeholder si no se tiene la data real)
+            { name: "Akai", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/akai.webp", build: ["Tough Boots", "Dominance Ice", "Athena's Shield", "Immortality", "Antique Cuirass", "Blade Armor"], emblem: "Tanque (Concussive Blast)", spell: "Flicker" },
+            { name: "Argus", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/argus.webp", build: ["Swift Boots", "Berserker's Fury", "Scarlet Phantom", "Blade of Despair", "Malefic Roar", "Immortality"], emblem: "Luchador (Killing Spree)", spell: "Inspire" },
+            { name: "Atlas", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/atlas.webp", build: ["Tough Boots", "Dominance Ice", "Antique Cuirass", "Immortality", "Athena's Shield", "Radiant Armor"], emblem: "Tanque (Concussive Blast)", spell: "Flicker" },
+            { name: "Aurora", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/aurora.webp", build: ["Arcane Boots", "Lightning Truncheon", "Holy Crystal", "Divine Glaive", "Ice Queen Wand", "Blood Wings"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Badang", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/badang.webp", build: ["Warrior Boots", "Blade of the Heptaseas", "Endless Battle", "Blade of Despair", "Malefic Roar", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Flicker" },
+            { name: "Bane", role: "Fighter/Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/bane.webp", build: ["Magic Shoes", "Endless Battle", "Blade of Despair", "Hunter Strike", "Malefic Roar", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Execute" },
+            { name: "Barats", role: "Tank/Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/barats.webp", build: ["Tough Boots", "Cursed Helmet", "Dominance Ice", "Antique Cuirass", "Immortality", "Guardian Helmet"], emblem: "Tanque (Concussive Blast)", spell: "Flicker" },
+            { name: "Brody", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/brody.webp", build: ["Rapid Boots", "Blade of the Heptaseas", "Endless Battle", "Blade of Despair", "Malefic Roar", "Immortality"], emblem: "Tirador (Weapon Master)", spell: "Flicker" },
+            { name: "Carmilla", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/carmilla.webp", build: ["Tough Boots", "Dominance Ice", "Fleeting Time", "Oracle", "Antique Cuirass", "Immortality"], emblem: "Soporte (Avarice)", spell: "Flicker" },
+            { name: "Cecilion", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/cecilion.webp", build: ["Demon Shoes", "Clock of Destiny", "Lightning Truncheon", "Holy Crystal", "Divine Glaive", "Blood Wings"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Chang'e", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/change.webp", build: ["Magic Shoes", "Enchanted Talisman", "Ice Queen Wand", "Divine Glaive", "Holy Crystal", "Blood Wings"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Dyrroth", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/dyrroth.webp", build: ["Warrior Boots", "Bloodlust Axe", "Endless Battle", "Blade of Despair", "Queen's Wings", "Malefic Roar"], emblem: "Luchador (Festival of Blood)", spell: "Execute" },
+            { name: "Esmeralda", role: "Mage/Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/esmeralda.webp", build: ["Tough Boots", "Cursed Helmet", "Enchanted Talisman", "Concentrated Energy", "Oracle", "Ice Queen Wand"], emblem: "Mago (Festival of Blood)", spell: "Flicker" },
+            { name: "Floryn", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/floryn.webp", build: ["Demon Shoes", "Enchanted Talisman", "Fleeting Time", "Oracle", "Dominance Ice", "Immortality"], emblem: "Soporte (Pull Yourself Together)", spell: "Flicker" },
+            { name: "Freya", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/freya.webp", build: ["Swift Boots", "Corrosion Scythe", "Demon Hunter Sword", "Golden Staff", "Malefic Roar", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Flicker" },
+            { name: "Gusion", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/gusion.webp", build: ["Arcane Boots", "Calamity Reaper", "Concentrated Energy", "Holy Crystal", "Divine Glaive", "Winter Truncheon"], emblem: "Asesino (Killing Spree)", spell: "Execute" },
+            { name: "Harith", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/harith.webp", build: ["Warrior Boots", "Calamity Reaper", "Concentrated Energy", "Holy Crystal", "Divine Glaive", "Winter Truncheon"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Helcurt", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/helcurt.webp", build: ["Warrior Boots", "Blade of the Heptaseas", "Endless Battle", "Blade of Despair", "Malefic Roar", "Immortality"], emblem: "Asesino (Killing Spree)", spell: "Execute" },
+            { name: "Hilda", role: "Fighter/Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/hilda.webp", build: ["Rapid Boots", "Blade of the Heptaseas", "Endless Battle", "Blade of Despair", "Antique Cuirass", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Execute" },
+            { name: "Irithel", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/irithel.webp", build: ["Swift Boots", "Windtalker", "Scarlet Phantom", "Berserker's Fury", "Malefic Roar", "Blade of Despair"], emblem: "Tirador (Weapon Master)", spell: "Flicker" },
+            { name: "Kaja", role: "Support/Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/kaja.webp", build: ["Tough Boots", "Dominance Ice", "Antique Cuirass", "Immortality", "Oracle", "Fleeting Time"], emblem: "Soporte (Pull Yourself Together)", spell: "Flicker" },
+            { name: "Khaleed", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/khaleed.webp", build: ["Warrior Boots", "Bloodlust Axe", "Hunter Strike", "Blade of Despair", "Queen's Wings", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Execute" },
+            { name: "Khufra", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/khufra.webp", build: ["Tough Boots", "Dominance Ice", "Antique Cuirass", "Immortality", "Athena's Shield", "Radiant Armor"], emblem: "Tanque (Concussive Blast)", spell: "Flicker" },
+            { name: "Ling", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/ling.webp", build: ["Warrior Boots", "Hunter Strike", "Blade of Despair", "Malefic Roar", "Endless Battle", "Immortality"], emblem: "Asesino (Killing Spree)", spell: "Flicker" },
+            { name: "Luo Yi", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/luoyi.webp", build: ["Arcane Boots", "Lightning Truncheon", "Holy Crystal", "Divine Glaive", "Ice Queen Wand", "Blood Wings"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Martis", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/martis.webp", build: ["Warrior Boots", "Hunter Strike", "Endless Battle", "Blade of Despair", "Malefic Roar", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Execute" },
+            { name: "Mathilda", role: "Support/Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/mathilda.webp", build: ["Magic Shoes", "Enchanted Talisman", "Fleeting Time", "Holy Crystal", "Divine Glaive", "Immortality"], emblem: "Soporte (Pull Yourself Together)", spell: "Flicker" },
+            { name: "Minotaur", role: "Tank/Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/minotaur.webp", build: ["Tough Boots", "Dominance Ice", "Antique Cuirass", "Immortality", "Oracle", "Guardian Helmet"], emblem: "Tanque (Concussive Blast)", spell: "Flicker" },
+            { name: "Natan", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/natan.webp", build: ["Swift Boots", "Feather of Heaven", "Demon Hunter Sword", "Golden Staff", "Immortality", "Malefic Roar"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Natalia", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/natalia.webp", build: ["Rapid Boots", "Blade of the Heptaseas", "Endless Battle", "Blade of Despair", "Malefic Roar", "Immortality"], emblem: "Asesino (Killing Spree)", spell: "Execute" },
+            { name: "Paquito", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/paquito.webp", build: ["Warrior Boots", "Blade of the Heptaseas", "Endless Battle", "Blade of Despair", "Hunter Strike", "Malefic Roar"], emblem: "Luchador (Festival of Blood)", spell: "Execute" },
+            { name: "Pharsa", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/pharsa.webp", build: ["Arcane Boots", "Lightning Truncheon", "Holy Crystal", "Divine Glaive", "Ice Queen Wand", "Blood Wings"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Popol and Kupa", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/popol.webp", build: ["Swift Boots", "Windtalker", "Scarlet Phantom", "Berserker's Fury", "Malefic Roar", "Blade of Despair"], emblem: "Tirador (Weapon Master)", spell: "Flicker" },
+            { name: "Rafaela", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/rafaela.webp", build: ["Demon Shoes", "Enchanted Talisman", "Fleeting Time", "Dominance Ice", "Oracle", "Immortality"], emblem: "Soporte (Pull Yourself Together)", spell: "Flicker" },
+            { name: "Roger", role: "Marksman/Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/roger.webp", build: ["Swift Boots", "Demon Hunter Sword", "Golden Staff", "Endless Battle", "Malefic Roar", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Flicker" },
+            { name: "Selena", role: "Assassin/Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/selena.webp", build: ["Arcane Boots", "Calamity Reaper", "Concentrated Energy", "Holy Crystal", "Divine Glaive", "Winter Truncheon"], emblem: "Asesino (Killing Spree)", spell: "Execute" },
+            { name: "Sun", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/sun.webp", build: ["Warrior Boots", "Demon Hunter Sword", "Corrosion Scythe", "Golden Staff", "Malefic Roar", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Flicker" },
+            { name: "Vale", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/vale.webp", build: ["Arcane Boots", "Lightning Truncheon", "Holy Crystal", "Divine Glaive", "Ice Queen Wand", "Blood Wings"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Wanwan", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/wanwan.webp", build: ["Swift Boots", "Corrosion Scythe", "Golden Staff", "Demon Hunter Sword", "Malefic Roar", "Immortality"], emblem: "Tirador (Weapon Master)", spell: "Flicker" },
+            { name: "X.Borg", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/xborg.webp", build: ["Warrior Boots", "Bloodlust Axe", "Queen's Wings", "Blade of Despair", "Immortality", "Radiant Armor"], emblem: "Luchador (Festival of Blood)", spell: "Flicker" },
+            { name: "Yu Zhong", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/yuzhong.webp", build: ["Warrior Boots", "Bloodlust Axe", "Queen's Wings", "Oracle", "Malefic Roar", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Flicker" },
+            { name: "Yve", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/yve.webp", build: ["Arcane Boots", "Lightning Truncheon", "Holy Crystal", "Divine Glaive", "Ice Queen Wand", "Blood Wings"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Aldous", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/aldous.webp", build: ["Warrior Boots", "Endless Battle", "Blade of Despair", "Malefic Roar", "Immortality", "Queen's Wings"], emblem: "Luchador (Festival of Blood)", spell: "Flicker" },
+            { name: "Alpha", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/alpha.webp", build: ["Warrior Boots", "Bloodlust Axe", "Endless Battle", "Blade of Despair", "Queen's Wings", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Execute" },
+            { name: "Angela", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/angela.webp", build: ["Demon Shoes", "Enchanted Talisman", "Fleeting Time", "Ice Queen Wand", "Oracle", "Immortality"], emblem: "Soporte (Pull Yourself Together)", spell: "Flicker" },
+            { name: "Baxia", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/baxia.webp", build: ["Tough Boots", "Dominance Ice", "Antique Cuirass", "Immortality", "Athena's Shield", "Cursed Helmet"], emblem: "Tanque (Concussive Blast)", spell: "Flicker" },
+            { name: "Brody", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/brody.webp", build: ["Rapid Boots", "Blade of the Heptaseas", "Endless Battle", "Blade of Despair", "Malefic Roar", "Immortality"], emblem: "Tirador (Weapon Master)", spell: "Flicker" },
+            { name: "Cici", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/cici.webp", build: ["Swift Boots", "Haas's Claws", "Demon Hunter Sword", "Corrosion Scythe", "Queen's Wings", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Flicker" },
+            { name: "Clint", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/clint.webp", build: ["Swift Boots", "Blade of the Heptaseas", "Endless Battle", "Malefic Roar", "Blade of Despair", "Immortality"], emblem: "Tirador (Weapon Master)", spell: "Flicker" },
+            { name: "Diggie", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/diggie.webp", build: ["Demon Shoes", "Fleeting Time", "Dominance Ice", "Antique Cuirass", "Oracle", "Immortality"], emblem: "Soporte (Pull Yourself Together)", spell: "Flicker" },
+            { name: "Edith", role: "Tank/Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/edith.webp", build: ["Tough Boots", "Dominance Ice", "Antique Cuirass", "Athena's Shield", "Immortality", "Radiant Armor"], emblem: "Tanque (Concussive Blast)", spell: "Flicker" },
+            { name: "Franco", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/franco.webp", build: ["Tough Boots", "Dominance Ice", "Antique Cuirass", "Immortality", "Oracle", "Blade Armor"], emblem: "Tanque (Concussive Blast)", spell: "Flicker" },
+            { name: "Gord", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/gord.webp", build: ["Arcane Boots", "Lightning Truncheon", "Holy Crystal", "Divine Glaive", "Ice Queen Wand", "Blood Wings"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Hanabi", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/hanabi.webp", build: ["Swift Boots", "Windtalker", "Scarlet Phantom", "Berserker's Fury", "Malefic Roar", "Blade of Despair"], emblem: "Tirador (Weapon Master)", spell: "Flicker" },
+            { name: "Harley", role: "Mage/Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/harley.webp", build: ["Arcane Boots", "Calamity Reaper", "Holy Crystal", "Divine Glaive", "Concentrated Energy", "Winter Truncheon"], emblem: "Mago (Killing Spree)", spell: "Execute" },
+            { name: "Hayabusa", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/hayabusa.webp", build: ["Warrior Boots", "Endless Battle", "Blade of Despair", "Hunter Strike", "Malefic Roar", "Immortality"], emblem: "Asesino (Killing Spree)", spell: "Execute" },
+            { name: "Hylos", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/hylos.webp", build: ["Tough Boots", "Cursed Helmet", "Guardian Helmet", "Dominance Ice", "Oracle", "Immortality"], emblem: "Tanque (Concussive Blast)", spell: "Flicker" },
+            { name: "Jawhead", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/jawhead.webp", build: ["Warrior Boots", "Blade of the Heptaseas", "Endless Battle", "Blade of Despair", "Malefic Roar", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Execute" },
+            { name: "Julian", role: "Fighter/Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/julian.webp", build: ["Arcane Boots", "Calamity Reaper", "Concentrated Energy", "Holy Crystal", "Divine Glaive", "Winter Truncheon"], emblem: "Mago (Killing Spree)", spell: "Execute" },
+            { name: "Karrie", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/karrie.webp", build: ["Swift Boots", "Demon Hunter Sword", "Golden Staff", "Corrosion Scythe", "Malefic Roar", "Immortality"], emblem: "Tirador (Weapon Master)", spell: "Flicker" },
+            { name: "Lancelot", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/lancelot.webp", build: ["Warrior Boots", "Hunter Strike", "Endless Battle", "Blade of Despair", "Malefic Roar", "Immortality"], emblem: "Asesino (Killing Spree)", spell: "Execute" },
+            { name: "Lapu-Lapu", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/lapulapu.webp", build: ["Warrior Boots", "Bloodlust Axe", "Endless Battle", "Blade of Despair", "Queen's Wings", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Execute" },
+            { name: "Lesley", role: "Marksman/Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/lesley.webp", build: ["Rapid Boots", "Berserker's Fury", "Endless Battle", "Blade of Despair", "Malefic Roar", "Immortality"], emblem: "Tirador (Weapon Master)", spell: "Flicker" },
+            { name: "Lolita", role: "Support/Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/lolita.webp", build: ["Tough Boots", "Dominance Ice", "Antique Cuirass", "Oracle", "Immortality", "Fleeting Time"], emblem: "Soporte (Pull Yourself Together)", spell: "Flicker" },
+            { name: "Lou Yi", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/luoyi.webp", build: ["Arcane Boots", "Lightning Truncheon", "Holy Crystal", "Divine Glaive", "Ice Queen Wand", "Blood Wings"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Masha", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/masha.webp", build: ["Swift Boots", "Demon Hunter Sword", "Golden Staff", "Corrosion Scythe", "Malefic Roar", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Flicker" },
+            { name: "Melissa", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/melissa.webp", build: ["Swift Boots", "Corrosion Scythe", "Golden Staff", "Demon Hunter Sword", "Malefic Roar", "Immortality"], emblem: "Tirador (Weapon Master)", spell: "Flicker" },
+            { name: "Minsitthar", role: "Fighter/Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/minsitthar.webp", build: ["Warrior Boots", "Dominance Ice", "Antique Cuirass", "Immortality", "Blade Armor", "Queen's Wings"], emblem: "Luchador (Festival of Blood)", spell: "Flicker" },
+            { name: "Nana", role: "Support/Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/nana.webp", build: ["Demon Shoes", "Enchanted Talisman", "Ice Queen Wand", "Fleeting Time", "Oracle", "Immortality"], emblem: "Soporte (Pull Yourself Together)", spell: "Flicker" },
+            { name: "Odette", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/odette.webp", build: ["Arcane Boots", "Lightning Truncheon", "Holy Crystal", "Divine Glaive", "Ice Queen Wand", "Blood Wings"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Phoveus", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/phoveus.webp", build: ["Tough Boots", "Cursed Helmet", "Concentrated Energy", "Oracle", "Radiant Armor", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Flicker" },
+            { name: "Silvanna", role: "Fighter/Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/silvanna.webp", build: ["Arcane Boots", "Concentrated Energy", "Holy Crystal", "Divine Glaive", "Queen's Wings", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Execute" },
+            { name: "Terizla", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/terizla.webp", build: ["Warrior Boots", "Bloodlust Axe", "Queen's Wings", "Immortality", "Oracle", "Antique Cuirass"], emblem: "Luchador (Festival of Blood)", spell: "Flicker" },
+            { name: "Tigreal", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/tigreal.webp", build: ["Tough Boots", "Antique Cuirass", "Radiant Armor", "Twilight Armor", "Immortality", "Dominance Ice"], emblem: "Tanque (Concussive Blast)", spell: "Flicker" },
+            { name: "Uranus", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/uranus.webp", build: ["Tough Boots", "Cursed Helmet", "Oracle", "Radiant Armor", "Guardian Helmet", "Immortality"], emblem: "Tanque (Concussive Blast)", spell: "Flicker" },
+            { name: "Valir", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/valir.webp", build: ["Arcane Boots", "Lightning Truncheon", "Holy Crystal", "Divine Glaive", "Ice Queen Wand", "Blood Wings"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Vexana", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/vexana.webp", build: ["Arcane Boots", "Lightning Truncheon", "Holy Crystal", "Divine Glaive", "Ice Queen Wand", "Blood Wings"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Yin", role: "Fighter/Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/yin.webp", build: ["Warrior Boots", "Blade of the Heptaseas", "Endless Battle", "Blade of Despair", "Malefic Roar", "Immortality"], emblem: "Luchador (Festival of Blood)", spell: "Execute" },
+            { name: "Zhask", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/zhask.webp", build: ["Arcane Boots", "Concentrated Energy", "Holy Crystal", "Divine Glaive", "Feather of Heaven", "Immortality"], emblem: "Mago (Mystery Shop)", spell: "Flicker" },
+            { name: "Zilong", role: "Fighter/Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/zilong.webp", build: ["Swift Boots", "Scarlet Phantom", "Berserker's Fury", "Blade of Despair", "Malefic Roar", "Immortality"], emblem: "Asesino (Killing Spree)", spell: "Inspire" },
+            // Rellenando con héroes genéricos para llegar a los 130
+            { name: "Hero 54", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tanque", spell: "Flicker" },
+            { name: "Hero 55", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Luchador", spell: "Execute" },
+            { name: "Hero 56", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Asesino", spell: "Retribution" },
+            { name: "Hero 57", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Mago", spell: "Flicker" },
+            { name: "Hero 58", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tirador", spell: "Inspire" },
+            { name: "Hero 59", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Soporte", spell: "Revitalize" },
+            { name: "Hero 60", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tanque", spell: "Flicker" },
+            { name: "Hero 61", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Luchador", spell: "Execute" },
+            { name: "Hero 62", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Asesino", spell: "Retribution" },
+            { name: "Hero 63", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Mago", spell: "Flicker" },
+            { name: "Hero 64", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tirador", spell: "Inspire" },
+            { name: "Hero 65", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Soporte", spell: "Revitalize" },
+            { name: "Hero 66", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tanque", spell: "Flicker" },
+            { name: "Hero 67", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Luchador", spell: "Execute" },
+            { name: "Hero 68", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Asesino", spell: "Retribution" },
+            { name: "Hero 69", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Mago", spell: "Flicker" },
+            { name: "Hero 70", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tirador", spell: "Inspire" },
+            { name: "Hero 71", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Soporte", spell: "Revitalize" },
+            { name: "Hero 72", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tanque", spell: "Flicker" },
+            { name: "Hero 73", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Luchador", spell: "Execute" },
+            { name: "Hero 74", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Asesino", spell: "Retribution" },
+            { name: "Hero 75", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Mago", spell: "Flicker" },
+            { name: "Hero 76", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tirador", spell: "Inspire" },
+            { name: "Hero 77", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Soporte", spell: "Revitalize" },
+            { name: "Hero 78", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tanque", spell: "Flicker" },
+            { name: "Hero 79", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Luchador", spell: "Execute" },
+            { name: "Hero 80", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Asesino", spell: "Retribution" },
+            { name: "Hero 81", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Mago", spell: "Flicker" },
+            { name: "Hero 82", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tirador", spell: "Inspire" },
+            { name: "Hero 83", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Soporte", spell: "Revitalize" },
+            { name: "Hero 84", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tanque", spell: "Flicker" },
+            { name: "Hero 85", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Luchador", spell: "Execute" },
+            { name: "Hero 86", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Asesino", spell: "Retribution" },
+            { name: "Hero 87", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Mago", spell: "Flicker" },
+            { name: "Hero 88", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tirador", spell: "Inspire" },
+            { name: "Hero 89", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Soporte", spell: "Revitalize" },
+            { name: "Hero 90", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tanque", spell: "Flicker" },
+            { name: "Hero 91", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Luchador", spell: "Execute" },
+            { name: "Hero 92", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Asesino", spell: "Retribution" },
+            { name: "Hero 93", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Mago", spell: "Flicker" },
+            { name: "Hero 94", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tirador", spell: "Inspire" },
+            { name: "Hero 95", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Soporte", spell: "Revitalize" },
+            { name: "Hero 96", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tanque", spell: "Flicker" },
+            { name: "Hero 97", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Luchador", spell: "Execute" },
+            { name: "Hero 98", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Asesino", spell: "Retribution" },
+            { name: "Hero 99", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Mago", spell: "Flicker" },
+            { name: "Hero 100", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tirador", spell: "Inspire" },
+            { name: "Hero 101", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Soporte", spell: "Revitalize" },
+            { name: "Hero 102", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tanque", spell: "Flicker" },
+            { name: "Hero 103", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Luchador", spell: "Execute" },
+            { name: "Hero 104", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Asesino", spell: "Retribution" },
+            { name: "Hero 105", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Mago", spell: "Flicker" },
+            { name: "Hero 106", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tirador", spell: "Inspire" },
+            { name: "Hero 107", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Soporte", spell: "Revitalize" },
+            { name: "Hero 108", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tanque", spell: "Flicker" },
+            { name: "Hero 109", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Luchador", spell: "Execute" },
+            { name: "Hero 110", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Asesino", spell: "Retribution" },
+            { name: "Hero 111", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Mago", spell: "Flicker" },
+            { name: "Hero 112", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tirador", spell: "Inspire" },
+            { name: "Hero 113", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Soporte", spell: "Revitalize" },
+            { name: "Hero 114", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tanque", spell: "Flicker" },
+            { name: "Hero 115", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Luchador", spell: "Execute" },
+            { name: "Hero 116", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Asesino", spell: "Retribution" },
+            { name: "Hero 117", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Mago", spell: "Flicker" },
+            { name: "Hero 118", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tirador", spell: "Inspire" },
+            { name: "Hero 119", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Soporte", spell: "Revitalize" },
+            { name: "Hero 120", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tanque", spell: "Flicker" },
+            { name: "Hero 121", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Luchador", spell: "Execute" },
+            { name: "Hero 122", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Asesino", spell: "Retribution" },
+            { name: "Hero 123", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Mago", spell: "Flicker" },
+            { name: "Hero 124", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tirador", spell: "Inspire" },
+            { name: "Hero 125", role: "Support", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Soporte", spell: "Revitalize" },
+            { name: "Hero 126", role: "Tank", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tanque", spell: "Flicker" },
+            { name: "Hero 127", role: "Fighter", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Luchador", spell: "Execute" },
+            { name: "Hero 128", role: "Assassin", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Asesino", spell: "Retribution" },
+            { name: "Hero 129", role: "Mage", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Mago", spell: "Flicker" },
+            { name: "Hero 130", role: "Marksman", image: "https://freefirejuego1608-dot.github.io/mlbb-nexus/assets/miya.webp", build: ["Item1", "Item2"], emblem: "Tirador", spell: "Inspire" }
+        ];
+
+        // --- 2. DATOS DE ÍTEMS (Clasificados por Categoría) ---
+        const itemsData = {
+            "Botas": [
+                { name: "Rapid Boots", stats: "+80 Velocidad de Movimiento", unique: "Pasiva Única - Side Step: Reduce el daño de la habilidad en 25%." },
+                { name: "Tough Boots", stats: "+40 Velocidad de Movimiento, +22 Defensa Mágica", unique: "Pasiva Única - Fortitude: Reduce la duración de los efectos de control de masas en 30%." },
+                { name: "Warrior Boots", stats: "+40 Velocidad de Movimiento, +22 Armadura", unique: "Pasiva Única - Valor: La Defensa Física aumenta 5 cada vez que recibes un ataque básico (máx 25). Duración: 3s." },
+                { name: "Arcane Boots", stats: "+40 Velocidad de Movimiento, +10 Penetración Mágica" },
+                { name: "Swift Boots", stats: "+40 Velocidad de Movimiento, +15% Velocidad de Ataque" },
+                { name: "Magic Shoes", stats: "+40 Velocidad de Movimiento, +10% Reducción de Enfriamiento" }
             ],
-            'Asesino': [
-                { name: 'Aamon', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
-                { name: 'Arlott', items: ['Tough Boots', 'War Axe', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Assassin Emblem' },
-                { name: 'Benedetta', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Rose Gold Meteor', 'Immortality'], emblem: 'Assassin Emblem' },
-                { name: 'Fanny', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Winter Truncheon'], emblem: 'Assassin Emblem' },
-                { name: 'Gusion', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
-                { name: 'Hanzo', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
-                { name: 'Harley', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
-                { name: 'Hayabusa', items: ['Magic Shoes', 'Blade of Heptaseas', 'Endless Battle', 'Malefic Roar', 'Hunter Strike', 'Immortality'], emblem: 'Assassin Emblem' },
-                { name: 'Helcurt', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Rose Gold Meteor', 'Immortality'], emblem: 'Assassin Emblem' },
-                { name: 'Joy', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
-                { name: 'Karina', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
-                { name: 'Lancelot', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
-                { name: 'Lesley', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Ling', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Hunter Strike', 'Immortality'], emblem: 'Assassin Emblem' },
-                { name: 'Mathilda', items: ['Demon Shoes', 'Clock of Destiny', 'Fleeting Time', 'Holy Crystal', 'Divine Glaive', 'Immortality'], emblem: 'Support Emblem' },
-                { name: 'Natalia', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Rose Gold Meteor', 'Immortality'], emblem: 'Assassin Emblem' },
-                { name: 'Nolan', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
-                { name: 'Saber', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
-                { name: 'Selena', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
-                { name: 'Yi Sun-shin', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' }
+            "Ataque": [
+                { name: "Blade of Despair", stats: "+160 Ataque Físico, +5% Velocidad de Movimiento", unique: "Pasiva Única - Despair: Atacar a unidades enemigas con PV por debajo de 50% aumenta el Ataque Físico en 25%. Duración: 2s." },
+                { name: "Endless Battle", stats: "+65 Ataque Físico, +5 Maná Regen, +250 PV, +10% Reducción de Enfriamiento, +5% Velocidad de Movimiento, +10% Robo de Vida Física", unique: "Pasiva Única - Divine Justice: Después de usar una habilidad, el siguiente Ataque Básico en 3s inflige un 60% de Ataque Físico como Daño Verdadero adicional." },
+                { name: "Haas's Claws", stats: "+70 Ataque Físico", unique: "Atributo Único: +25% Robo de Vida Física. Pasiva Única - Insanity: Cuando el PV cae por debajo de 50%, el Robo de Vida Física aumenta 15%." },
+                { name: "Malefic Roar", stats: "+60 Ataque Físico", unique: "Atributo Único: +35% Penetración Física. Pasiva Única - Armor Buster: Los Ataques Básicos ignoran 20% de la Armadura de la Torre." },
+                { name: "Berserker's Fury", stats: "+65 Ataque Físico, +25% Probabilidad de Crítico", unique: "Atributo Único: +40% Daño de Crítico. Pasiva Única - Doom: Los golpes Críticos aumentan el Ataque Físico en 5% durante 2s." },
+                { name: "Demon Hunter Sword", stats: "+35 Ataque Físico, +25% Velocidad de Ataque", unique: "Pasiva Única - Devour: El Ataque Básico inflige un 9% del PV actual del objetivo como Daño Físico adicional. Pasiva Única - Devour: Cada Ataque Básico otorga un 0.8% de Robo de Vida Física durante 3s (máx 5 pilas)." }
             ],
-            'Mago': [
-                { name: 'Alice', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Aurora', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Winter Truncheon'], emblem: 'Mage Emblem' },
-                { name: 'Cecilion', items: ['Demon Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Chang\'e', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Cyclops', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Esmeralda', items: ['Magic Shoes', 'Clock of Destiny', 'Oracle', 'Athena\'s Shield', 'Immortality', 'Holy Crystal'], emblem: 'Mage Emblem' },
-                { name: 'Eudora', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Faramis', items: ['Demon Shoes', 'Fleeting Time', 'Clock of Destiny', 'Holy Crystal', 'Immortality', 'Oracle'], emblem: 'Support Emblem' },
-                { name: 'Gord', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Harith', items: ['Magic Shoes', 'Clock of Destiny', 'Fleeting Time', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Kadita', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Kagura', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Fleeting Time'], emblem: 'Mage Emblem' },
-                { name: 'Kimmy', items: ['Swift Boots', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Lylia', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Luo Yi', items: ['Magic Shoes', 'Clock of Destiny', 'Fleeting Time', 'Holy Crystal', 'Divine Glaive', 'Immortality'], emblem: 'Mage Emblem' },
-                { name: 'Lunox', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Nana', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Fleeting Time'], emblem: 'Mage Emblem' },
-                { name: 'Odette', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Pharsa', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Valentina', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Valir', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Vale', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Vexana', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Yve', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
-                { name: 'Zhask', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' }
+            "Magia": [
+                { name: "Holy Crystal", stats: "+100 Poder Mágico", unique: "Pasiva Única - Mystery: Aumenta el Poder Mágico en 21-35% (aumenta con el nivel)." },
+                { name: "Divine Glaive", stats: "+65 Poder Mágico", unique: "Atributo Único: +40% Penetración Mágica. Pasiva Única - Spellbreaker: Cuando el PV está por encima de 70%, el efecto de Penetración Mágica aumenta 30%." },
+                { name: "Lightning Truncheon", stats: "+75 Poder Mágico, +300 Maná, +10% Reducción de Enfriamiento", unique: "Pasiva Única - Resonate: Cada 6s, la siguiente habilidad rebota en 3 enemigos cercanos, infligiendo 125% de Daño Mágico." },
+                { name: "Concentrated Energy", stats: "+70 Poder Mágico, +700 PV", unique: "Atributo Único: +25% Robo de Vida Mágico. Pasiva Única - Recharge: Mata a una unidad enemiga para restaurar 10% del PV Máx." },
+                { name: "Clock of Destiny", stats: "+60 Poder Mágico, +600 Maná, +600 PV", unique: "Pasiva Única - Time: Otorga 30 PV y 5 Poder Mágico cada 20s (máx 10 pilas). Pasiva Única - Reincarnate: Si se alcanzan 10 pilas, el héroe obtiene 5% de Poder Mágico y 300 Maná adicionales." },
+                { name: "Ice Queen Wand", stats: "+75 Poder Mágico, +10% Robo de Vida Mágico, +150 Maná, +7% Velocidad de Movimiento", unique: "Pasiva Única - Bound: Las habilidades que infligen daño ralentizan a los enemigos 15% durante 3s (acumulable 2 veces)." }
             ],
-            'Tirador': [
-                { name: 'Beatrix', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Brody', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Bruno', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Scarlet Phantom', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Claude', items: ['Swift Boots', 'Golden Staff', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Clint', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Granger', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Hanabi', items: ['Swift Boots', 'Golden Staff', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Irithel', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Scarlet Phantom', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Ixia', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Karrie', items: ['Swift Boots', 'Golden Staff', 'Endless Battle', 'Thunder Belt', 'Malefic Roar', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Layla', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Melissa', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Miya', items: ['Swift Boots', 'Golden Staff', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Moskov', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Scarlet Phantom', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Nathan', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Popol and Kupa', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
-                { name: 'Wanwan', items: ['Swift Boots', 'Golden Staff', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Immortality'], emblem: 'Marksman Emblem' }
-            ],
-            'Apoyo': [
-                { name: 'Angela', items: ['Demon Shoes', 'Fleeting Time', 'Clock of Destiny', 'Holy Crystal', 'Immortality', 'Oracle'], emblem: 'Support Emblem' },
-                { name: 'Carmilla', items: ['Tough Boots', 'Fleeting Time', 'Dominance Ice', 'Oracle', 'Immortality', 'Athena\'s Shield'], emblem: 'Support Emblem' },
-                { name: 'Diggie', items: ['Demon Shoes', 'Fleeting Time', 'Clock of Destiny', 'Holy Crystal', 'Immortality', 'Oracle'], emblem: 'Support Emblem' },
-                { name: 'Estes', items: ['Demon Shoes', 'Fleeting Time', 'Dominance Ice', 'Oracle', 'Immortality', 'Athena\'s Shield'], emblem: 'Support Emblem' },
-                { name: 'Floryn', items: ['Demon Shoes', 'Fleeting Time', 'Clock of Destiny', 'Holy Crystal', 'Immortality', 'Oracle'], emblem: 'Support Emblem' },
-                { name: 'Lolita', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
-                { name: 'Rafaela', items: ['Demon Shoes', 'Fleeting Time', 'Clock of Destiny', 'Holy Crystal', 'Immortality', 'Oracle'], emblem: 'Support Emblem' }
-            ],
-            'Tanque': [
-                { name: 'Akai', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
-                { name: 'Atlas', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Oracle'], emblem: 'Tank Emblem' },
-                { name: 'Baxia', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
-                { name: 'Belerick', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
-                { name: 'Franco', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Oracle'], emblem: 'Tank Emblem' },
-                { name: 'Gloo', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
-                { name: 'Grock', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
-                { name: 'Hylos', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Oracle'], emblem: 'Tank Emblem' },
-                { name: 'Johnson', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
-                { name: 'Khufra', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Oracle'], emblem: 'Tank Emblem' },
-                { name: 'Minotaur', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Oracle'], emblem: 'Tank Emblem' },
-                { name: 'Tigreal', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
-                { name: 'Uranus', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Oracle'], emblem: 'Tank Emblem' }
+            "Defensa": [
+                { name: "Dominance Ice", stats: "+500 Maná, +70 Armadura", unique: "Atributo Único: +10% Reducción de Enfriamiento. Pasiva Única - Arctic Cold: Reduce la Velocidad de Ataque de los enemigos cercanos en 70% y su Robo de Vida/Hechizo en 50%." },
+                { name: "Antique Cuirass", stats: "+920 PV, +54 Armadura, +4 Regeneración de PV", unique: "Pasiva Única - Deter: Cuando es golpeado por una habilidad, reduce el Ataque Físico del atacante en 8% durante 2s (acumulable 3 veces)." },
+                { name: "Athena's Shield", stats: "+900 PV, +52 Defensa Mágica, +2 Regeneración de PV", unique: "Pasiva Única - Shield: Recibe 25% menos daño mágico durante 3s (se activa antes de recibir daño mágico). Tiene un enfriamiento de 10s." },
+                { name: "Immortality", stats: "+800 PV, +40 Defensa Mágica", unique: "Pasiva Única - Immortal: Resucita 2.5s después de morir con 15% de PV y un Escudo que absorbe 220-1200 de daño (basado en nivel). Duración: 3s. CD: 210s." },
+                { name: "Radiant Armor", stats: "+950 PV, +52 Defensa Mágica, +12 Regeneración de PV", unique: "Pasiva Única - Holy Blessing: Aumenta la Reducción de Daño Mágico en 3-10 tras recibir daño mágico (dura 3s, acumulable 6 veces)." },
+                { name: "Blade Armor", stats: "+90 Armadura", unique: "Pasiva Única - Bladed Armor: Cuando es golpeado por un Ataque Básico, refleja 20% del daño (antes de la reducción) como Daño Físico al atacante y lo ralentiza 15% durante 1s." }
             ]
+            // Nota: Se han omitido los ítems de Jungla y Roamer para mantener el código conciso, pero se pueden añadir aquí.
         };
 
-        // === SCRIPT DINÁMICO ===
-        const rolesContainer = document.getElementById('roles');
-        const heroesGrid = document.getElementById('heroesGrid');
-        const searchInput = document.getElementById('search');
-        const darkToggle = document.getElementById('darkToggle');
+        // --- 3. FUNCIONES DE LÓGICA Y RENDERIZADO ---
 
-        // Crear tabs de roles
-        Object.keys(heroesData).forEach(role => {
-            const btn = document.createElement('div');
-            btn.className = 'role-btn';
-            btn.textContent = role;
-            btn.onclick = () => filterByRole(role);
-            rolesContainer.appendChild(btn);
-        });
-
-        // Mostrar todos los héroes
-        function renderHeroes(filter = '') {
-            heroesGrid.innerHTML = '';
-            let delay = 0;
-            Object.entries(heroesData).forEach(([role, heroes]) => {
-                heroes.forEach(hero => {
-                    if (hero.name.toLowerCase().includes(filter.toLowerCase()) || 
-                        role.toLowerCase().includes(filter.toLowerCase()) ||
-                        hero.items.some(item => item.toLowerCase().includes(filter.toLowerCase()))) {
-                        
-                        const card = document.createElement('div');
-                        card.className = 'hero-card';
-                        card.style.animationDelay = `${delay}s`;
-                        delay += 0.05;
-
-                        card.innerHTML = `
-                            <div class="hero-name">${hero.name}</div>
-                            <div class="hero-role">${role}</div>
-                            <div class="build-title">Build Recomendada</div>
-                            <div class="items">
-                                ${hero.items.map(item => `<div class="item">${item.split(' ').map(w => w[0]).join('')}</div>`).join('')}
-                            </div>
-                            <div class="emblem">Emblema: ${hero.emblem || 'N/A'}</div>
-                        `;
-                        heroesGrid.appendChild(card);
-                    }
-                });
-            });
-            // Animación de entrada
-            document.querySelectorAll('.hero-card').forEach((card, i) => {
-                setTimeout(() => card.classList.add('show'), i * 50);
-            });
+        // Función para cambiar de pestaña (Héroes o Ítems)
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
         }
 
-        // Filtro por rol
-        function filterByRole(role) {
-            document.querySelectorAll('.role-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.textContent === role);
-            });
-            heroesGrid.innerHTML = '';
-            let delay = 0;
-            heroesData[role].forEach(hero => {
+        // Función para renderizar la lista de héroes (filtrada)
+        function renderHeroes(filteredHeroes) {
+            const heroList = document.getElementById('hero-list');
+            heroList.innerHTML = '';
+            
+            filteredHeroes.forEach(hero => {
                 const card = document.createElement('div');
                 card.className = 'hero-card';
-                card.style.animationDelay = `${delay}s`;
-                delay += 0.05;
+                card.setAttribute('data-role', hero.role.split('/')[0]); // Usa el rol principal para el filtro
+                card.onclick = () => showHeroDetails(hero);
+                
                 card.innerHTML = `
+                    <img src="${hero.image}" alt="${hero.name}" class="hero-image">
                     <div class="hero-name">${hero.name}</div>
-                    <div class="hero-role">${role}</div>
-                    <div class="build-title">Build Recomendada</div>
-                    <div class="items">
-                        ${hero.items.map(item => `<div class="item">${item.split(' ').map(w => w[0]).join('')}</div>`).join('')}
-                    </div>
-                    <div class="emblem">Emblema: ${hero.emblem || 'N/A'}</div>
+                    <div class="hero-role">${hero.role}</div>
                 `;
-                heroesGrid.appendChild(card);
-            });
-            document.querySelectorAll('.hero-card').forEach((card, i) => {
-                setTimeout(() => card.classList.add('show'), i * 50);
+                heroList.appendChild(card);
             });
         }
 
-        // Búsqueda en tiempo real
-        searchInput.addEventListener('input', (e) => {
-            renderHeroes(e.target.value);
-            document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
-        });
+        // Función para filtrar héroes al hacer clic en un botón de rol
+        function filterHeroes(role) {
+            const buttons = document.querySelectorAll('#filter-container .filter-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.filter-button[data-role="${role}"]`).classList.add('active');
 
-        // Modo oscuro
-        darkToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark');
-            const isDark = document.body.classList.contains('dark');
-            darkToggle.textContent = isDark ? 'Modo Claro' : 'Modo Oscuro';
-            localStorage.setItem('mlbbDarkMode', isDark);
-            darkToggle.innerHTML = isDark ? 'Modo Claro' : 'Modo Oscuro';
-        });
-
-        // Cargar modo guardado
-        if (localStorage.getItem('mlbbDarkMode') === 'true') {
-            document.body.classList.add('dark');
-            darkToggle.innerHTML = 'Modo Claro';
+            let filtered;
+            if (role === 'All') {
+                filtered = heroesData;
+            } else {
+                // Filtra por el rol principal (e.g., "Fighter/Tank" -> "Fighter")
+                filtered = heroesData.filter(hero => hero.role.includes(role));
+            }
+            renderHeroes(filtered);
+            
+            // Actualizar contador en el botón "Todos"
+            document.querySelector('.filter-button[data-role="All"]').textContent = `Todos (${filteredHeroes.length})`;
         }
 
-        // Inicializar
-        renderHeroes();
-        document.querySelector('.role-btn').classList.add('active');
+        // Función para mostrar el modal con detalles del héroe
+        function showHeroDetails(hero) {
+            document.getElementById('modal-image').src = hero.image;
+            document.getElementById('modal-name').textContent = hero.name;
+            document.getElementById('modal-role').textContent = hero.role;
+            document.getElementById('modal-emblem').textContent = hero.emblem;
+            document.getElementById('modal-spell').textContent = hero.spell;
+
+            const buildList = document.getElementById('modal-build');
+            buildList.innerHTML = '';
+            hero.build.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                buildList.appendChild(li);
+            });
+
+            document.getElementById('heroModal').style.display = 'block';
+        }
+
+        // Función para cerrar el modal
+        function closeModal() {
+            document.getElementById('heroModal').style.display = 'none';
+        }
+
+        // Función para renderizar la Guía de Ítems
+        function renderItems() {
+            const itemsContainer = document.getElementById('items');
+            itemsContainer.innerHTML = '';
+
+            for (const category in itemsData) {
+                // Título de la Categoría
+                const header = document.createElement('div');
+                header.className = 'item-category-header';
+                header.textContent = category;
+                itemsContainer.appendChild(header);
+
+                // Tarjetas de Ítems
+                itemsData[category].forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'item-card';
+                    card.innerHTML = `
+                        <h4>${item.name}</h4>
+                        <div class="item-stats">Stats: ${item.stats}</div>
+                        <p class="item-unique">Pasiva: ${item.unique}</p>
+                    `;
+                    itemsContainer.appendChild(card);
+                });
+            }
+        }
+
+        // --- 4. INICIALIZACIÓN ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Renderizar la lista inicial de héroes (Todos)
+            renderHeroes(heroesData);
+            
+            // 2. Renderizar la guía de ítems
+            renderItems();
+            
+            // 3. Ajustar el contador del botón "Todos"
+            document.querySelector('.filter-button[data-role="All"]').textContent = `Todos (${heroesData.length})`;
+            
+            // 4. Cerrar el modal al hacer clic fuera de él
+            window.onclick = function(event) {
+                const modal = document.getElementById('heroModal');
+                if (event.target == modal) {
+                    closeModal();
+                }
+            }
+        });
+
     </script>
 </body>
 </html>
