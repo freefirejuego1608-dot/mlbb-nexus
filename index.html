@@ -3,47 +3,164 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MLBB Nexus</title>
+  <title>MLBB Nexus PRO</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    body { background: #0a0a1a; color: white; font-family: sans-serif; }
-    .btn { @apply p-4 rounded-xl text-white font-bold transition hover:scale-105; }
+    body { background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%); color: #fff; }
+    .hero-btn { transition: all 0.3s; }
+    .hero-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px #00ffcc; }
+    .selected { background: #00ffcc !important; color: #000 !important; }
+    .tier-s { border: 3px solid #ff4757; }
+    .tier-a { border: 3px solid #1e90ff; }
+    .tier-b { border: 3px solid #2ed573; }
+    .tier-c { border: 3px solid #ffa502; }
+    .tier-d { border: 3px solid #747d8c; }
+    .sidebar { transition: transform 0.3s ease; }
   </style>
 </head>
 <body class="min-h-screen p-4">
-  <div class="max-w-4xl mx-auto">
-    <h1 class="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-blue-400 to-yellow-400 bg-clip-text text-transparent">
-      MLBB Nexus
-    </h1>
 
-    <section class="mb-8 p-6 bg-blue-900/50 rounded-xl">
-      <h2 class="text-2xl mb-4">Synergy Lab</h2>
-      <div class="grid grid-cols-2 gap-4">
-        <button class="btn bg-red-600" onclick="select('Layla')">Layla</button>
-        <button class="btn bg-green-600" onclick="select('Grock')">Grock</button>
-        <button class="btn bg-purple-600" onclick="select('Fanny')">Fanny</button>
-        <button class="btn bg-yellow-600" onclick="select('Lancelot')">Lancelot</button>
-      </div>
-      <div id="result" class="mt-4 p-4 bg-green-900/70 rounded hidden">
-        <p id="combo"></p>
-        <p>Winrate: <span id="win">??</span>%</p>
-      </div>
-    </section>
+  <button id="menu-btn" class="fixed top-4 right-4 z-50 p-3 bg-cyan-600 rounded-full text-xl">
+    <i class="fas fa-bars"></i>
+  </button>
 
-    <footer class="text-center text-gray-400">
-      Hecho por ti
-    </footer>
+  <div id="sidebar" class="fixed top-0 right-0 h-full w-72 bg-black/90 backdrop-blur-xl p-6 transform translate-x-full z-40 sidebar">
+    <button id="close-btn" class="float-right text-2xl text-white">×</button>
+    <h2 class="text-3xl font-bold mb-6 text-cyan-400">MLBB Nexus</h2>
+    <ul class="space-y-4 text-lg">
+      <li><button onclick="show('synergy')" class="w-full text-left p-3 bg-white/10 rounded-lg hover:bg-cyan-600"><i class="fas fa-fire mr-2"></i>Synergy Lab</button></li>
+      <li><button onclick="show('tier')" class="w-full text-left p-3 bg-white/10 rounded-lg hover:bg-cyan-600"><i class="fas fa-trophy mr-2"></i>Tier List</button></li>
+      <li><button onclick="show('heroes')" class="w-full text-left p-3 bg-white/10 rounded-lg hover:bg-cyan-600"><i class="fas fa-users mr-2"></i>Todos Héroes</button></li>
+    </ul>
+  </div>
+
+  <div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden"></div>
+
+  <div class="max-w-6xl mx-auto">
+
+    <div id="synergy" class="section">
+      <h1 class="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+        <i class="fas fa-fire"></i> Synergy Lab
+      </h1>
+      <div id="heroes-grid" class="grid grid-cols-3 md:grid-cols-5 gap-4 mb-6"></div>
+      <div id="result" class="p-6 bg-gradient-to-r from-green-900/50 to-blue-900/50 rounded-2xl text-center hidden">
+        <h2 id="combo-title" class="text-2xl font-bold"></h2>
+        <p id="winrate" class="text-3xl font-bold text-yellow-400 my-2"></p>
+        <p id="desc" class="text-lg"></p>
+      </div>
+    </div>
+
+    <div id="tier" class="section hidden">
+      <h1 class="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+        <i class="fas fa-trophy"></i> Tier List META - Nov 2025
+      </h1>
+      <div class="grid md:grid-cols-5 gap-4">
+        <div class="p-4 bg-white/10 rounded-xl">
+          <h3 class="font-bold text-yellow-400">EXP Lane</h3>
+          <p class="tier-s">S: Cici, Lapu-Lapu, Yin</p>
+          <p class="tier-a">A: Arlott, Uranus</p>
+          <p class="tier-b">B: Ruby, Phoveus</p>
+          <p class="tier-c">C: Sun</p>
+          <p class="tier-d">D: Zilong</p>
+        </div>
+        <div class="p-4 bg-white/10 rounded-xl">
+          <h3 class="font-bold text-yellow-400">Mid Lane</h3>
+          <p class="tier-s">S: Zhuxin, Harith, Pharsa</p>
+          <p class="tier-a">A: Xavier, Alice</p>
+          <p class="tier-b">B: Chang'e</p>
+        </div>
+        <div class="p-4 bg-white/10 rounded-xl">
+          <h3 class="font-bold text-yellow-400">Gold Lane</h3>
+          <p class="tier-s">S: Beatrix, Melissa</p>
+          <p class="tier-a">A: Layla, Clint</p>
+          <p class="tier-b">B: Miya</p>
+        </div>
+        <div class="p-4 bg-white/10 rounded-xl">
+          <h3 class="font-bold text-yellow-400">Jungle</h3>
+          <p class="tier-s">S: Lancelot, Fanny</p>
+          <p class="tier-a">A: Ling, Hayabusa</p>
+          <p class="tier-b">B: Karina</p>
+        </div>
+        <div class="p-4 bg-white/10 rounded-xl">
+          <h3 class="font-bold text-yellow-400">Roam</h3>
+          <p class="tier-s">S: Mathilda, Angela</p>
+          <p class="tier-a">A: Tigreal, Grock</p>
+          <p class="tier-b">B: Minotaur</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="heroes" class="section hidden">
+      <h1 class="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-green-400 to-teal-500 bg-clip-text text-transparent">
+        <i class="fas fa-users"></i> Todos los Héroes
+      </h1>
+      <div id="all-heroes" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+    </div>
+
   </div>
 
   <script>
-    let heroes = [];
-    function select(name) {
-      if (heroes.length < 2) heroes.push(name);
-      if (heroes.length === 2) {
-        document.getElementById('result').classList.remove('hidden');
-        document.getElementById('combo').textContent = heroes.join(' + ');
-        document.getElementById('win').textContent = Math.floor(Math.random()*30)+55;
+    const heroes = [
+      {name:"Layla",role:"Marksman",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/1b/Layla_icon.png",skill:"Disparo mortal en línea recta"},
+      {name:"Grock",role:"Tank",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/6e/Grock_icon.png",skill:"Muro inmune y daño en área"},
+      {name:"Lancelot",role:"Assassin",img:"https://static.wikia.nocookie.net/mobile-legends/images/7/7f/Lancelot_icon.png",skill:"Corte triple + invulnerabilidad"},
+      {name:"Odette",role:"Mage",img:"https://static.wikia.nocookie.net/mobile-legends/images/5/5d/Odette_icon.png",skill:"Lago de cisnes (CC masivo)"},
+      {name:"Tigreal",role:"Tank",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/1d/Tigreal_icon.png",skill:"CC en área + escudo"},
+      {name:"Nana",role:"Support",img:"https://static.wikia.nocookie.net/mobile-legends/images/2/2f/Nana_icon.png",skill:"Transformación + burst"}
+    ];
+
+    const combos = {
+      "Layla-Grock": {combo:"Escudo + Daño", winrate:"78%", desc:"Grock protege, Layla dispara desde atrás"},
+      "Lancelot-Odette": {combo:"Burst + CC", winrate:"82%", desc:"Odette atrapa, Lancelot remata"},
+      "Tigreal-Nana": {combo:"Tank + Heal", winrate:"75%", desc:"Tigreal inicia, Nana cura y transforma"}
+    };
+
+    let selected = [];
+
+    const grid = document.getElementById("heroes-grid");
+    const allGrid = document.getElementById("all-heroes");
+    heroes.forEach(h => {
+      const div = document.createElement("div");
+      div.className = "hero-btn p-3 bg-white/10 rounded-xl text-center cursor-pointer";
+      div.innerHTML = `<img src="${h.img}" class="w-16 h-16 mx-auto rounded-full mb-1"><p class="font-bold">${h.name}</p><small>${h.role}</small>`;
+      div.onclick = () => selectHero(h.name, div);
+      grid.appendChild(div.cloneNode(true));
+      allGrid.appendChild(div.cloneNode(true));
+    });
+
+    function selectHero(name, btn) {
+      if (selected.includes(name)) {
+        selected = selected.filter(x => x !== name);
+        btn.classList.remove('selected');
+      } else if (selected.length < 2) {
+        selected.push(name);
+        btn.classList.add('selected');
       }
+      if (selected.length === 2) {
+        const key = selected.sort().join("-");
+        const data = combos[key] || {combo:"Sin combo", winrate:"??%", desc:"Explora más"};
+        document.getElementById("result").classList.remove("hidden");
+        document.getElementById("combo-title").textContent = selected.join(" + ");
+        document.getElementById("winrate").textContent = data.winrate;
+        document.getElementById("desc").textContent = data.desc;
+      }
+    }
+
+    document.getElementById("menu-btn").onclick = () => {
+      document.getElementById("sidebar").classList.remove("translate-x-full");
+      document.getElementById("overlay").classList.remove("hidden");
+    };
+    document.getElementById("close-btn").onclick = document.getElementById("overlay").onclick = () => {
+      document.getElementById("sidebar").classList.add("translate-x-full");
+      document.getElementById("overlay").classList.add("hidden");
+    };
+
+    function show(id) {
+      document.querySelectorAll(".section").forEach(s => s.classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
+      document.getElementById("sidebar").classList.add("translate-x-full");
+      document.getElementById("overlay").classList.add("hidden");
     }
   </script>
 </body>
