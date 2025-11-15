@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MLBB Nexus</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #0a0a1a; color: white; font-family: sans-serif; }
+    .btn { @apply p-4 rounded-xl text-white font-bold transition hover:scale-105; }
+  </style>
+</head>
+<body class="min-h-screen p-4">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-blue-400 to-yellow-400 bg-clip-text text-transparent">
+      MLBB Nexus
+    </h1>
+
+    <section class="mb-8 p-6 bg-blue-900/50 rounded-xl">
+      <h2 class="text-2xl mb-4">Synergy Lab</h2>
+      <div class="grid grid-cols-2 gap-4">
+        <button class="btn bg-red-600" onclick="select('Layla')">Layla</button>
+        <button class="btn bg-green-600" onclick="select('Grock')">Grock</button>
+        <button class="btn bg-purple-600" onclick="select('Fanny')">Fanny</button>
+        <button class="btn bg-yellow-600" onclick="select('Lancelot')">Lancelot</button>
+      </div>
+      <div id="result" class="mt-4 p-4 bg-green-900/70 rounded hidden">
+        <p id="combo"></p>
+        <p>Winrate: <span id="win">??</span>%</p>
+      </div>
+    </section>
+
+    <footer class="text-center text-gray-400">
+      Hecho por ti
+    </footer>
+  </div>
+
+  <script>
+    let heroes = [];
+    function select(name) {
+      if (heroes.length < 2) heroes.push(name);
+      if (heroes.length === 2) {
+        document.getElementById('result').classList.remove('hidden');
+        document.getElementById('combo').textContent = heroes.join(' + ');
+        document.getElementById('win').textContent = Math.floor(Math.random()*30)+55;
+      }
+    }
+  </script>
+</body>
+</html>
