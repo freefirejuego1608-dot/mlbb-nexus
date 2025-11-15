@@ -1,167 +1,320 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MLBB Nexus PRO</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    body { background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%); color: #fff; }
-    .hero-btn { transition: all 0.3s; }
-    .hero-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px #00ffcc; }
-    .selected { background: #00ffcc !important; color: #000 !important; }
-    .tier-s { border: 3px solid #ff4757; }
-    .tier-a { border: 3px solid #1e90ff; }
-    .tier-b { border: 3px solid #2ed573; }
-    .tier-c { border: 3px solid #ffa502; }
-    .tier-d { border: 3px solid #747d8c; }
-    .sidebar { transition: transform 0.3s ease; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLBB Nexus PRO - Guías Completas de Héroes</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            min-height: 100vh;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        body.dark { background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%); color: #e0e0e0; }
+        .header {
+            text-align: center; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.2); border-radius: 0 0 20px 20px;
+        }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .controls {
+            display: flex; justify-content: center; gap: 15px; margin: 20px 0; flex-wrap: wrap; padding: 0 10px;
+        }
+        .search { padding: 12px 20px; border: none; border-radius: 25px; width: 250px; font-size: 16px; outline: none; }
+        .toggle { background: #ff6b35; color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer; font-size: 16px; transition: all 0.3s; }
+        .toggle:hover { transform: scale(1.05); }
+        .roles {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0; padding: 0 10px;
+        }
+        .role-btn {
+            background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3);
+            padding: 10px 20px; border-radius: 20px; cursor: pointer; transition: all 0.3s; font-weight: bold;
+        }
+        .role-btn.active, .role-btn:hover { background: #ff6b35; border-color: #ff6b35; transform: scale(1.05); }
+        .heroes-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; padding: 20px; max-width: 1400px; margin: 0 auto;
+        }
+        .hero-card {
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            opacity: 0; transform: translateY(30px); transition: all 0.5s ease; border: 1px solid rgba(255,255,255,0.2);
+        }
+        .hero-card.show { opacity: 1; transform: translateY(0); }
+        .hero-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(255,107,53,0.4); }
+        .hero-name { font-size: 1.8em; margin-bottom: 10px; color: #ff6b35; }
+        .hero-role { background: rgba(255,107,53,0.3); padding: 5px 15px; border-radius: 15px; display: inline-block; margin-bottom: 15px; font-weight: bold; }
+        .build-title { font-size: 1.2em; margin: 15px 0 10px; color: #ffd700; }
+        .items { display: flex; flex-wrap: wrap; gap: 10px; }
+        .item {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d); width: 60px; height: 60px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s;
+        }
+        .item:hover { transform: scale(1.1); }
+        body.dark .item { background: linear-gradient(45deg, #667eea, #764ba2); }
+        .emblem { margin-top: 10px; font-size: 0.9em; color: #ffd700; font-style: italic; }
+        .footer { text-align: center; padding: 20px; opacity: 0.8; font-size: 0.9em; }
+        @media (max-width: 768px) {
+            .heroes-grid { grid-template-columns: 1fr; padding: 10px; }
+            .header h1 { font-size: 2em; }
+            .controls { flex-direction: column; align-items: center; }
+            .search { width: 100%; max-width: 300px; }
+            .roles { justify-content: center; }
+            .role-btn { padding: 8px 16px; font-size: 14px; }
+        }
+    </style>
 </head>
-<body class="min-h-screen p-4">
-
-  <button id="menu-btn" class="fixed top-4 right-4 z-50 p-3 bg-cyan-600 rounded-full text-xl">
-    <i class="fas fa-bars"></i>
-  </button>
-
-  <div id="sidebar" class="fixed top-0 right-0 h-full w-72 bg-black/90 backdrop-blur-xl p-6 transform translate-x-full z-40 sidebar">
-    <button id="close-btn" class="float-right text-2xl text-white">×</button>
-    <h2 class="text-3xl font-bold mb-6 text-cyan-400">MLBB Nexus</h2>
-    <ul class="space-y-4 text-lg">
-      <li><button onclick="show('synergy')" class="w-full text-left p-3 bg-white/10 rounded-lg hover:bg-cyan-600"><i class="fas fa-fire mr-2"></i>Synergy Lab</button></li>
-      <li><button onclick="show('tier')" class="w-full text-left p-3 bg-white/10 rounded-lg hover:bg-cyan-600"><i class="fas fa-trophy mr-2"></i>Tier List</button></li>
-      <li><button onclick="show('heroes')" class="w-full text-left p-3 bg-white/10 rounded-lg hover:bg-cyan-600"><i class="fas fa-users mr-2"></i>Todos Héroes</button></li>
-    </ul>
-  </div>
-
-  <div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden"></div>
-
-  <div class="max-w-6xl mx-auto">
-
-    <div id="synergy" class="section">
-      <h1 class="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-        <i class="fas fa-fire"></i> Synergy Lab
-      </h1>
-      <div id="heroes-grid" class="grid grid-cols-3 md:grid-cols-5 gap-4 mb-6"></div>
-      <div id="result" class="p-6 bg-gradient-to-r from-green-900/50 to-blue-900/50 rounded-2xl text-center hidden">
-        <h2 id="combo-title" class="text-2xl font-bold"></h2>
-        <p id="winrate" class="text-3xl font-bold text-yellow-400 my-2"></p>
-        <p id="desc" class="text-lg"></p>
-      </div>
+<body>
+    <div class="header">
+        <h1>MLBB Nexus PRO</h1>
+        <p>Guías Épicas de Builds - Todos los Héroes (Actualizado Nov 2025)</p>
+    </div>
+    <div class="controls">
+        <input type="text" class="search" id="search" placeholder="Busca héroe, rol o item...">
+        <button class="toggle" id="darkToggle">Modo Oscuro</button>
+    </div>
+    <div class="roles" id="roles"></div>
+    <div class="heroes-grid" id="heroesGrid"></div>
+    <div class="footer">
+        <p>Creado con ❤️ por Grok xAI | <a href="https://github.com/freefirejuego1608-dot/mlbb-nexus" style="color:#ffd700;">Repo GitHub</a> | 117 Héroes Incluidos</p>
     </div>
 
-    <div id="tier" class="section hidden">
-      <h1 class="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-        <i class="fas fa-trophy"></i> Tier List META - Nov 2025
-      </h1>
-      <div class="grid md:grid-cols-5 gap-4">
-        <div class="p-4 bg-white/10 rounded-xl">
-          <h3 class="font-bold text-yellow-400">EXP Lane</h3>
-          <p class="tier-s">S: Cici, Lapu-Lapu, Yin</p>
-          <p class="tier-a">A: Arlott, Uranus</p>
-          <p class="tier-b">B: Ruby, Phoveus</p>
-          <p class="tier-c">C: Sun</p>
-          <p class="tier-d">D: Zilong</p>
-        </div>
-        <div class="p-4 bg-white/10 rounded-xl">
-          <h3 class="font-bold text-yellow-400">Mid Lane</h3>
-          <p class="tier-s">S: Zhuxin, Harith, Pharsa</p>
-          <p class="tier-a">A: Xavier, Alice</p>
-          <p class="tier-b">B: Chang'e</p>
-        </div>
-        <div class="p-4 bg-white/10 rounded-xl">
-          <h3 class="font-bold text-yellow-400">Gold Lane</h3>
-          <p class="tier-s">S: Beatrix, Melissa</p>
-          <p class="tier-a">A: Layla, Clint</p>
-          <p class="tier-b">B: Miya</p>
-        </div>
-        <div class="p-4 bg-white/10 rounded-xl">
-          <h3 class="font-bold text-yellow-400">Jungle</h3>
-          <p class="tier-s">S: Lancelot, Fanny</p>
-          <p class="tier-a">A: Ling, Hayabusa</p>
-          <p class="tier-b">B: Karina</p>
-        </div>
-        <div class="p-4 bg-white/10 rounded-xl">
-          <h3 class="font-bold text-yellow-400">Roam</h3>
-          <p class="tier-s">S: Mathilda, Angela</p>
-          <p class="tier-a">A: Tigreal, Grock</p>
-          <p class="tier-b">B: Minotaur</p>
-        </div>
-      </div>
-    </div>
+    <script>
+        // === TODOS LOS HÉROES (117) CON BUILDS ÉPICAS ===
+        const heroesData = {
+            'Lucha': [
+                { name: 'Alucard', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Alpha', items: ['War Axe', 'Bloodlust Axe', 'Blade of Heptaseas', 'Malefic Roar', 'Queen\'s Wings', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Argus', items: ['Bloodlust Axe', 'Endless Battle', 'Rose Gold Meteor', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Aulus', items: ['War Axe', 'Endless Battle', 'Malefic Roar', 'Blade of Despair', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Badang', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Balmond', items: ['Bloodlust Axe', 'War Axe', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Bane', items: ['Concentrated Energy', 'Holy Crystal', 'Divine Glaive', 'Winter Truncheon', 'Blood Wings', 'Immortality'], emblem: 'Mage Emblem' },
+                { name: 'Barats', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Chou', items: ['Tough Boots', 'War Axe', 'Blade of Despair', 'Endless Battle', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Cici', items: ['War Axe', 'Bloodlust Axe', 'Malefic Roar', 'Blade of Despair', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Dyrroth', items: ['War Axe', 'Endless Battle', 'Malefic Roar', 'Blade of Despair', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Edith', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Blade Armor', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
+                { name: 'Freya', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Golden Staff', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Gatotkaca', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
+                { name: 'Guinevere', items: ['Demon Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Immortality'], emblem: 'Mage Emblem' },
+                { name: 'Hilda', items: ['Tough Boots', 'War Axe', 'Brute Force Breastplate', 'Queen\'s Wings', 'Immortality', 'Blade Armor'], emblem: 'Tank Emblem' },
+                { name: 'Julian', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Kaja', items: ['Tough Boots', 'Dominance Ice', 'Thunder Belt', 'Athena\'s Shield', 'Immortality', 'Oracle'], emblem: 'Support Emblem' },
+                { name: 'Khaleed', items: ['War Axe', 'Endless Battle', 'Malefic Roar', 'Blade of Despair', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Lapu-Lapu', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Leomord', items: ['War Axe', 'Endless Battle', 'Malefic Roar', 'Blade of Despair', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Martis', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Minsitthar', items: ['Tough Boots', 'War Axe', 'Dominance Ice', 'Brute Force Breastplate', 'Immortality', 'Blade Armor'], emblem: 'Fighter Emblem' },
+                { name: 'Paquito', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Phoveus', items: ['Tough Boots', 'War Axe', 'Dominance Ice', 'Brute Force Breastplate', 'Immortality', 'Oracle'], emblem: 'Fighter Emblem' },
+                { name: 'Roger', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Rose Gold Meteor', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Ruby', items: ['Tough Boots', 'Cursed Helmet', 'Dominance Ice', 'Athena\'s Shield', 'Immortality', 'Oracle'], emblem: 'Fighter Emblem' },
+                { name: 'Silvanna', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Immortality'], emblem: 'Mage Emblem' },
+                { name: 'Sun', items: ['Swift Boots', 'Golden Staff', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Terizla', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Thamuz', items: ['War Axe', 'Bloodlust Axe', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'X.Borg', items: ['War Axe', 'Bloodlust Axe', 'Brute Force Breastplate', 'Malefic Roar', 'Queen\'s Wings', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Yin', items: ['War Axe', 'Blade of Despair', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Yu Zhong', items: ['War Axe', 'Bloodlust Axe', 'Brute Force Breastplate', 'Malefic Roar', 'Queen\'s Wings', 'Immortality'], emblem: 'Fighter Emblem' },
+                { name: 'Zilong', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Scarlet Phantom', 'Immortality'], emblem: 'Fighter Emblem' }
+            ],
+            'Asesino': [
+                { name: 'Aamon', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
+                { name: 'Arlott', items: ['Tough Boots', 'War Axe', 'Endless Battle', 'Malefic Roar', 'Brute Force Breastplate', 'Immortality'], emblem: 'Assassin Emblem' },
+                { name: 'Benedetta', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Rose Gold Meteor', 'Immortality'], emblem: 'Assassin Emblem' },
+                { name: 'Fanny', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Winter Truncheon'], emblem: 'Assassin Emblem' },
+                { name: 'Gusion', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
+                { name: 'Hanzo', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
+                { name: 'Harley', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
+                { name: 'Hayabusa', items: ['Magic Shoes', 'Blade of Heptaseas', 'Endless Battle', 'Malefic Roar', 'Hunter Strike', 'Immortality'], emblem: 'Assassin Emblem' },
+                { name: 'Helcurt', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Rose Gold Meteor', 'Immortality'], emblem: 'Assassin Emblem' },
+                { name: 'Joy', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
+                { name: 'Karina', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
+                { name: 'Lancelot', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
+                { name: 'Lesley', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Ling', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Hunter Strike', 'Immortality'], emblem: 'Assassin Emblem' },
+                { name: 'Mathilda', items: ['Demon Shoes', 'Clock of Destiny', 'Fleeting Time', 'Holy Crystal', 'Divine Glaive', 'Immortality'], emblem: 'Support Emblem' },
+                { name: 'Natalia', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Rose Gold Meteor', 'Immortality'], emblem: 'Assassin Emblem' },
+                { name: 'Nolan', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
+                { name: 'Saber', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
+                { name: 'Selena', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Assassin Emblem' },
+                { name: 'Yi Sun-shin', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' }
+            ],
+            'Mago': [
+                { name: 'Alice', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Aurora', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Winter Truncheon'], emblem: 'Mage Emblem' },
+                { name: 'Cecilion', items: ['Demon Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Chang\'e', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Cyclops', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Esmeralda', items: ['Magic Shoes', 'Clock of Destiny', 'Oracle', 'Athena\'s Shield', 'Immortality', 'Holy Crystal'], emblem: 'Mage Emblem' },
+                { name: 'Eudora', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Faramis', items: ['Demon Shoes', 'Fleeting Time', 'Clock of Destiny', 'Holy Crystal', 'Immortality', 'Oracle'], emblem: 'Support Emblem' },
+                { name: 'Gord', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Harith', items: ['Magic Shoes', 'Clock of Destiny', 'Fleeting Time', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Kadita', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Kagura', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Fleeting Time'], emblem: 'Mage Emblem' },
+                { name: 'Kimmy', items: ['Swift Boots', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Lylia', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Luo Yi', items: ['Magic Shoes', 'Clock of Destiny', 'Fleeting Time', 'Holy Crystal', 'Divine Glaive', 'Immortality'], emblem: 'Mage Emblem' },
+                { name: 'Lunox', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Nana', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Fleeting Time'], emblem: 'Mage Emblem' },
+                { name: 'Odette', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Pharsa', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Valentina', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Valir', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Vale', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Vexana', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Yve', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' },
+                { name: 'Zhask', items: ['Magic Shoes', 'Clock of Destiny', 'Lightning Truncheon', 'Holy Crystal', 'Divine Glaive', 'Blood Wings'], emblem: 'Mage Emblem' }
+            ],
+            'Tirador': [
+                { name: 'Beatrix', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Brody', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Bruno', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Scarlet Phantom', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Claude', items: ['Swift Boots', 'Golden Staff', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Clint', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Granger', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Hanabi', items: ['Swift Boots', 'Golden Staff', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Irithel', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Scarlet Phantom', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Ixia', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Karrie', items: ['Swift Boots', 'Golden Staff', 'Endless Battle', 'Thunder Belt', 'Malefic Roar', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Layla', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Melissa', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Miya', items: ['Swift Boots', 'Golden Staff', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Moskov', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Scarlet Phantom', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Nathan', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Popol and Kupa', items: ['Swift Boots', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Windtalker', 'Immortality'], emblem: 'Marksman Emblem' },
+                { name: 'Wanwan', items: ['Swift Boots', 'Golden Staff', 'Endless Battle', 'Blade of Despair', 'Malefic Roar', 'Immortality'], emblem: 'Marksman Emblem' }
+            ],
+            'Apoyo': [
+                { name: 'Angela', items: ['Demon Shoes', 'Fleeting Time', 'Clock of Destiny', 'Holy Crystal', 'Immortality', 'Oracle'], emblem: 'Support Emblem' },
+                { name: 'Carmilla', items: ['Tough Boots', 'Fleeting Time', 'Dominance Ice', 'Oracle', 'Immortality', 'Athena\'s Shield'], emblem: 'Support Emblem' },
+                { name: 'Diggie', items: ['Demon Shoes', 'Fleeting Time', 'Clock of Destiny', 'Holy Crystal', 'Immortality', 'Oracle'], emblem: 'Support Emblem' },
+                { name: 'Estes', items: ['Demon Shoes', 'Fleeting Time', 'Dominance Ice', 'Oracle', 'Immortality', 'Athena\'s Shield'], emblem: 'Support Emblem' },
+                { name: 'Floryn', items: ['Demon Shoes', 'Fleeting Time', 'Clock of Destiny', 'Holy Crystal', 'Immortality', 'Oracle'], emblem: 'Support Emblem' },
+                { name: 'Lolita', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
+                { name: 'Rafaela', items: ['Demon Shoes', 'Fleeting Time', 'Clock of Destiny', 'Holy Crystal', 'Immortality', 'Oracle'], emblem: 'Support Emblem' }
+            ],
+            'Tanque': [
+                { name: 'Akai', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
+                { name: 'Atlas', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Oracle'], emblem: 'Tank Emblem' },
+                { name: 'Baxia', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
+                { name: 'Belerick', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
+                { name: 'Franco', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Oracle'], emblem: 'Tank Emblem' },
+                { name: 'Gloo', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
+                { name: 'Grock', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
+                { name: 'Hylos', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Oracle'], emblem: 'Tank Emblem' },
+                { name: 'Johnson', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
+                { name: 'Khufra', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Oracle'], emblem: 'Tank Emblem' },
+                { name: 'Minotaur', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Oracle'], emblem: 'Tank Emblem' },
+                { name: 'Tigreal', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Radiant Armor'], emblem: 'Tank Emblem' },
+                { name: 'Uranus', items: ['Tough Boots', 'Dominance Ice', 'Athena\'s Shield', 'Cursed Helmet', 'Immortality', 'Oracle'], emblem: 'Tank Emblem' }
+            ]
+        };
 
-    <div id="heroes" class="section hidden">
-      <h1 class="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-green-400 to-teal-500 bg-clip-text text-transparent">
-        <i class="fas fa-users"></i> Todos los Héroes
-      </h1>
-      <div id="all-heroes" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
-    </div>
+        // === SCRIPT DINÁMICO ===
+        const rolesContainer = document.getElementById('roles');
+        const heroesGrid = document.getElementById('heroesGrid');
+        const searchInput = document.getElementById('search');
+        const darkToggle = document.getElementById('darkToggle');
 
-  </div>
+        // Crear tabs de roles
+        Object.keys(heroesData).forEach(role => {
+            const btn = document.createElement('div');
+            btn.className = 'role-btn';
+            btn.textContent = role;
+            btn.onclick = () => filterByRole(role);
+            rolesContainer.appendChild(btn);
+        });
 
-  <script>
-    const heroes = [
-      {name:"Layla",role:"Marksman",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/1b/Layla_icon.png",skill:"Disparo mortal en línea recta"},
-      {name:"Grock",role:"Tank",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/6e/Grock_icon.png",skill:"Muro inmune y daño en área"},
-      {name:"Lancelot",role:"Assassin",img:"https://static.wikia.nocookie.net/mobile-legends/images/7/7f/Lancelot_icon.png",skill:"Corte triple + invulnerabilidad"},
-      {name:"Odette",role:"Mage",img:"https://static.wikia.nocookie.net/mobile-legends/images/5/5d/Odette_icon.png",skill:"Lago de cisnes (CC masivo)"},
-      {name:"Tigreal",role:"Tank",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/1d/Tigreal_icon.png",skill:"CC en área + escudo"},
-      {name:"Nana",role:"Support",img:"https://static.wikia.nocookie.net/mobile-legends/images/2/2f/Nana_icon.png",skill:"Transformación + burst"}
-    ];
+        // Mostrar todos los héroes
+        function renderHeroes(filter = '') {
+            heroesGrid.innerHTML = '';
+            let delay = 0;
+            Object.entries(heroesData).forEach(([role, heroes]) => {
+                heroes.forEach(hero => {
+                    if (hero.name.toLowerCase().includes(filter.toLowerCase()) || 
+                        role.toLowerCase().includes(filter.toLowerCase()) ||
+                        hero.items.some(item => item.toLowerCase().includes(filter.toLowerCase()))) {
+                        
+                        const card = document.createElement('div');
+                        card.className = 'hero-card';
+                        card.style.animationDelay = `${delay}s`;
+                        delay += 0.05;
 
-    const combos = {
-      "Layla-Grock": {combo:"Escudo + Daño", winrate:"78%", desc:"Grock protege, Layla dispara desde atrás"},
-      "Lancelot-Odette": {combo:"Burst + CC", winrate:"82%", desc:"Odette atrapa, Lancelot remata"},
-      "Tigreal-Nana": {combo:"Tank + Heal", winrate:"75%", desc:"Tigreal inicia, Nana cura y transforma"}
-    };
+                        card.innerHTML = `
+                            <div class="hero-name">${hero.name}</div>
+                            <div class="hero-role">${role}</div>
+                            <div class="build-title">Build Recomendada</div>
+                            <div class="items">
+                                ${hero.items.map(item => `<div class="item">${item.split(' ').map(w => w[0]).join('')}</div>`).join('')}
+                            </div>
+                            <div class="emblem">Emblema: ${hero.emblem || 'N/A'}</div>
+                        `;
+                        heroesGrid.appendChild(card);
+                    }
+                });
+            });
+            // Animación de entrada
+            document.querySelectorAll('.hero-card').forEach((card, i) => {
+                setTimeout(() => card.classList.add('show'), i * 50);
+            });
+        }
 
-    let selected = [];
+        // Filtro por rol
+        function filterByRole(role) {
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent === role);
+            });
+            heroesGrid.innerHTML = '';
+            let delay = 0;
+            heroesData[role].forEach(hero => {
+                const card = document.createElement('div');
+                card.className = 'hero-card';
+                card.style.animationDelay = `${delay}s`;
+                delay += 0.05;
+                card.innerHTML = `
+                    <div class="hero-name">${hero.name}</div>
+                    <div class="hero-role">${role}</div>
+                    <div class="build-title">Build Recomendada</div>
+                    <div class="items">
+                        ${hero.items.map(item => `<div class="item">${item.split(' ').map(w => w[0]).join('')}</div>`).join('')}
+                    </div>
+                    <div class="emblem">Emblema: ${hero.emblem || 'N/A'}</div>
+                `;
+                heroesGrid.appendChild(card);
+            });
+            document.querySelectorAll('.hero-card').forEach((card, i) => {
+                setTimeout(() => card.classList.add('show'), i * 50);
+            });
+        }
 
-    const grid = document.getElementById("heroes-grid");
-    const allGrid = document.getElementById("all-heroes");
-    heroes.forEach(h => {
-      const div = document.createElement("div");
-      div.className = "hero-btn p-3 bg-white/10 rounded-xl text-center cursor-pointer";
-      div.innerHTML = `<img src="${h.img}" class="w-16 h-16 mx-auto rounded-full mb-1"><p class="font-bold">${h.name}</p><small>${h.role}</small>`;
-      div.onclick = () => selectHero(h.name, div);
-      grid.appendChild(div.cloneNode(true));
-      allGrid.appendChild(div.cloneNode(true));
-    });
+        // Búsqueda en tiempo real
+        searchInput.addEventListener('input', (e) => {
+            renderHeroes(e.target.value);
+            document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
+        });
 
-    function selectHero(name, btn) {
-      if (selected.includes(name)) {
-        selected = selected.filter(x => x !== name);
-        btn.classList.remove('selected');
-      } else if (selected.length < 2) {
-        selected.push(name);
-        btn.classList.add('selected');
-      }
-      if (selected.length === 2) {
-        const key = selected.sort().join("-");
-        const data = combos[key] || {combo:"Sin combo", winrate:"??%", desc:"Explora más"};
-        document.getElementById("result").classList.remove("hidden");
-        document.getElementById("combo-title").textContent = selected.join(" + ");
-        document.getElementById("winrate").textContent = data.winrate;
-        document.getElementById("desc").textContent = data.desc;
-      }
-    }
+        // Modo oscuro
+        darkToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            darkToggle.textContent = isDark ? 'Modo Claro' : 'Modo Oscuro';
+            localStorage.setItem('mlbbDarkMode', isDark);
+            darkToggle.innerHTML = isDark ? 'Modo Claro' : 'Modo Oscuro';
+        });
 
-    document.getElementById("menu-btn").onclick = () => {
-      document.getElementById("sidebar").classList.remove("translate-x-full");
-      document.getElementById("overlay").classList.remove("hidden");
-    };
-    document.getElementById("close-btn").onclick = document.getElementById("overlay").onclick = () => {
-      document.getElementById("sidebar").classList.add("translate-x-full");
-      document.getElementById("overlay").classList.add("hidden");
-    };
+        // Cargar modo guardado
+        if (localStorage.getItem('mlbbDarkMode') === 'true') {
+            document.body.classList.add('dark');
+            darkToggle.innerHTML = 'Modo Claro';
+        }
 
-    function show(id) {
-      document.querySelectorAll(".section").forEach(s => s.classList.add("hidden"));
-      document.getElementById(id).classList.remove("hidden");
-      document.getElementById("sidebar").classList.add("translate-x-full");
-      document.getElementById("overlay").classList.add("hidden");
-    }
-  </script>
+        // Inicializar
+        renderHeroes();
+        document.querySelector('.role-btn').classList.add('active');
+    </script>
 </body>
 </html>
