@@ -3,781 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MLBB Nexus PRO - Ultimate Guide 2025</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>MLBB Nexus PRO</title>
     <style>
-        :root {
-            --bg-dark: #0a0a0a;
-            --card-dark: #1a1a1a;
-            --text-dark: #e0e0e0;
-            --text-light-secondary: #aaaaaa;
-            --orange: #ff6b00;
-            --bg-light: #f5f5f5;
-            --card-light: #ffffff;
-            --text-light: #333333;
-            --shadow: 0 4px 20px rgba(255,107,0,0.2);
-            --transition: all 0.3s ease;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-dark);
+        * {
             margin: 0;
             padding: 0;
-            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
             overflow-x: hidden;
-            transition: var(--transition);
+            padding-bottom: 80px;
         }
-
-        body.light {
-            background: var(--bg-light);
-            color: var(--text-light);
-        }
-
-        /* Header limpio sin rojo */
         header {
-            background: linear-gradient(135deg, var(--card-dark), var(--bg-dark));
-            padding: 20px 15px;
             text-align: center;
+            padding: 20px 20px 10px;
+            background: linear-gradient(180deg, #000 0%, rgba(0,0,0,0.8) 100%);
             position: sticky;
             top: 0;
-            width: 100%;
             z-index: 100;
-            box-shadow: var(--shadow);
+            box-shadow: 0 4px 20px rgba(255,140,0,0.3);
         }
-
-        body.light header {
-            background: linear-gradient(135deg, #eee, var(--bg-light));
-        }
-
         h1 {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--orange);
-            font-size: 2.2em;
-            text-shadow: 0 0 10px rgba(255,107,0,0.5);
-            margin: 0;
-            animation: glow 1.5s infinite alternate;
+            font-size: 2.2rem;
+            background: linear-gradient(45deg, #ff8c00, #ffa500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(255,140,0,0.8);
+            margin-bottom: 10px;
+            animation: glow 2s ease-in-out infinite alternate;
         }
-
         @keyframes glow {
-            from { text-shadow: 0 0 5px rgba(255,107,0,0.3); }
-            to { text-shadow: 0 0 15px rgba(255,107,0,0.7); }
+            from { text-shadow: 0 0 20px rgba(255,140,0,0.8); }
+            to { text-shadow: 0 0 30px rgba(255,140,0,1); }
         }
-
-        .search-bar {
-            margin: 15px auto;
-            max-width: 90%;
+        .search-container {
             position: relative;
+            margin: 0 10px 20px;
         }
-
-        .search-bar input {
+        .search-input {
             width: 100%;
-            padding: 14px 45px;
-            background: #222;
-            border: 2px solid var(--orange);
-            border-radius: 50px;
-            color: var(--text-dark);
-            font-size: 1.1em;
+            padding: 15px 50px 15px 20px;
+            border: 2px solid #ff8c00;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .search-input::placeholder {
+            color: #ccc;
+        }
+        .search-input:focus {
             outline: none;
-            transition: var(--transition);
+            border-color: #ffa500;
+            box-shadow: 0 0 20px rgba(255,140,0,0.5);
         }
-
-        body.light .search-bar input {
-            background: #ddd;
-            color: var(--text-light);
-        }
-
-        .search-bar::before {
-            content: '🔍';
+        .search-icon {
             position: absolute;
-            left: 18px;
-            top: 14px;
-            font-size: 1.3em;
-            color: var(--orange);
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ff8c00;
+            font-size: 20px;
         }
-
-        /* Páginas */
-        .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.5s ease-in; }
-
+        section {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+        section.active {
+            display: block;
+        }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        /* Grid de héroes limpia con animaciones */
-        .hero-grid {
+        .heroes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .hero-item {
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            opacity: 0;
-            animation: slideUp 0.5s forwards;
-            animation-delay: calc(0.1s * var(--order));
-        }
-
-        .hero-item:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(255,107,0,0.5);
-        }
-
-        .hero-img {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid var(--orange);
-            box-shadow: 0 0 15px rgba(255,107,0,0.4);
-            transition: var(--transition);
-        }
-
-        .hero-name {
-            margin-top: 8px;
-            font-size: 0.9em;
-            color: var(--text-dark);
-            transition: var(--transition);
-        }
-
-        body.light .hero-name {
-            color: var(--text-light);
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: var(--card-dark);
-            display: flex;
-            justify-content: space-around;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 15px;
             padding: 10px 0;
-            border-top: 1px solid #333;
-            z-index: 100;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
         }
-
-        body.light .bottom-nav {
-            background: #ddd;
-            border-top: 1px solid #ccc;
-        }
-
-        .nav-item {
+        .hero-card {
             text-align: center;
-            color: var(--text-light-secondary);
-            font-size: 0.9em;
-            transition: var(--transition);
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
-
-        .nav-item.active {
-            color: var(--orange);
-        }
-
-        .nav-item i {
-            font-size: 1.6em;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        /* Tier List con efectos */
-        .tier-section {
-            padding: 20px;
-            background: #111;
-            margin: 15px;
-            border-radius: 15px;
-            border: 2px solid var(--orange);
-            animation: fadeIn 0.5s ease;
-        }
-
-        body.light .tier-section {
-            background: #eee;
-            border: 2px solid var(--orange);
-        }
-
-        .tier-title {
-            color: var(--orange);
-            font-size: 1.4em;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .tier-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 10px 0;
-            flex-wrap: wrap;
-            transition: var(--transition);
-        }
-
-        .tier-row:hover {
-            transform: translateX(5px);
-        }
-
-        .tier-label {
-            background: var(--orange);
-            color: black;
-            padding: 5px 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            min-width: 50px;
-            text-align: center;
-        }
-
-        .tier-heroes {
-            display: flex;
-            gap: 12px;
-            flex: 1;
-            flex-wrap: wrap;
-        }
-
-        .tier-hero {
-            position: relative;
-            transition: var(--transition);
-            background: #333;
-            padding: 5px 10px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-        }
-
-        .tier-hero:hover {
+        .hero-card:hover {
             transform: scale(1.1);
         }
-
-        .tier-hero img {
-            width: 30px;
-            height: 30px;
+        .hero-image {
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            margin-right: 8px;
+            border: 3px solid #ff8c00;
+            object-fit: cover;
+            margin: 0 auto 8px;
+            box-shadow: 0 0 15px rgba(255,140,0,0.6);
+            transition: all 0.3s ease;
         }
-
-        .tier-hero span {
-            color: var(--text-dark);
+        .hero-card:hover .hero-image {
+            box-shadow: 0 0 25px rgba(255,140,0,1);
+            border-color: #ffa500;
         }
-
-        .trend {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            font-size: 1.3em;
-            animation: bounce 1s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
-        /* More page con apartado descargar */
-        .more-section {
-            padding: 30px;
-            text-align: center;
-        }
-
-        .more-section p {
-            color: var(--text-light-secondary);
-            margin-bottom: 20px;
-        }
-
-        .more-button {
-            background: var(--orange);
-            color: black;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            width: 100%;
-            transition: var(--transition);
-        }
-
-        .more-button:hover {
-            background: #ff8c00;
-            transform: scale(1.05);
-        }
-
-        .more-button.secondary {
-            background: #333;
-            color: white;
-            border: 2px solid var(--orange);
-        }
-
-        body.light .more-button.secondary {
-            background: #ccc;
-            color: #333;
-        }
-
-        /* Modal con animaciones */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 200;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background: var(--card-dark);
-            margin: 10% auto;
-            padding: 25px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: var(--shadow-medium);
-            animation: zoomIn 0.3s ease-out;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        body.light .modal-content {
-            background: var(--card-light);
-        }
-
-        @keyframes zoomIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .close-button {
-            color: var(--orange);
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            transition: var(--transition);
-        }
-
-        .close-button:hover {
+        .hero-name {
+            font-size: 11px;
+            font-weight: 600;
             color: #fff;
-            transform: rotate(90deg);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-
-        .modal-header {
+        /* Tier List */
+        .tier-lanes {
             display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #333;
+            overflow-x: auto;
+            gap: 10px;
+            margin-bottom: 20px;
             padding-bottom: 10px;
         }
-
-        body.light .modal-header {
-            border-bottom: 1px solid #ddd;
+        .lane-tab {
+            flex: 0 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 12px 20px;
+            border-radius: 20px;
+            color: #fff;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            white-space: nowrap;
         }
-
-        .modal-header img {
+        .lane-tab.active {
+            background: linear-gradient(45deg, #ff8c00, #ffa500);
+            border-color: #fff;
+            box-shadow: 0 5px 15px rgba(255,140,0,0.5);
+        }
+        .tier-container {
+            display: none;
+        }
+        .tier-container.active {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .tier-row {
+            margin-bottom: 25px;
+        }
+        .tier-label {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ff8c00;
+        }
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            gap: 12px;
+        }
+        .tier-hero {
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .tier-hero:hover {
+            transform: scale(1.15);
+        }
+        .tier-hero-image {
             width: 60px;
             height: 60px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid var(--orange);
-            margin-right: 15px;
+            margin: 0 auto 5px;
+            border: 2px solid #ff8c00;
+            box-shadow: 0 0 10px rgba(255,140,0,0.4);
         }
-
-        .modal h2 {
-            margin: 0;
-            color: var(--orange);
-            font-size: 1.6em;
-        }
-
-        .modal p {
-            margin: 5px 0;
-            font-size: 0.95em;
-        }
-
-        .build-section h3 {
-            color: var(--orange);
-            margin-top: 15px;
-            border-bottom: 1px solid #444;
-            padding-bottom: 5px;
-        }
-
-        body.light .build-section h3 {
-            border-bottom: 1px solid #ccc;
-        }
-
-        .build-section ul {
-            list-style: none;
-            padding: 0;
-            margin-top: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .build-section li {
-            background-color: #333;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.9em;
+        .tier-hero-name {
+            font-size: 9px;
+            color: #fff;
             white-space: nowrap;
-            transition: var(--transition);
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-
-        body.light .build-section li {
-            background-color: #ddd;
-            color: #333;
+        /* Download */
+        .download-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(45deg, #ff8c00, #ffa500);
+            color: #000;
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255,140,0,0.4);
+            margin-top: 20px;
         }
-
-        .build-section li:hover {
-            background-color: var(--orange);
-            color: black;
+        .download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(255,140,0,0.6);
         }
-
-        .counters-section, .synergies-section {
-            margin-top: 15px;
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 200;
+            border-top: 1px solid rgba(255,140,0,0.3);
         }
-
-        .counters-section ul, .synergies-section ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .counters-section li, .synergies-section li {
-            background-color: #ff4444;
-            color: white;
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
             padding: 5px 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-            transition: var(--transition);
+            border-radius: 10px;
+            min-width: 60px;
         }
-
-        .synergies-section li {
-            background-color: #44ff44;
-            color: black;
+        .nav-item.active {
+            background: rgba(255,140,0,0.2);
+            color: #ff8c00;
         }
-
-        /* Responsive */
-        @media (min-width: 600px) {
-            .hero-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
-            .hero-img { width: 110px; height: 110px; }
+        .nav-icon {
+            font-size: 24px;
+            display: block;
         }
-
+        .nav-label {
+            font-size: 10px;
+            margin-top: 2px;
+        }
+        /* Hide empty */
+        .tier-row:empty { display: none; }
+        /* Placeholder for images */
+        .hero-image[src=""], .tier-hero-image[src=""] {
+            background: rgba(255,140,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #ff8c00;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-
     <header>
         <h1>MLBB Nexus PRO</h1>
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Buscar héroe...">
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="Buscar héroe...">
+            <span class="search-icon">🔍</span>
         </div>
     </header>
 
-    <!-- PÁGINA HÉROES -->
-    <div id="page-heroes" class="page active">
-        <div class="hero-grid" id="heroGrid"></div>
-    </div>
+    <section id="heroes" class="active">
+        <div class="heroes-grid" id="heroesGrid"></div>
+    </section>
 
-    <!-- PÁGINA RANKING (Tier List) -->
-    <div id="page-ranking" class="page">
-        <div class="tier-section">
-            <div class="tier-title">Gold Lane Tier List</div>
-            <div class="tier-row"><div class="tier-label">S</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Cici" alt="Cici"><span>Cici</span><div class="trend">↑</div></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Natan" alt="Natan"><span>Natan</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Obsidia" alt="Obsidia"><span>Obsidia</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Granger" alt="Granger"><span>Granger</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Melissa" alt="Melissa"><span>Melissa</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">A</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Bane" alt="Bane"><span>Bane</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Irithel" alt="Irithel"><span>Irithel</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Ixia" alt="Ixia"><span>Ixia</span><div class="trend">↑</div></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Kimmy" alt="Kimmy"><span>Kimmy</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Hanabi" alt="Hanabi"><span>Hanabi</span><div class="trend">↑</div></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Popol" alt="Popol"><span>Popol</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Brody" alt="Brody"><span>Brody</span><div class="trend">↑</div></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">B</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Wanwan" alt="Wanwan"><span>Wanwan</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Moskov" alt="Moskov"><span>Moskov</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Lesley" alt="Lesley"><span>Lesley</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Clint" alt="Clint"><span>Clint</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Beatrix" alt="Beatrix"><span>Beatrix</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">C</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Miya" alt="Miya"><span>Miya</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Claude" alt="Claude"><span>Claude</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Bruno" alt="Bruno"><span>Bruno</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">D</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Layla" alt="Layla"><span>Layla</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Roger" alt="Roger"><span>Roger</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Hanabi" alt="Hanabi"><span>Hanabi</span></div>
-            </div></div>
+    <section id="ranking">
+        <div class="tier-lanes">
+            <div class="lane-tab active" data-lane="gold">Línea de Oro</div>
+            <div class="lane-tab" data-lane="exp">Línea EXP</div>
+            <div class="lane-tab" data-lane="jungle">Jungla</div>
+            <div class="lane-tab" data-lane="mid">Media</div>
+            <div class="lane-tab" data-lane="roam">Roam</div>
         </div>
-        <div class="tier-section">
-            <div class="tier-title">Exp Lane Tier List</div>
-            <div class="tier-row"><div class="tier-label">S</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Phoveus" alt="Phoveus"><span>Phoveus</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Fredrinn" alt="Fredrinn"><span>Fredrinn</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Arlott" alt="Arlott"><span>Arlott</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Badang" alt="Badang"><span>Badang</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Lapu-Lapu" alt="Lapu-Lapu"><span>Lapu-Lapu</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">A</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Guinevere" alt="Guinevere"><span>Guinevere</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Alpha" alt="Alpha"><span>Alpha</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Cici" alt="Cici"><span>Cici</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Sun" alt="Sun"><span>Sun</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Hilda" alt="Hilda"><span>Hilda</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Khaleed" alt="Khaleed"><span>Khaleed</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Chou" alt="Chou"><span>Chou</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Yu Zhong" alt="Yu Zhong"><span>Yu Zhong</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Ruby" alt="Ruby"><span>Ruby</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Jawhead" alt="Jawhead"><span>Jawhead</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Leomord" alt="Leomord"><span>Leomord</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Lukas" alt="Lukas"><span>Lukas</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">B</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Masha" alt="Masha"><span>Masha</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Yin" alt="Yin"><span>Yin</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Freya" alt="Freya"><span>Freya</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Argus" alt="Argus"><span>Argus</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Terizla" alt="Terizla"><span>Terizla</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Bane" alt="Bane"><span>Bane</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Balmond" alt="Balmond"><span>Balmond</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Dyrroth" alt="Dyrroth"><span>Dyrroth</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Minsitthar" alt="Minsitthar"><span>Minsitthar</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Paquito" alt="Paquito"><span>Paquito</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">C</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Alucard" alt="Alucard"><span>Alucard</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Aldous" alt="Aldous"><span>Aldous</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Zilong" alt="Zilong"><span>Zilong</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Thamuz" alt="Thamuz"><span>Thamuz</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Roger" alt="Roger"><span>Roger</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Martis" alt="Martis"><span>Martis</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=X.Borg" alt="X.Borg"><span>X.Borg</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Silvanna" alt="Silvanna"><span>Silvanna</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Aulus" alt="Aulus"><span>Aulus</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">D</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Khufra" alt="Khufra"><span>Khufra</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Minotaur" alt="Minotaur"><span>Minotaur</span></div>
-            </div></div>
-        </div>
-        <div class="tier-section">
-            <div class="tier-title">Jungle Tier List</div>
-            <div class="tier-row"><div class="tier-label">S</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Julian" alt="Julian"><span>Julian</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Hayabusa" alt="Hayabusa"><span>Hayabusa</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Yi Sun-shin" alt="Yi Sun-shin"><span>Yi Sun-shin</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Joy" alt="Joy"><span>Joy</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Ling" alt="Ling"><span>Ling</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Selena" alt="Selena"><span>Selena</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Fanny" alt="Fanny"><span>Fanny</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">A</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Nolan" alt="Nolan"><span>Nolan</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Benedetta" alt="Benedetta"><span>Benedetta</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">B</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Helcurt" alt="Helcurt"><span>Helcurt</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Gusion" alt="Gusion"><span>Gusion</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Karina" alt="Karina"><span>Karina</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Suyou" alt="Suyou"><span>Suyou</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Hanzo" alt="Hanzo"><span>Hanzo</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">C</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Saber" alt="Saber"><span>Saber</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Natalia" alt="Natalia"><span>Natalia</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">D</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Lancelot" alt="Lancelot"><span>Lancelot</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Aamon" alt="Aamon"><span>Aamon</span></div>
-            </div></div>
-        </div>
-        <div class="tier-section">
-            <div class="tier-title">Mid Lane Tier List</div>
-            <div class="tier-row"><div class="tier-label">S</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Zhuxin" alt="Zhuxin"><span>Zhuxin</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Harith" alt="Harith"><span>Harith</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Pharsa" alt="Pharsa"><span>Pharsa</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Valentina" alt="Valentina"><span>Valentina</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Yve" alt="Yve"><span>Yve</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">A</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Luo Yi" alt="Luo Yi"><span>Luo Yi</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Vexana" alt="Vexana"><span>Vexana</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Alice" alt="Alice"><span>Alice</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Valir" alt="Valir"><span>Valir</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Zetian" alt="Zetian"><span>Zetian</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Novaria" alt="Novaria"><span>Novaria</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">B</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Odette" alt="Odette"><span>Odette</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Xavier" alt="Xavier"><span>Xavier</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Lunox" alt="Lunox"><span>Lunox</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Zhask" alt="Zhask"><span>Zhask</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Kagura" alt="Kagura"><span>Kagura</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Kadita" alt="Kadita"><span>Kadita</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Aurora" alt="Aurora"><span>Aurora</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Vale" alt="Vale"><span>Vale</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Cecilion" alt="Cecilion"><span>Cecilion</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">C</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Chang’e" alt="Chang’e"><span>Chang’e</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Lylia" alt="Lylia"><span>Lylia</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Eudora" alt="Eudora"><span>Eudora</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Gord" alt="Gord"><span>Gord</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Cyclops" alt="Cyclops"><span>Cyclops</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Nana" alt="Nana"><span>Nana</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">D</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Harley" alt="Harley"><span>Harley</span></div>
-            </div></div>
-        </div>
-        <div class="tier-section">
-            <div class="tier-title">Roam Tier List</div>
-            <div class="tier-row"><div class="tier-label">S</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Floryn" alt="Floryn"><span>Floryn</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Angela" alt="Angela"><span>Angela</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Mathilda" alt="Mathilda"><span>Mathilda</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Diggie" alt="Diggie"><span>Diggie</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">A</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Chip" alt="Chip"><span>Chip</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Rafaela" alt="Rafaela"><span>Rafaela</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Kalea" alt="Kalea"><span>Kalea</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Estes" alt="Estes"><span>Estes</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">B</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Carmilla" alt="Carmilla"><span>Carmilla</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Faramis" alt="Faramis"><span>Faramis</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">C</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Kaja" alt="Kaja"><span>Kaja</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Lolita" alt="Lolita"><span>Lolita</span></div>
-            </div></div>
-            <div class="tier-row"><div class="tier-label">D</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Johnson" alt="Johnson"><span>Johnson</span></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Minotaur" alt="Minotaur"><span>Minotaur</span></div>
-            </div></div>
-        </div>
-    </div>
+        <div id="tierContainers"></div>
+    </section>
 
-    <!-- PÁGINA MORE -->
-    <div id="page-more" class="page">
-        <div class="more-section">
-            <h2 style="color: var(--orange);">MLBB Nexus PRO</h2>
-            <p>Builds, counters, sinergias, tier list actualizada cada parche</p>
-            <a href="https://play.google.com/store/apps/details?id=com.mlbbnexuspro" target="_blank"><button class="more-button">Descargar App (Android)</button></a>
-            <a href="https://apps.apple.com/app/mlbb-nexus-pro/id1234567890" target="_blank"><button class="more-button">Descargar App (iOS)</button></a>
-            <button class="more-button secondary" onclick="openPrivacy()">Privacy</button>
-        </div>
-    </div>
+    <section id="more">
+        <h2 style="text-align:center; color:#ff8c00; margin:40px 0 20px;">Descarga la App</h2>
+        <p style="text-align:center; margin-bottom:20px;">¡Disponible pronto! La mejor experiencia MLBB en tu dispositivo.</p>
+        <button class="download-btn">📱 Descargar MLBB Nexus PRO</button>
+    </section>
 
-    <!-- Modal Héroe -->
-    <div id="heroModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeModal()">&times;</span>
-            <div class="modal-header">
-                <img id="modal-image" src="" alt="Imagen del Héroe">
-                <div>
-                    <h2 id="modal-name"></h2>
-                    <p id="modal-role"></p>
-                </div>
-            </div>
-            <div class="build-section">
-                <h3>Build Recomendada</h3>
-                <ul id="modal-build"></ul>
-            </div>
-            <div class="build-section">
-                <h3>Emblema</h3>
-                <p id="modal-emblem"></p>
-            </div>
-            <div class="build-section">
-                <h3>Hechizo</h3>
-                <p id="modal-spell"></p>
-            </div>
-            <div class="counters-section">
-                <h3>Counters</h3>
-                <ul id="modal-counters"></ul>
-            </div>
-            <div class="synergies-section">
-                <h3>Sinergias</h3>
-                <ul id="modal-synergies"></ul>
-            </div>
+    <nav class="bottom-nav">
+        <div class="nav-item active" data-section="heroes">
+            <span class="nav-icon">⚔️</span>
+            <span class="nav-label">Héroe</span>
         </div>
-    </div>
+        <div class="nav-item" data-section="ranking">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Ranking</span>
+        </div>
+        <div class="nav-item" data-section="more">
+            <span class="nav-icon">⋮</span>
+            <span class="nav-label">Más</span>
+        </div>
+    </nav>
 
     <script>
-        // Toggle modo claro/oscuro
-        function toggleMode() {
-            document.body.classList.toggle('light');
-            localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
-        }
-
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.classList.add('light');
-        }
-
-        // Navegación pages
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            event.target.closest('.nav-item').classList.add('active');
-        }
-
-        // Búsqueda
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const term = this.value.toLowerCase();
-            document.querySelectorAll('.hero-item').forEach(item => {
-                const name = item.querySelector('.hero-name').textContent.toLowerCase();
-                item.style.display = name.includes(term) ? 'block' : 'none';
-            });
-        });
-
-        // Inicializar grid de héroes
-        const grid = document.getElementById('heroGrid');
-        heroesData.forEach((h, index) => {
-            const div = document.createElement('div');
-            div.className = 'hero-item';
-            div.style = `--order: ${index};`;
-            div.innerHTML = `<img class="hero-img" src="${h.image}" alt="${h.name}"><div class="hero-name">${h.name}</div>`;
-            div.onclick = () => openHeroModal(h);
-            grid.appendChild(div);
-        });
-
-        // Modal héroe
-        function openHeroModal(hero) {
-            document.getElementById('modal-image').src = hero.image;
-            document.getElementById('modal-name').textContent = hero.name;
-            document.getElementById('modal-role').textContent = hero.role;
-            document.getElementById('modal-build').innerHTML = hero.build.map(item => `<li>${item}</li>`).join('');
-            document.getElementById('modal-emblem').textContent = hero.emblem || "Sin datos";
-            document.getElementById('modal-spell').textContent = hero.spell || "Sin datos";
-            document.getElementById('modal-counters').innerHTML = hero.counters.map(c => `<li>${c}</li>`).join('');
-            document.getElementById('modal-synergies').innerHTML = hero.synergies.map(s => `<li>${s}</li>`).join('');
-            document.getElementById('heroModal').style.display = 'block';
-        }
-
-        function closeModal() {
-            document.getElementById('heroModal').style.display = 'none';
-        }
-
-        function openPrivacy() {
-            alert('Política de privacidad: Tus datos están seguros. No recopilamos info personal.');
-        }
-    </script>
-</body>
-</html>
+        // Base de datos completa de 128 héroes (de wiki, Nov 2025)
+        const heroesData = [
+            {name: "Miya", role: "Marksman", specialty: "Finisher / Damage", lane: "Gold Lane", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Miya.png/revision/latest"},
+            {name: "Balmond", role: "Fighter", specialty: "Damage / Regen", lane: "Jungle / EXP Lane", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Balmond.png/revision/latest"},
+            {name: "Saber", role: "Assassin", specialty: "Charge / Finisher", lane: "Jungle / Roaming", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Saber.png/revision/latest"},
+            {name: "Alice", role: "Tank / Mage", specialty: "Charge / Regen", lane: "EXP Lane / Jungle", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Alice.png/revision/latest"},
+            {name: "Nana", role: "Mage", specialty: "Poke / Burst", lane: "Mid Lane", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Nana.png/revision/latest"},
+            {name: "Tigreal", role: "Tank", specialty: "Crowd Control", lane: "Roaming", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Tigreal.png/revision/latest"},
+            {name: "Alucard", role: "Fighter / Assassin", specialty: "Chase / Damage", lane: "Jungle", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Alucard.png/revision/latest"},
+            {name: "Karina", role: "Assassin", specialty: "Finisher / Magic Damage", lane: "Jungle", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Karina.png/revision/latest"},
+            {name: "Akai", role: "Tank", specialty: "Guard / Crowd Control", lane: "Roaming", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Akai.png/revision/latest"},
+            {name: "Franco", role: "Tank", specialty: "Initiator / Control", lane: "Roaming", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Franco.png/revision/latest"},
+            {name: "Bane", role: "Fighter
