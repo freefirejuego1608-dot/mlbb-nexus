@@ -3,582 +3,717 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MLBB Nexus PRO</title>
+    <title>MLBB Nexus PRO | Modern Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        /* Estilos Base y Variables Globales */
         * { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            /* Tema Oscuro (Defecto) */
+            --primary-color: #ff6b00; 
+            --secondary-color: #ffb400;
+            --bg-color: #000;
+            --text-color: #fff;
+            --card-bg: rgba(30,30,30,0.9);
+            --header-bg: rgba(0,0,0,0.95);
+            --border-color: rgba(255,107,0,0.3);
+            --favorite-color: #ffd700;
+            --bar-color: var(--secondary-color);
+            --transition-duration: 0.4s;
+        }
+
+        /* Tema Claro (Activado por la clase .light-mode) - Idea 2 */
+        .light-mode {
+            --primary-color: #006bff; /* Azul */
+            --secondary-color: #00b4ff; /* Azul claro */
+            --bg-color: #f0f0f5;
+            --text-color: #111;
+            --card-bg: rgba(255,255,255,0.95);
+            --header-bg: rgba(255,255,255,0.95);
+            --border-color: rgba(0,107,255,0.3);
+            --bar-color: var(--secondary-color);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #000;
-            color: #fff;
+            font-family: 'Orbitron', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
             min-height: 100vh;
             padding-bottom: 90px;
             overflow-x: hidden;
+            background-image: radial-gradient(#222 1px, transparent 0), radial-gradient(#222 1px, transparent 0);
+            background-size: 50px 50px;
+            background-position: 0 0, 25px 25px;
+            background-attachment: fixed; 
+            transition: background-color 0.5s ease, color 0.5s ease; /* Transición para modo oscuro */
         }
+        .light-mode body {
+            background-image: radial-gradient(#ccc 1px, transparent 0), radial-gradient(#ccc 1px, transparent 0);
+        }
+
+        /* ------------------ Header and Title ------------------ */
         header {
             text-align: center;
             padding: 25px 20px 15px;
-            background: linear-gradient(to bottom, #111, #000);
+            background: var(--header-bg);
+            backdrop-filter: blur(5px);
             position: sticky;
             top: 0;
             z-index: 100;
+            border-bottom: 2px solid var(--border-color);
         }
         h1 {
-            font-size: 2.4rem;
+            font-size: 2.6rem;
             font-weight: 900;
-            background: linear-gradient(45deg, #ff6b00, #ffb400);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 0 30px rgba(255,107,0,0.8);
             animation: glow 2s infinite alternate;
         }
-        @keyframes glow { from { text-shadow: 0 0 20px rgba(255,107,0,0.8); } to { text-shadow: 0 0 40px rgba(255,107,0,1); } }
+        .light-mode h1 { text-shadow: none; }
+        @keyframes glow { 
+            from { text-shadow: 0 0 20px rgba(255,107,0,0.8); } 
+            to { text-shadow: 0 0 40px rgba(255,107,0,1); } 
+        }
 
-        .search-box {
-            margin: 20px auto;
-            max-width: 90%;
-            position: relative;
-        }
-        .search-box input {
-            width: 100%;
-            padding: 16px 50px 16px 20px;
-            border: 2px solid #ff6b00;
-            border-radius: 30px;
-            background: rgba(30,30,30,0.9);
-            color: #fff;
-            font-size: 16px;
-            box-shadow: 0 0 20px rgba(255,107,0,0.4);
-        }
-        .search-box input::placeholder { color: #aaa; }
-        .search-box::after {
-            content: "Search";
+        /* Botón de Notificación (Idea 5) */
+        .notification-bell {
             position: absolute;
-            right: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 20px;
-            color: #ff6b00;
-        }
-
-        .tab { display: none; }
-        .tab.active { display: block; animation: fade 0.5s; }
-        @keyframes fade { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
-
-        .heroes-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-            gap: 18px;
-            padding: 20px;
-        }
-        .hero-card {
-            text-align: center;
-            transition: transform 0.3s;
+            top: 25px;
+            right: 20px;
+            font-size: 28px;
             cursor: pointer;
+            color: var(--secondary-color);
+            transition: transform 0.2s;
         }
-        .hero-card:hover { transform: scale(1.12); }
-        .hero-img {
-            width: 82px;
-            height: 82px;
+        .notification-bell:hover { transform: rotate(10deg) scale(1.1); }
+        .notification-badge {
+            position: absolute;
+            top: 25px;
+            right: 18px;
+            width: 10px;
+            height: 10px;
+            background: red;
             border-radius: 50%;
-            border: 3px solid #ff6b00;
-            object-fit: cover;
-            box-shadow: 0 0 20px rgba(255,107,0,0.7);
+            border: 2px solid var(--header-bg);
+            animation: mini-pulse 1s infinite;
         }
-        .hero-name {
-            margin-top: 8px;
-            font-size: 11px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 0 1px 3px #000;
+        @keyframes mini-pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
         }
-
-        /* Modal para detalles del héroe */
-        .modal {
+        /* Contenedor de Alerta */
+        .alert-popover {
+            position: absolute;
+            top: 60px;
+            right: 10px;
+            background: var(--card-bg);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 15px;
+            width: 250px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            z-index: 150;
             display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.9);
             animation: fadeIn 0.3s;
         }
-        .modal.active { display: block; }
-        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
-        .modal-content {
-            background-color: #111;
-            margin: 5% auto;
-            padding: 20px;
-            border: 2px solid #ff6b00;
-            border-radius: 10px;
-            width: 90%;
-            max-height: 85vh;
-            overflow-y: auto;
-            box-shadow: 0 0 30px rgba(255,107,0,0.5);
-        }
-        .close {
-            color: #ff6b00;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close:hover { color: #ffb400; }
-        .hero-detail-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 3px solid #ff6b00;
-            display: block;
-            margin: 0 auto 15px;
-        }
-        .detail-title { color: #ff6b00; font-size: 18px; margin: 10px 0 5px; }
-        .detail-text { font-size: 14px; line-height: 1.4; margin-bottom: 10px; }
-        .build-list { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
-        .build-item { background: #333; padding: 5px 10px; border-radius: 5px; font-size: 12px; }
 
-        /* Tier List */
-        .lanes {
-            display: flex;
-            overflow-x: auto;
-            padding: 15px 20px;
-            gap: 12px;
-            background: #000;
-            border-bottom: 1px solid #333;
+        /* ------------------ Search Box and Tabs ------------------ */
+        .search-box input {
+            border: 2px solid var(--primary-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+            box-shadow: 0 0 20px rgba(255,107,0,0.4);
         }
-        .lane-btn {
-            padding: 10px 18px;
-            background: rgba(255,107,0,0.15);
-            border: 2px solid #ff6b00;
-            border-radius: 25px;
-            font-weight: bold;
-            white-space: nowrap;
-            transition: 0.3s;
+        .search-box input:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 30px rgba(255,180,0,0.7);
         }
-        .lane-btn.active {
-            background: linear-gradient(45deg, #ff6b00, #ffb400);
-            color: #000;
-            box-shadow: 0 0 20px rgba(255,107,0,0.8);
+        .search-box::after { color: var(--primary-color); }
+        .tab.active { animation: fadeIn var(--transition-duration) ease-out forwards; }
+        @keyframes fadeIn { 
+            from { opacity:0; transform:translateY(20px); } 
+            to { opacity:1; transform:translateY(0); } 
         }
 
-        .tier-section { padding: 20px; }
-        .tier-row {
-            margin-bottom: 25px;
+        /* ------------------ Hero Grid and Cards ------------------ */
+        .hero-card {
+            background: var(--card-bg);
         }
-        .tier-title {
-            font-size: 20px;
-            color: #ff6b00;
-            margin-bottom: 12px;
-            font-weight: bold;
+        .hero-card:hover { 
+            box-shadow: 0 15px 35px rgba(255,107,0,0.6);
+            background: rgba(45,45,45,0.9);
         }
-        .tier-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-            gap: 14px;
+        .hero-img {
+            box-shadow: 0 0 10px var(--primary-color), inset 0 0 10px var(--secondary-color);
+            animation: hologramGlow 4s infinite alternate;
         }
-        .tier-hero img {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            border: 2px solid #ff6b00;
-            box-shadow: 0 0 15px rgba(255,107,0,0.5);
+        .hero-card:hover .hero-img {
+            box-shadow: 0 0 25px var(--secondary-color), inset 0 0 15px var(--primary-color);
         }
-        .tier-hero p {
-            font-size: 9px;
-            margin-top: 5px;
-            text-align: center;
-        }
-
-        .download-section {
-            text-align: center;
-            padding: 40px 20px;
-        }
-        .download-btn {
-            background: linear-gradient(45deg, #ff6b00, #ffb400);
-            color: #000;
-            padding: 18px 40px;
-            border: none;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: bold;
-            box-shadow: 0 10px 30px rgba(255,107,0,0.5);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.05); } }
-
-        /* Navegación inferior */
-        .nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(15px);
+        
+        /* ------------------ Modal de Héroe ------------------ */
+        .modal-subnav {
             display: flex;
             justify-content: space-around;
-            padding: 12px 0;
-            border-top: 1px solid #333;
-            z-index: 999;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #333;
         }
-        .nav-item {
-            text-align: center;
-            padding: 8px;
-            border-radius: 12px;
-            transition: 0.3s;
+        .modal-subnav-item {
+            padding: 8px 15px;
+            cursor: pointer;
+            color: #888;
+            transition: color 0.3s, border-bottom 0.3s;
+        }
+        .modal-subnav-item.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            font-weight: bold;
+        }
+        .modal-tab-content {
+            display: none;
+            animation: fadeIn 0.4s;
+        }
+        .modal-tab-content.active {
+            display: block;
+        }
+        .detail-title { color: var(--primary-color); }
+        .build-item { background: #333; color: #fff; }
+
+        /* ------------------ Gráficos Dinámicos (Idea 1) ------------------ */
+        .chart-container {
+            padding: 10px 0;
+        }
+        .chart-row {
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+        .chart-label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+        .chart-bar-container {
+            height: 15px;
+            background: #222;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .chart-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #444, var(--bar-color));
+            border-radius: 5px;
+            transition: width 1s ease-out; /* Animación de crecimiento */
+            width: 0%; /* Inicia en cero para la animación */
+        }
+        .light-mode .chart-bar-container { background: #e0e0e0; }
+        .light-mode .chart-bar { background: linear-gradient(90deg, #aaa, var(--bar-color)); }
+
+        /* ------------------ Navegación Inferior ------------------ */
+        .nav {
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255,107,0,0.2);
+        }
+        .light-mode .nav {
+            background: rgba(255,255,255,0.7);
+            border-top: 1px solid rgba(0,0,0,0.1);
         }
         .nav-item.active {
             background: rgba(255,107,0,0.3);
-            color: #ff6b00;
+            color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(255,107,0,0.5);
         }
-        .nav-item span { font-size: 24px; display: block; }
-        .nav-item small { font-size: 10px; margin-top: 4px; display: block; }
 
-        /* === NUEVOS ESTILOS (solo para las funciones nuevas) === */
-        .create-tier-btn {
-            display: block;
-            margin: 25px auto;
-            padding: 14px 32px;
-            background: linear-gradient(45deg, #ff6b00, #ffb400);
-            color: #000;
-            border: none;
-            border-radius: 30px;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 0 25px rgba(255,107,0,0.6);
-        }
-        .tier-bin {
-            min-height: 110px;
-            border: 2px dashed #ff6b00;
-            border-radius: 12px;
-            padding: 12px;
-            background: rgba(255,107,0,0.08);
-            margin-bottom: 15px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .tier-bin h3 { width: 100%; color: #ff6b00; margin: 0 0 8px 0; }
-        .draggable-hero {
-            cursor: grab;
-            text-align: center;
-            width: 70px;
-        }
-        .draggable-hero img {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            border: 2px solid #ff6b00;
-        }
-        .draggable-hero:active { cursor: grabbing; opacity: 0.8; }
-
-        /* Builder */
-        .builder-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 10px;
-            margin: 15px 0;
-        }
-        .item-slot {
-            width: 68px;
-            height: 68px;
-            background: #222;
-            border: 2px dashed #555;
-            border-radius: 10px;
+        /* Alternador de Tema (Idea 2) */
+        .theme-toggle {
             display: flex;
             align-items: center;
             justify-content: center;
+            margin: 30px 0;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            margin: 0 15px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
             cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            transition: 0.4s;
+            border-radius: 34px;
         }
-        .item-slot img { width: 58px; height: 58px; border-radius: 8px; }
-        .selected-build {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            margin: 15px 0;
-        }
-        .stats-preview {
-            background: #222;
-            padding: 12px;
-            border-radius: 8px;
+        .slider:before {
+            position: absolute;
+            content: "🌑";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: var(--secondary-color);
+            transition: 0.4s;
+            border-radius: 50%;
             text-align: center;
-            font-size: 14px;
-            margin-top: 10px;
+            line-height: 26px;
+        }
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+            content: "☀️";
         }
     </style>
 </head>
-<body>
-
-<header>
+<body class="dark-mode"> <header>
     <h1>MLBB Nexus PRO</h1>
+    <span class="notification-bell" id="notification-bell">🔔</span>
+    <span class="notification-badge" id="notification-badge"></span>
+    <div class="alert-popover" id="alert-popover">
+        <h4 style="color:var(--primary-color); margin-bottom:5px;">¡Alerta de Parche!</h4>
+        <p style="font-size:12px;">Se ha publicado el Patch 1.9.90. ¡Nerf masivo a Fanny y Buff a Layla!</p>
+    </div>
     <div class="search-box">
         <input type="text" id="search" placeholder="Buscar héroe...">
     </div>
 </header>
 
 <div class="tab active" id="heroes-tab">
+    <div style="text-align:center; padding: 10px 20px;">
+        <div id="all-heroes-filter" class="lane-btn active" style="margin-right: 15px;">Todos los Héroes</div>
+        <div id="favorites-filter" class="lane-btn" style="margin-right: 15px;">Mis Favoritos ⭐</div>
+    </div>
     <div class="heroes-grid" id="heroes-grid"></div>
 </div>
 
 <div class="tab" id="ranking-tab">
-    <div class="lanes">
-        <div class="lane-btn active" data-lane="gold">Línea de Oro</div>
-        <div class="lane-btn" data-lane="exp">EXP Lane</div>
-        <div class="lane-btn" data-lane="jungle">Jungla</div>
-        <div class="lane-btn" data-lane="mid">Mid Lane</div>
-        <div class="lane-btn" data-lane="roam">Roam</div>
+    <div class="lanes" id="lane-buttons">
+        <div class="lane-btn active" data-lane="gold">🪙 Gold Lane</div>
+        <div class="lane-btn" data-lane="exp">⚔️ EXP Lane</div>
+        <div class="lane-btn" data-lane="jungle">🌳 Jungla</div>
+        <div class="lane-btn" data-lane="mid">🔮 Mid Lane</div>
+        <div class="lane-btn" data-lane="roam">🛡️ Roam</div>
     </div>
     <div id="tier-container"></div>
-    <button class="create-tier-btn" onclick="openTierCreator()">Crear Mi Tier List Personal</button>
 </div>
 
 <div class="tab" id="more-tab">
     <div class="download-section">
-        <h2 style="color:#ff6b00; margin-bottom:20px;">¡Descarga la App Física!</h2>
-        <p>Pronto disponible para Android e iOS</p>
+        <h2 style="color:var(--primary-color); margin-bottom:20px;">⚡ ¡Configuración y Utilidades! ⚡</h2>
+        
+        <div class="theme-toggle">
+            <span style="font-size: 14px;">Modo Oscuro</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="theme-toggle-switch">
+                <span class="slider"></span>
+            </label>
+            <span style="font-size: 14px;">Modo Claro</span>
+        </div>
+
+        <p style="margin-bottom: 25px;">Pronto disponible con notificaciones y modo offline.</p>
         <button class="download-btn">Descargar MLBB Nexus PRO</button>
     </div>
 </div>
 
-<!-- Modal para detalles del héroe + Builder -->
 <div id="heroModal" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
-        <img id="heroDetailImg" class="hero-detail-img" src="" alt="">
-        <div id="heroDetail"></div>
-
-        <!-- Simulador de Builds -->
-        <div class="detail-title">Simulador de Build (Toca para agregar)</div>
-        <div class="selected-build" id="selectedBuild"></div>
-        <div class="stats-preview" id="statsPreview">AD: 0 | AS: 0% | LS: 0% | Pen: 0%</div>
-
-        <div class="builder-grid">
-            <div class="item-slot" data-item="Demon Hunter Sword"><img src="https://static.wikia.nocookie.net/mobile-legends/images/5/5f/Demon_Hunter_Sword.png" alt="DHS"></div>
-            <div class="item-slot" data-item="Haas's Claws"><img src="https://static.wikia.nocookie.net/mobile-legends/images/6/6d/Haas%27s_Claws.png" alt="HC"></div>
-            <div class="item-slot" data-item="Blade of Despair"><img src="https://static.wikia.nocookie.net/mobile-legends/images/5/5d/Blade_of_Despair.png" alt="BoD"></div>
-            <div class="item-slot" data-item="Endless Battle"><img src="https://static.wikia.nocookie.net/mobile-legends/images/9/9f/Endless_Battle.png" alt="EB"></div>
-            <div class="item-slot" data-item="Malefic Roar"><img src="https://static.wikia.nocookie.net/mobile-legends/images/2/2f/Malefic_Roar.png" alt="MR"></div>
-            <div class="item-slot" data-item="Rose Gold Meteor"><img src="https://static.wikia.nocookie.net/mobile-legends/images/8/8f/Rose_Gold_Meteor.png" alt="RGM"></div>
-            <div class="item-slot" data-item="Winter Truncheon"><img src="https://static.wikia.nocookie.net/mobile-legends/images/4/4d/Winter_Truncheon.png" alt="WT"></div>
-            <div class="item-slot" data-item="Immortality"><img src="https://static.wikia.nocookie.net/mobile-legends/images/9/9b/Immortality.png" alt="Immortality"></div>
-            <div class="item-slot" data-item="Dominance Ice"><img src="https://static.wikia.nocookie.net/mobile-legends/images/3/3f/Dominance_Ice.png" alt="DI"></div>
-            <div class="item-slot" data-item="War Axe"><img src="https://static.wikia.nocookie.net/mobile-legends/images/9/9f/War_Axe.png" alt="WA"></div>
-            <div class="item-slot" data-item="Bloodlust Axe"><img src="https://static.wikia.nocookie.net/mobile-legends/images/0/0f/Bloodlust_Axe.png" alt="BLA"></div>
-            <div class="item-slot" data-item="Holy Crystal"><img src="https://static.wikia.nocookie.net/mobile-legends/images/6/6b/Holy_Crystal.png" alt="HC"></div>
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img id="heroDetailImg" class="hero-detail-img" src="" alt="Hero Portrait">
+        
+        <div class="modal-subnav">
+            <div class="modal-subnav-item active" data-modal-tab="details">Detalles</div>
+            <div class="modal-subnav-item" data-modal-tab="stats">Estadísticas</div>
         </div>
-    </div>
-</div>
 
-<!-- Modal Tier List Interactiva -->
-<div id="tierCreatorModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="document.getElementById('tierCreatorModal').classList.remove('active')">&times;</span>
-        <h2 style="text-align:center;color:#ff6b00;">Crea tu Tier List Personal</h2>
-        <select id="tierLaneSelect" onchange="loadHeroesForCreator()" style="width:100%;padding:12px;margin:15px 0;background:#222;color:#fff;border:2px solid #ff6b00;border-radius:8px;">
-            <option value="gold">Línea de Oro</option>
-            <option value="exp">EXP Lane</option>
-            <option value="jungle">Jungla</option>
-            <option value="mid">Mid Lane</option>
-            <option value="roam">Roam</option>
-        </select>
+        <div class="modal-tab-content active" id="modal-details">
+            <div id="heroDetail"></div>
+        </div>
 
-        <div class="tier-bin" id="binS" ondrop="drop(event)" ondragover="allowDrop(event)"><h3>Tier S</h3></div>
-        <div class="tier-bin" id="binA" ondrop="drop(event)" ondragover="allowDrop(event)"><h3>Tier A</h3></div>
-        <div class="tier-bin" id="binB" ondrop="drop(event)" ondragover="allowDrop(event)"><h3>Tier B</h3></div>
-        <div class="tier-bin" id="binC" ondrop="drop(event)" ondragover="allowDrop(event)"><h3>Tier C</h3></div>
-
-        <div id="heroesPool" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:20px;"></div>
-
-        <button onclick="saveTierList()" style="display:block;margin:25px auto;padding:14px 40px;background:#ff6b00;color:#000;border:none;border-radius:30px;font-weight:bold;font-size:16px;cursor:pointer;">
-            Guardar como Imagen
-        </button>
+        <div class="modal-tab-content" id="modal-stats">
+            <div class="chart-container" id="heroStatsChart">
+                </div>
+        </div>
     </div>
 </div>
 
 <nav class="nav">
     <div class="nav-item active" data-tab="heroes-tab">
-        <span>Hero</span><small>Héroes</small>
+        <span>👤</span><small>Héroes</small>
     </div>
     <div class="nav-item" data-tab="ranking-tab">
-        <span>Ranking</span><small>Tier List</small>
+        <span>🏆</span><small>Tier List</small>
     </div>
     <div class="nav-item" data-tab="more-tab">
-        <span>More</span><small>Más</small>
+        <span>➕</span><small>Más</small>
     </div>
 </nav>
 
 <script>
-// === TU BASE DE DATOS ORIGINAL COMPLETA (sin tocar ni una coma) ===
+// Base de datos de héroes (Añadido 'id' y 'stats')
 const heroes = [
-    {name:"Miya",img:"https://static.wikia.nocookie.net/mobile-legends/images/3/3a/Portrait_Miya.png/revision/latest", description:"Marksman de daño sostenido, fuerte en late game para derretir tanks con su ultimate. Tier B en gold lane.", build:"Demon Hunter Sword, Wind of Nature, Haas's Claws, Blade of Despair, Rose Gold Meteor, Malefic Roar", strongAgainst:"Tanks y fighters con bajo sustain", counters:"Franco, Kaja, Hayabusa"},
-    {name:"Balmond",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/1b/Portrait_Balmond.png/revision/latest", description:"Fighter jungle/EXP con regen y AoE. Excelente clear y teamfight. Tier A en EXP.", build:"Bloodlust Axe, Endless Battle, Haas's Claws, Blade of Despair, Oracle, Brute Force Breastplate", strongAgainst:"Squishies y healers", counters:"Phoveus, Khufra, Baxia"},
-    {name:"Saber",img:"https://static.wikia.nocookie.net/mobile-legends/images/5/5e/Portrait_Saber.png/revision/latest", description:"Assassin burst con charge. Buen pick off pero vulnerable a CC. Tier B en jungle.", build:"Magic Shoes, Starlium Scythe, Holy Crystal, Divine Glaive, Winter Truncheon, Immortality", strongAgainst:"Marksmen y mages solos", counters:"Franco, Chou, Kaja"},
-    {name:"Alice",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/0d/Portrait_Alice.png/revision/latest", description:"Tank/Mage S-tier con sustain infinito y burst. Domina teamfights en meta 2025.", build:"Concentrated Energy, Oracle, Holy Crystal, Divine Glaive, Winter Truncheon, Immortality", strongAgainst:"Assassins y fighters", counters:"Phoveus, Minsitthar"},
-    {name:"Nana",img:"https://static.wikia.nocookie.net/mobile-legends/images/2/2f/Portrait_Nana.png/revision/latest", description:"Mage poke con CC. Tier C en mid, útil para peel.", build:"Clock of Destiny, Lightning Truncheon, Holy Crystal, Divine Glaive, Genius Wand", strongAgainst:"Melee divers", counters:"Fanny, Ling"},
-    {name:"Tigreal",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/0e/Portrait_Tigreal.png/revision/latest", description:"Tank roam clásico con CC fuerte. Tier B en roam para setups.", build:"Tough Boots, Dominance Ice, Athena's Shield, Immortality, Brute Force Breastplate", strongAgainst:"Grouped teams", counters:"Phoveus, Joy"},
-    {name:"Alucard",img:"https://static.wikia.nocookie.net/mobile-legends/images/9/9e/Portrait_Alucard.png/revision/latest", description:"Fighter/Assassin con lifesteal. Tier C en jungle, countered por antiheal.", build:"War Axe, Endless Battle, Haas's Claws, Blade of Despair, Rose Gold Meteor", strongAgainst:"Tanks solos", counters:"Baxia, Khufra"},
-    {name:"Karina",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/6b/Portrait_Karina.png/revision/latest", description:"Assassin anti-mage. Tier A en jungle contra comps mágicas.", build:"Magic Shoes, Starlium Scythe, Holy Crystal, Divine Glaive, Genius Wand", strongAgainst:"Mages y supports", counters:"Franco, Chou"},
-    {name:"Akai",img:"https://static.wikia.nocookie.net/mobile-legends/images/9/9a/Portrait_Akai.png/revision/latest", description:"Tank roam con control. Tier B para peel en meta.", build:"Tough Boots, Dominance Ice, Athena's Shield, Immortality", strongAgainst:"Assassins divers", counters:"Phoveus, Badang"},
-    {name:"Franco",img:"https://static.wikia.nocookie.net/mobile-legends/images/4/4c/Portrait_Franco.png/revision/latest", description:"Tank roam S-tier para picks con hook. Domina picks off.", build:"Tough Boots, Dominance Ice, Athena's Shield, Immortality, Oracle", strongAgainst:"Assassins y MM", counters:"Joy, Ling (dodge hook)"},
-    // ... (TODOS los demás héroes que tenías, sin tocar nada)
-    {name:"Lukas",img:"https://static.wikia.nocookie.net/mobile-legends/images/8/89/Portrait_Lukas.png/revision/latest", description:"Fighter burst. Tier A en EXP.", build:"Warrior Boots, Endless Battle, Haas's Claws", strongAgainst:"Low HP", counters:"Khufra"}
+    {id:1, name:"Miya",img:"https://static.wikia.nocookie.net/mobile-legends/images/3/3a/Portrait_Miya.png/revision/latest", description:"Marksman de daño sostenido, fuerte en late game para derretir tanks con su ultimate. Tier B en gold lane.", build:"Demon Hunter Sword, Wind of Nature, Haas's Claws, Blade of Despair, Rose Gold Meteor, Malefic Roar", strongAgainst:"Tanks y fighters con bajo sustain", counters:"Franco, Kaja, Hayabusa", lane:"gold", tier:"B", stats: {damage: 80, durability: 30, control: 40, difficulty: 60}},
+    {id:2, name:"Balmond",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/1b/Portrait_Balmond.png/revision/latest", description:"Fighter jungle/EXP con regen y AoE. Excelente clear y teamfight. Tier A en EXP.", build:"Bloodlust Axe, Endless Battle, Haas's Claws, Blade of Despair, Oracle, Brute Force Breastplate", strongAgainst:"Squishies y healers", counters:"Phoveus, Khufra, Baxia", lane:"exp", tier:"A", stats: {damage: 70, durability: 90, control: 60, difficulty: 40}},
+    {id:3, name:"Saber",img:"https://static.wikia.nocookie.net/mobile-legends/images/5/5e/Portrait_Saber.png/revision/latest", description:"Assassin burst con charge. Buen pick off pero vulnerable a CC. Tier B en jungle.", build:"Magic Shoes, Starlium Scythe, Holy Crystal, Divine Glaive, Winter Truncheon, Immortality", strongAgainst:"Marksmen y mages solos", counters:"Franco, Chou, Kaja", lane:"jungle", tier:"B", stats: {damage: 95, durability: 20, control: 50, difficulty: 70}},
+    {id:4, name:"Alice",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/0d/Portrait_Alice.png/revision/latest", description:"Tank/Mage S-tier con sustain infinito y burst. Domina teamfights en meta 2025.", build:"Concentrated Energy, Oracle, Holy Crystal, Divine Glaive, Winter Truncheon, Immortality", strongAgainst:"Assassins y fighters", counters:"Phoveus, Minsitthar", lane:"mid", tier:"S", stats: {damage: 80, durability: 80, control: 90, difficulty: 65}},
+    {id:5, name:"Nana",img:"https://static.wikia.nocookie.net/mobile-legends/images/2/2f/Portrait_Nana.png/revision/latest", description:"Mage poke con CC. Tier C en mid, útil para peel.", build:"Clock of Destiny, Lightning Truncheon, Holy Crystal, Divine Glaive, Genius Wand", strongAgainst:"Melee divers", counters:"Fanny, Ling", lane:"mid", tier:"C", stats: {damage: 60, durability: 40, control: 90, difficulty: 45}},
+    {id:6, name:"Tigreal",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/0e/Portrait_Tigreal.png/revision/latest", description:"Tank roam clásico con CC fuerte. Tier B en roam para setups.", build:"Tough Boots, Dominance Ice, Athena's Shield, Immortality, Brute Force Breastplate", strongAgainst:"Grouped teams", counters:"Phoveus, Joy", lane:"roam", tier:"B", stats: {damage: 20, durability: 100, control: 100, difficulty: 50}},
+    {id:7, name:"Franco",img:"https://static.wikia.nocookie.net/mobile-legends/images/4/4c/Portrait_Franco.png/revision/latest", description:"Tank roam S-tier para picks con hook. Domina picks off.", build:"Tough Boots, Dominance Ice, Athena's Shield, Immortality, Oracle", strongAgainst:"Assassins y MM", counters:"Joy, Ling (dodge hook)", lane:"roam", tier:"S", stats: {damage: 30, durability: 90, control: 100, difficulty: 70}},
+    {id:8, name:"Clint",img:"https://static.wikia.nocookie.net/mobile-legends/images/8/8b/Portrait_Clint.png/revision/latest", description:"Marksman A-tier con true damage. Fuerte vs tanks.", build:"Swift Boots, Demon Hunter Sword, Haas's Claws, Malefic Roar", strongAgainst:"Armored heroes", counters:"Hayabusa, Saber", lane:"gold", tier:"A", stats: {damage: 90, durability: 35, control: 50, difficulty: 60}},
+    {id:9, name:"Karina",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/6b/Portrait_Karina.png/revision/latest", description:"Assassin anti-mage. Tier A en jungle contra comps mágicas.", build:"Magic Shoes, Starlium Scythe, Holy Crystal, Divine Glaive, Genius Wand", strongAgainst:"Mages y supports", counters:"Franco, Chou", lane:"jungle", tier:"A", stats: {damage: 95, durability: 40, control: 60, difficulty: 60}},
+    {id:12, name:"Hayabusa",img:"https://static.wikia.nocookie.net/mobile-legends/images/3/3c/Portrait_Hayabusa.png/revision/latest", description:"Assassin S-tier jungle. Burst y mobility top meta 2025.", build:"Magic Shoes, Blade of the Heptaseas, Haas's Claws, Blade of Despair", strongAgainst:"Squishies", counters:"Franco, Kaja", lane:"jungle", tier:"S", stats: {damage: 90, durability: 30, control: 70, difficulty: 90}},
+    {id:20, name:"Wanwan",img:"https://static.wikia.nocookie.net/mobile-legends/images/a/a1/Portrait_Wanwan.png/revision/latest", description:"Marksman hyper-mobile.", build:"Swift Boots, Demon Hunter Sword, Corrosion Scythe", strongAgainst:"Tanks", counters:"Franco, Chou", lane:"gold", tier:"S", stats: {damage: 85, durability: 30, control: 70, difficulty: 85}},
+    {id:21, name:"Khufra",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/6f/Portrait_Khufra.png/revision/latest", description:"Tank anti-dash.", build:"Tough Boots, Dominance Ice, Athena's Shield", strongAgainst:"Dash heroes", counters:"Diggie, Rafaela", lane:"roam", tier:"S", stats: {damage: 20, durability: 95, control: 100, difficulty: 60}},
 ];
 
-const tierList = {
-    gold: { S:["Kimmy","Beatrix","Wanwan","Ixia","Obsidia"], A:["Granger","Clint","Moskov","Brody","Lesley"], B:["Karrie","Bruno","Layla","Hanabi"], C:["Miya","Roger"] },
-    exp: { S:["Arlott","Fredrinn","Phoveus","Cici","Badang"], A:["Guinevere","Yu Zhong","Esmeralda","Terizla","Ruby"], B:["Lapu-Lapu","Chou","Sun","Alpha"], C:["Thamuz","Dyrroth"] },
-    jungle: { S:["Julian","Joy","Ling","Hayabusa","Lancelot"], A:["Benedetta","Gusion","Fanny","Yi Sun-shin"], B:["Helcurt","Hanzo","Saber"], C:["Natalia"] },
-    mid: { S:["Zhuxin","Novaria","Valentina","Yve","Harith"], A:["Pharsa","Luo Yi","Valir","Cecilion"], B:["Chang'e","Kagura","Aurora"], C:["Vexana","Eudora"] },
-    roam: { S:["Angela","Floryn","Mathilda","Chip","Kalea"], A:["Estes","Rafaela","Diggie"], B:["Tigreal","Atlas","Khufra"], C:["Minotaur"] }
-};
+const tierOrder = ["S", "A", "B", "C", "D"]; 
+let isFavoriteView = false; 
 
-// === TUS FUNCIONES ORIGINALES (sin tocar) ===
-function showHeroDetail(hero) {
-    document.getElementById('heroDetailImg').src = hero.img;
-    document.getElementById('heroDetail').innerHTML = `
-        <h2 style="text-align:center; color:#ff6b00;">${hero.name}</h2>
-        <div class="detail-title">Descripción</div>
-        <div class="detail-text">${hero.description}</div>
-        <div class="detail-title">Build Ideal (Competitivo)</div>
-        <div class="build-list">${hero.build.split(', ').map(item => `<span class="build-item">${item}</span>`).join('')}</div>
-        <div class="detail-title">Fuerte Contra</div>
-        <div class="detail-text">${hero.strongAgainst}</div>
-        <div class="detail-title">Counters</div>
-        <div class="detail-text">${hero.counters}</div>
-    `;
-    currentBuild = []; // reset builder
-    document.getElementById("selectedBuild").innerHTML = "";
-    document.getElementById("statsPreview").textContent = "AD: 0 | AS: 0% | LS: 0% | Pen: 0%";
-    document.getElementById('heroModal').classList.add('active');
+// ------------------ Funcionalidad de Favoritos ------------------
+
+function getFavorites() {
+    const favorites = localStorage.getItem('mlbb_favorites');
+    return favorites ? JSON.parse(favorites) : [];
 }
 
-function renderHeroes(filter = "") {
-    const grid = document.getElementById("heroes-grid");
-    grid.innerHTML = "";
-    heroes.filter(h => h.name.toLowerCase().includes(filter.toLowerCase())).forEach(hero => {
+function saveFavorites(favorites) {
+    localStorage.setItem('mlbb_favorites', JSON.stringify(favorites));
+}
+
+function toggleFavorite(heroId, event) {
+    event.stopPropagation();
+    const id = parseInt(heroId);
+    let favorites = getFavorites();
+    const isCurrentlyFavorite = favorites.includes(id);
+
+    if (isCurrentlyFavorite) {
+        favorites = favorites.filter(favId => favId !== id);
+    } else {
+        favorites.push(id);
+    }
+
+    saveFavorites(favorites);
+    
+    // Rerenderizar la grid para actualizar el icono y la lista
+    renderHeroes(document.getElementById('search').value, isFavoriteView);
+}
+
+// ------------------ Funcionalidad de Gráficos (Idea 1) ------------------
+
+function renderHeroStats(hero) {
+    const chartContainer = document.getElementById('heroStatsChart');
+    chartContainer.innerHTML = '';
+
+    const statsMap = {
+        damage: 'Daño',
+        durability: 'Durabilidad',
+        control: 'Control',
+        difficulty: 'Dificultad'
+    };
+
+    let html = '';
+    for (const key in hero.stats) {
+        if (hero.stats.hasOwnProperty(key)) {
+            const value = hero.stats[key]; // Valor de 0 a 100
+            const label = statsMap[key] || key;
+            html += `
+                <div class="chart-row">
+                    <div class="chart-label">
+                        <span>${label}</span>
+                        <span>${value}%</span>
+                    </div>
+                    <div class="chart-bar-container">
+                        <div class="chart-bar" style="width: ${value}%;"></div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    chartContainer.innerHTML = html;
+}
+
+
+// ------------------ Funcionalidad Principal ------------------
+
+function renderHeroes(filterText = '', onlyFavorites = false) {
+    const grid = document.getElementById('heroes-grid');
+    grid.innerHTML = '';
+    
+    let filtered = heroes;
+    
+    if (onlyFavorites) {
+        const favoriteIds = getFavorites();
+        filtered = filtered.filter(hero => favoriteIds.includes(hero.id));
+    }
+    
+    filtered = filtered.filter(hero => hero.name.toLowerCase().includes(filterText.toLowerCase()));
+
+    const favoriteIds = getFavorites();
+
+    if (filtered.length === 0) {
+        grid.innerHTML = `<p style="text-align:center; color:#888; padding:30px;">No se encontraron héroes${onlyFavorites ? ' en tus favoritos.' : '.'}</p>`;
+        return;
+    }
+
+    filtered.forEach(hero => {
+        const isFav = favoriteIds.includes(hero.id);
+        
         const card = document.createElement('div');
         card.className = 'hero-card';
-        card.onclick = () => showHeroDetail(hero);
+        card.setAttribute('onclick', `openModal('${hero.name}')`);
         card.innerHTML = `
-            <img src="${hero.img}" alt="${hero.name}" class="hero-img" onerror="this.src='https://via.placeholder.com/82?text=${hero.name[0]}'">
-            <div class="hero-name">${hero.name}</div>
+            <span class="favorite-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(${hero.id}, event)">${isFav ? '⭐' : '☆'}</span>
+            <img class="hero-img" src="${hero.img}" alt="${hero.name}">
+            <p class="hero-name">${hero.name}</p>
         `;
         grid.appendChild(card);
     });
 }
 
-function renderTier(lane = "gold") {
-    const container = document.getElementById("tier-container");
-    container.innerHTML = "";
-    const data = tierList[lane];
-    ['S','A','B','C'].forEach(tier => {
-        if (data[tier] && data[tier].length > 0) {
-            container.innerHTML += `
-                <div class="tier-row">
-                    <div class="tier-title">Tier ${tier}</div>
-                    <div class="tier-grid">
-                        ${data[tier].map(name => {
-                            const h = heroes.find(hero => hero.name === name);
-                            return `<div class="tier-hero"><img src="${h ? h.img : ''}" onerror="this.src='https://via.placeholder.com/65?text=${name[0]}'"><p>${name}</p></div>`;
-                        }).join('')}
+function renderTierList(lane) {
+    const container = document.getElementById('tier-container');
+    
+    // Mostrar Skeleton Loader
+    container.innerHTML = createSkeletonLoader();
+
+    setTimeout(() => {
+        container.innerHTML = '';
+        const filteredByLane = heroes.filter(hero => hero.lane === lane);
+
+        tierOrder.forEach(tier => {
+            const heroesInTier = filteredByLane.filter(hero => hero.tier === tier);
+            if (heroesInTier.length > 0) {
+                const section = document.createElement('div');
+                section.className = 'tier-section';
+                section.innerHTML = `
+                    <div class="tier-row">
+                        <h3 class="tier-title">Tier ${tier}</h3>
+                        <div class="tier-grid">
+                            ${heroesInTier.map(hero => `
+                                <div class="tier-hero" onclick="openModal('${hero.name}')">
+                                    <img src="${hero.img}" alt="${hero.name}">
+                                    <p>${hero.name}</p>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
+                `;
+                container.appendChild(section);
+            }
+        });
+    }, 500); // 500ms de retraso simulado
+}
+
+function createSkeletonLoader() {
+    let loader = '<div class="skeleton-loader">';
+    for (let i = 0; i < 3; i++) { 
+        loader += `
+            <div class="skeleton-row">
+                <div class="skeleton-title"></div>
+                <div class="skeleton-grid">
+                    <div class="skeleton-item"></div>
+                    <div class="skeleton-item"></div>
+                    <div class="skeleton-item"></div>
+                    <div class="skeleton-item" style="display: none;"></div>
                 </div>
-            `;
-        }
-    });
+            </div>
+        `;
+    }
+    loader += '</div>';
+    return loader;
 }
 
-// === NUEVAS FUNCIONES (sin romper nada) ===
-let currentBuild = [];
-function updateStats() {
-    let ad = 0, as = 0, ls = 0, pen = 0;
-    currentBuild.forEach(i => {
-        if(i==="Demon Hunter Sword") { ad+=170; as+=25; }
-        if(i==="Haas's Claws") { ad+=70; ls+=20; }
-        if(i==="Blade of Despair") ad+=170;
-        if(i==="Endless Battle") { ad+=65; as+=25; ls+=10; }
-        if(i==="Malefic Roar") pen+=35;
-        if(i==="War Axe") ad+=85;
-        if(i==="Bloodlust Axe") ls+=20;
-        if(i==="Holy Crystal") /* solo ejemplo */;
-    });
-    document.getElementById("statsPreview").textContent = `AD: ${ad} | AS: ${as}% | LS: ${ls}% | Pen: ${pen}%`;
-}
-document.querySelectorAll(".item-slot").forEach(slot => {
-    slot.addEventListener("click", () => {
-        if(currentBuild.length >= 6) return alert("¡Máximo 6 items!");
-        const item = slot.dataset.item;
-        currentBuild.push(item);
-        document.getElementById("selectedBuild").innerHTML += `<div style="background:#333;padding:8px;border-radius:8px;">${item}</div>`;
-        updateStats();
-    });
-});
+// ------------------ Funcionalidad de Interacción ------------------
 
-function openTierCreator() {
-    document.getElementById("tierCreatorModal").classList.add("active");
-    loadHeroesForCreator();
+function openModal(heroName) {
+    const hero = heroes.find(h => h.name === heroName);
+    if (!hero) return;
+
+    // Reiniciar a la pestaña de "Detalles" al abrir
+    document.querySelector('.modal-subnav-item.active').classList.remove('active');
+    document.querySelector('[data-modal-tab="details"]').classList.add('active');
+    document.querySelectorAll('.modal-tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('modal-details').classList.add('active');
+
+
+    document.getElementById('heroDetailImg').src = hero.img;
+    document.getElementById('heroDetail').innerHTML = `
+        <h2 style="color:var(--secondary-color); text-align:center; margin-bottom:15px; font-size: 28px;">${hero.name}</h2>
+        <p class="detail-text"><strong>Rol/Lane:</strong> ${hero.lane} (${hero.tier}-Tier)</p>
+        <p class="detail-text">${hero.description}</p>
+        
+        <h3 class="detail-title">⚙️ Build Recomendada</h3>
+        <div class="build-list">
+            ${hero.build.split(', ').map(item => `<span class="build-item">${item}</span>`).join('')}
+        </div>
+
+        <h3 class="detail-title">👍 Fuerte Contra</h3>
+        <p class="detail-text">${hero.strongAgainst}</p>
+
+        <h3 class="detail-title">👎 Counters</h3>
+        <p class="detail-text">${hero.counters}</p>
+    `;
+
+    // Renderizar los gráficos inmediatamente para el héroe
+    renderHeroStats(hero);
+
+    document.getElementById('heroModal').classList.add('active');
 }
-function allowDrop(e) { e.preventDefault(); }
-function drag(e) { e.dataTransfer.setData("name", e.target.closest(".draggable-hero").dataset.name); }
-function drop(e) {
-    e.preventDefault();
-    const name = e.dataTransfer.getData("name");
-    const hero = heroes.find(h => h.name === name);
-    if(!hero) return;
-    const bin = e.target.closest(".tier-bin");
-    if(bin) {
-        bin.innerHTML += `<div class="draggable-hero"><img src="${hero.img}" onerror="this.src='https://via.placeholder.com/56?text=${name[0]}'"><p>${name}</p></div>`;
+
+function closeModal() {
+    document.getElementById('heroModal').classList.remove('active');
+}
+
+function switchModalTab(tabId) {
+    document.querySelectorAll('.modal-subnav-item').forEach(item => item.classList.remove('active'));
+    document.querySelectorAll('.modal-tab-content').forEach(content => content.classList.remove('active'));
+
+    document.querySelector(`[data-modal-tab="${tabId}"]`).classList.add('active');
+    document.getElementById(`modal-${tabId}`).classList.add('active');
+}
+
+// ------------------ Funcionalidad de Tema (Idea 2) ------------------
+
+function toggleTheme(event) {
+    const body = document.body;
+    if (event.target.checked) {
+        body.classList.remove('dark-mode');
+        body.classList.add('light-mode');
+        localStorage.setItem('mlbb_theme', 'light');
+    } else {
+        body.classList.remove('light-mode');
+        body.classList.add('dark-mode');
+        localStorage.setItem('mlbb_theme', 'dark');
     }
 }
-function loadHeroesForCreator() {
-    const lane = document.getElementById("tierLaneSelect").value;
-    const pool = document.getElementById("heroesPool");
-    pool.innerHTML = "";
-    const allInLane = [...(tierList[lane].S||[]), ...(tierList[lane].A||[]), ...(tierList[lane].B||[]), ...(tierList[lane].C||[])];
-    allInLane.forEach(name => {
-        const h = heroes.find(hero => hero.name === name);
-        if(h) {
-            pool.innerHTML += `<div class="draggable-hero" draggable="true" ondragstart="drag(event)" data-name="${h.name}">
-                <img src="${h.img}" onerror="this.src='https://via.placeholder.com/56?text=${h.name[0]}'"><p>${h.name}</p>
-            </div>`;
-        }
-    });
-}
-function saveTierList() {
-    html2canvas(document.querySelector("#tierCreatorModal .modal-content")).then(canvas => {
-        const a = document.createElement("a");
-        a.href = canvas.toDataURL();
-        a.download = `Mi_TierList_${new Date().toISOString().slice(0,10)}.png`;
-        a.click();
-    });
+
+// ------------------ Funcionalidad de Notificaciones (Idea 5) ------------------
+
+function toggleNotificationPopover() {
+    const popover = document.getElementById('alert-popover');
+    const badge = document.getElementById('notification-badge');
+
+    if (popover.style.display === 'block') {
+        popover.style.display = 'none';
+    } else {
+        popover.style.display = 'block';
+        // Simular que la notificación se lee al abrir
+        badge.style.display = 'none';
+    }
 }
 
-// === TUS EVENTOS ORIGINALES (intactos) ===
-document.getElementById("search").addEventListener("input", e => renderHeroes(e.target.value));
-document.querySelectorAll(".lane-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-        document.querySelectorAll(".lane-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        renderTier(btn.dataset.lane);
-    });
-});
-document.querySelectorAll(".nav-item").forEach(item => {
-    item.addEventListener("click", () => {
-        document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
-        item.classList.add("active");
-        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-        document.getElementById(item.dataset.tab).classList.add("active");
-        if (item.dataset.tab === "ranking-tab") renderTier();
-    });
-});
-document.querySelectorAll('.close').forEach(c => c.onclick = () => c.closest('.modal').classList.remove('active'));
-window.onclick = e => { if(e.target.classList.contains('modal')) e.target.classList.remove('active'); };
 
-// Inicio
-renderHeroes();
-renderTier();
+// ------------------ Event Listeners ------------------
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Inicializar el tema basado en localStorage
+    const savedTheme = localStorage.getItem('mlbb_theme') || 'dark';
+    const themeToggle = document.getElementById('theme-toggle-switch');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+        themeToggle.checked = true;
+    } else {
+        document.body.classList.add('dark-mode');
+        themeToggle.checked = false;
+    }
+
+    // Inicializar la grid de héroes (muestra todos por defecto)
+    isFavoriteView = false;
+    renderHeroes('', isFavoriteView);
+
+    // Manejar la búsqueda
+    document.getElementById('search').addEventListener('input', (e) => {
+        renderHeroes(e.target.value, isFavoriteView);
+    });
+
+    // Manejar el cambio de tabs de la navegación principal (código existente)
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            const tabId = item.getAttribute('data-tab');
+            switchTab(tabId);
+        });
+    });
+
+    // Manejar el cambio de lane en la Tier List (código existente)
+    document.querySelectorAll('.lane-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.lane-btn').forEach(el => el.classList.remove('active'));
+            e.target.classList.add('active');
+            renderTierList(e.target.getAttribute('data-lane'));
+        });
+    });
+
+    // Manejar el filtro de Favoritos (código existente)
+    document.getElementById('all-heroes-filter').addEventListener('click', (e) => {
+        isFavoriteView = false;
+        document.getElementById('favorites-filter').classList.remove('active');
+        e.target.classList.add('active');
+        renderHeroes(document.getElementById('search').value, isFavoriteView);
+    });
+
+    document.getElementById('favorites-filter').addEventListener('click', (e) => {
+        isFavoriteView = true;
+        document.getElementById('all-heroes-filter').classList.remove('active');
+        e.target.classList.add('active');
+        renderHeroes(document.getElementById('search').value, isFavoriteView);
+    });
+    
+    // Event listener para el toggle de tema (Idea 2)
+    themeToggle.addEventListener('change', toggleTheme);
+
+    // Event listener para el sub-navegador del modal (Idea 1)
+    document.querySelectorAll('.modal-subnav-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            switchModalTab(e.target.getAttribute('data-modal-tab'));
+        });
+    });
+
+    // Event listener para el botón de notificación (Idea 5)
+    document.getElementById('notification-bell').addEventListener('click', toggleNotificationPopover);
+    
+    // Cargar la Tier List inicial (Gold Lane)
+    renderTierList('gold');
+});
+
+// Switch Tab (función global necesaria para el nav)
+function switchTab(tabId) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    document.querySelector(`.nav-item[data-tab="${tabId}"]`).classList.add('active');
+
+    if (tabId === 'ranking-tab') {
+        const activeLane = document.querySelector('.lanes .lane-btn.active').getAttribute('data-lane');
+        renderTierList(activeLane);
+    }
+    
+    if (tabId === 'heroes-tab') {
+        renderHeroes(document.getElementById('search').value, isFavoriteView);
+    }
+}
+
+// Cerrar modal al hacer clic fuera de él
+window.onclick = function(event) {
+    const modal = document.getElementById('heroModal');
+    const popover = document.getElementById('alert-popover');
+    if (event.target == modal) {
+        closeModal();
+    }
+    // Cerrar popover si se hace clic fuera de la campana
+    if (event.target !== document.getElementById('notification-bell') && event.target !== popover) {
+        popover.style.display = 'none';
+    }
+}
 </script>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </body>
 </html>
