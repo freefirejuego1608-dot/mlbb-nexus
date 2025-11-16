@@ -264,6 +264,10 @@
             margin-right: 8px;
         }
 
+        .tier-hero span {
+            color: var(--text-dark);
+        }
+
         .trend {
             position: absolute;
             top: -5px;
@@ -334,7 +338,7 @@
             background: var(--card-dark);
             margin: 10% auto;
             padding: 25px;
-            border-radius: var(--border-radius);
+            border-radius: 15px;
             width: 90%;
             max-width: 500px;
             box-shadow: var(--shadow-medium);
@@ -365,6 +369,100 @@
             transform: rotate(90deg);
         }
 
+        .modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        body.light .modal-header {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .modal-header img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--orange);
+            margin-right: 15px;
+        }
+
+        .modal h2 {
+            margin: 0;
+            color: var(--orange);
+            font-size: 1.6em;
+        }
+
+        .modal p {
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .build-section h3 {
+            color: var(--orange);
+            margin-top: 15px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        body.light .build-section h3 {
+            border-bottom: 1px solid #ccc;
+        }
+
+        .build-section ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .build-section li {
+            background-color: #333;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+
+        body.light .build-section li {
+            background-color: #ddd;
+            color: #333;
+        }
+
+        .build-section li:hover {
+            background-color: var(--orange);
+            color: black;
+        }
+
+        .counters-section, .synergies-section {
+            margin-top: 15px;
+        }
+
+        .counters-section ul, .synergies-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .counters-section li, .synergies-section li {
+            background-color: #ff4444;
+            color: white;
+            padding: 5px 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            transition: var(--transition);
+        }
+
+        .synergies-section li {
+            background-color: #44ff44;
+            color: black;
+        }
+
         /* Responsive */
         @media (min-width: 600px) {
             .hero-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
@@ -391,56 +489,188 @@
     <div id="page-ranking" class="page">
         <div class="tier-section">
             <div class="tier-title">Gold Lane Tier List</div>
-            <div class="tier-row"><div class="tier-label">SS</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Cici" alt="Cici">Cici<div class="trend">↑</div></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Natan" alt="Natan">Natan</div>
-            </div></div>
             <div class="tier-row"><div class="tier-label">S</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Bane" alt="Bane">Bane</div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Obsidia" alt="Obsidia">Obsidia</div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Irithel" alt="Irithel">Irithel</div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Ixia" alt="Ixia">Ixia<div class="trend">↑</div></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Kimmy" alt="Kimmy">Kimmy</div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Hanabi" alt="Hanabi">Hanabi<div class="trend">↑</div></div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Popol" alt="Popol">Popol</div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Melissa" alt="Melissa">Melissa</div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Brody" alt="Brody">Brody<div class="trend">↑</div></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Cici" alt="Cici"><span>Cici</span><div class="trend">↑</div></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Natan" alt="Natan"><span>Natan</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Obsidia" alt="Obsidia"><span>Obsidia</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Granger" alt="Granger"><span>Granger</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Melissa" alt="Melissa"><span>Melissa</span></div>
             </div></div>
             <div class="tier-row"><div class="tier-label">A</div><div class="tier-heroes">
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Layla" alt="Layla">Layla</div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Miya" alt="Miya">Miya</div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Lesley" alt="Lesley">Lesley</div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Clint" alt="Clint">Clint</div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Wanwan" alt="Wanwan">Wanwan</div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Moskov" alt="Moskov">Moskov</div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Granger" alt="Granger">Granger</div>
-                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Bruno" alt="Bruno">Bruno</div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Bane" alt="Bane"><span>Bane</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Irithel" alt="Irithel"><span>Irithel</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Ixia" alt="Ixia"><span>Ixia</span><div class="trend">↑</div></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Kimmy" alt="Kimmy"><span>Kimmy</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Hanabi" alt="Hanabi"><span>Hanabi</span><div class="trend">↑</div></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Popol" alt="Popol"><span>Popol</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Brody" alt="Brody"><span>Brody</span><div class="trend">↑</div></div>
             </div></div>
             <div class="tier-row"><div class="tier-label">B</div><div class="tier-heroes">
-                <!-- Añadir héroes B -->
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Wanwan" alt="Wanwan"><span>Wanwan</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Moskov" alt="Moskov"><span>Moskov</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Lesley" alt="Lesley"><span>Lesley</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Clint" alt="Clint"><span>Clint</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Beatrix" alt="Beatrix"><span>Beatrix</span></div>
             </div></div>
             <div class="tier-row"><div class="tier-label">C</div><div class="tier-heroes">
-                <!-- Añadir héroes C -->
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Miya" alt="Miya"><span>Miya</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Claude" alt="Claude"><span>Claude</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Bruno" alt="Bruno"><span>Bruno</span></div>
             </div></div>
             <div class="tier-row"><div class="tier-label">D</div><div class="tier-heroes">
-                <!-- Añadir héroes D -->
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Layla" alt="Layla"><span>Layla</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Roger" alt="Roger"><span>Roger</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Hanabi" alt="Hanabi"><span>Hanabi</span></div>
             </div></div>
         </div>
         <div class="tier-section">
             <div class="tier-title">Exp Lane Tier List</div>
-            <!-- Añadir tiers S, A, B, C, D para Exp Lane -->
+            <div class="tier-row"><div class="tier-label">S</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Phoveus" alt="Phoveus"><span>Phoveus</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Fredrinn" alt="Fredrinn"><span>Fredrinn</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Arlott" alt="Arlott"><span>Arlott</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Badang" alt="Badang"><span>Badang</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Lapu-Lapu" alt="Lapu-Lapu"><span>Lapu-Lapu</span></div>
+            </div></div>
+            <div class="tier-row"><div class="tier-label">A</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Guinevere" alt="Guinevere"><span>Guinevere</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Alpha" alt="Alpha"><span>Alpha</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Cici" alt="Cici"><span>Cici</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Sun" alt="Sun"><span>Sun</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Hilda" alt="Hilda"><span>Hilda</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Khaleed" alt="Khaleed"><span>Khaleed</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Chou" alt="Chou"><span>Chou</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Yu Zhong" alt="Yu Zhong"><span>Yu Zhong</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Ruby" alt="Ruby"><span>Ruby</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Jawhead" alt="Jawhead"><span>Jawhead</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Leomord" alt="Leomord"><span>Leomord</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Lukas" alt="Lukas"><span>Lukas</span></div>
+            </div></div>
+            <div class="tier-row"><div class="tier-label">B</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Masha" alt="Masha"><span>Masha</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Yin" alt="Yin"><span>Yin</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Freya" alt="Freya"><span>Freya</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Argus" alt="Argus"><span>Argus</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Terizla" alt="Terizla"><span>Terizla</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Bane" alt="Bane"><span>Bane</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Balmond" alt="Balmond"><span>Balmond</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Dyrroth" alt="Dyrroth"><span>Dyrroth</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Minsitthar" alt="Minsitthar"><span>Minsitthar</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Paquito" alt="Paquito"><span>Paquito</span></div>
+            </div></div>
+            <div class="tier-row"><div class="tier-label">C</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Alucard" alt="Alucard"><span>Alucard</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Aldous" alt="Aldous"><span>Aldous</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Zilong" alt="Zilong"><span>Zilong</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Thamuz" alt="Thamuz"><span>Thamuz</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Roger" alt="Roger"><span>Roger</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Martis" alt="Martis"><span>Martis</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=X.Borg" alt="X.Borg"><span>X.Borg</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Silvanna" alt="Silvanna"><span>Silvanna</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Aulus" alt="Aulus"><span>Aulus</span></div>
+            </div></div>
+            <div class="tier-row"><div class="tier-label">D</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Khufra" alt="Khufra"><span>Khufra</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Minotaur" alt="Minotaur"><span>Minotaur</span></div>
+            </div></div>
         </div>
         <div class="tier-section">
             <div class="tier-title">Jungle Tier List</div>
-            <!-- Añadir tiers S, A, B, C, D para Jungle -->
+            <div class="tier-row"><div class="tier-label">S</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Julian" alt="Julian"><span>Julian</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Hayabusa" alt="Hayabusa"><span>Hayabusa</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Yi Sun-shin" alt="Yi Sun-shin"><span>Yi Sun-shin</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Joy" alt="Joy"><span>Joy</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Ling" alt="Ling"><span>Ling</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Selena" alt="Selena"><span>Selena</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Fanny" alt="Fanny"><span>Fanny</span></div>
+            </div></div>
+            <div class="tier-row"><div class="tier-label">A</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Nolan" alt="Nolan"><span>Nolan</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Benedetta" alt="Benedetta"><span>Benedetta</span></div>
+            </div></div>
+            <div class="tier-row"><div class="tier-label">B</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Helcurt" alt="Helcurt"><span>Helcurt</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Gusion" alt="Gusion"><span>Gusion</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Karina" alt="Karina"><span>Karina</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Suyou" alt="Suyou"><span>Suyou</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Hanzo" alt="Hanzo"><span>Hanzo</span></div>
+            </div></div>
+            <div class="tier-row"><div class="tier-label">C</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Saber" alt="Saber"><span>Saber</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Natalia" alt="Natalia"><span>Natalia</span></div>
+            </div></div>
+            <div class="tier-row"><div class="tier-label">D</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Lancelot" alt="Lancelot"><span>Lancelot</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Aamon" alt="Aamon"><span>Aamon</span></div>
+            </div></div>
         </div>
         <div class="tier-section">
             <div class="tier-title">Mid Lane Tier List</div>
-            <!-- Añadir tiers S, A, B, C, D para Mid Lane -->
+            <div class="tier-row"><div class="tier-label">S</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Zhuxin" alt="Zhuxin"><span>Zhuxin</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Harith" alt="Harith"><span>Harith</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Pharsa" alt="Pharsa"><span>Pharsa</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Valentina" alt="Valentina"><span>Valentina</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Yve" alt="Yve"><span>Yve</span></div>
+            </div></div>
+            <div class="tier-row"><div class="tier-label">A</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Luo Yi" alt="Luo Yi"><span>Luo Yi</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Vexana" alt="Vexana"><span>Vexana</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Alice" alt="Alice"><span>Alice</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Valir" alt="Valir"><span>Valir</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Zetian" alt="Zetian"><span>Zetian</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Novaria" alt="Novaria"><span>Novaria</span></div>
+            </div></div>
+            <div class="tier-row"><div class="tier-label">B</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Odette" alt="Odette"><span>Odette</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Xavier" alt="Xavier"><span>Xavier</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Lunox" alt="Lunox"><span>Lunox</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Zhask" alt="Zhask"><span>Zhask</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Kagura" alt="Kagura"><span>Kagura</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Kadita" alt="Kadita"><span>Kadita</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Aurora" alt="Aurora"><span>Aurora</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Vale" alt="Vale"><span>Vale</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Cecilion" alt="Cecilion"><span>Cecilion</span></div>
+            </div></div>
+            <div class="tier-row"><div class="tier-label">C</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Chang’e" alt="Chang’e"><span>Chang’e</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Lylia" alt="Lylia"><span>Lylia</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Eudora" alt="Eudora"><span>Eudora</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Gord" alt="Gord"><span>Gord</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Cyclops" alt="Cyclops"><span>Cyclops</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Nana" alt="Nana"><span>Nana</span></div>
+            </div></div>
+            <div class="tier-row"><div class="tier-label">D</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Harley" alt="Harley"><span>Harley</span></div>
+            </div></div>
         </div>
         <div class="tier-section">
             <div class="tier-title">Roam Tier List</div>
-            <!-- Añadir tiers S, A, B, C, D para Roam -->
+            <div class="tier-row"><div class="tier-label">S</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Floryn" alt="Floryn"><span>Floryn</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Angela" alt="Angela"><span>Angela</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Mathilda" alt="Mathilda"><span>Mathilda</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Diggie" alt="Diggie"><span>Diggie</span></div>
+            </div></div>
+            <div class="tier-row"><div class="tier-label">A</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Chip" alt="Chip"><span>Chip</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Rafaela" alt="Rafaela"><span>Rafaela</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Kalea" alt="Kalea"><span>Kalea</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Estes" alt="Estes"><span>Estes</span></div>
+            </div></div>
+            <div class="tier-row"><div class="tier-label">B</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Carmilla" alt="Carmilla"><span>Carmilla</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Faramis" alt="Faramis"><span>Faramis</span></div>
+            </div></div>
+            <div class="tier-row"><div class="tier-label">C</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Kaja" alt="Kaja"><span>Kaja</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Lolita" alt="Lolita"><span>Lolita</span></div>
+            </div></div>
+            <div class="tier-row"><div class="tier-label">D</div><div class="tier-heroes">
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Johnson" alt="Johnson"><span>Johnson</span></div>
+                <div class="tier-hero"><img src="https://via.placeholder.com/30?text=Minotaur" alt="Minotaur"><span>Minotaur</span></div>
+            </div></div>
         </div>
     </div>
 
@@ -449,28 +679,105 @@
         <div class="more-section">
             <h2 style="color: var(--orange);">MLBB Nexus PRO</h2>
             <p>Builds, counters, sinergias, tier list actualizada cada parche</p>
-            <a href="https://example.com/download-app" target="_blank"><button class="more-button">Descargar App (Próximamente)</button></a>
-            <button class="more-button secondary">Privacy</button>
+            <a href="https://play.google.com/store/apps/details?id=com.mlbbnexuspro" target="_blank"><button class="more-button">Descargar App (Android)</button></a>
+            <a href="https://apps.apple.com/app/mlbb-nexus-pro/id1234567890" target="_blank"><button class="more-button">Descargar App (iOS)</button></a>
+            <button class="more-button secondary" onclick="openPrivacy()">Privacy</button>
         </div>
-    </div>
-
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="showPage('page-heroes')"><i>⚔️</i>Hero</div>
-        <div class="nav-item" onclick="showPage('page-ranking')"><i>📊</i>Ranking</div>
-        <div class="nav-item" onclick="showPage('page-more')"><i>⋮</i>More</div>
     </div>
 
     <!-- Modal Héroe -->
     <div id="heroModal" class="modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeModal()">&times;</span>
-            <!-- Contenido modal como antes -->
+            <div class="modal-header">
+                <img id="modal-image" src="" alt="Imagen del Héroe">
+                <div>
+                    <h2 id="modal-name"></h2>
+                    <p id="modal-role"></p>
+                </div>
+            </div>
+            <div class="build-section">
+                <h3>Build Recomendada</h3>
+                <ul id="modal-build"></ul>
+            </div>
+            <div class="build-section">
+                <h3>Emblema</h3>
+                <p id="modal-emblem"></p>
+            </div>
+            <div class="build-section">
+                <h3>Hechizo</h3>
+                <p id="modal-spell"></p>
+            </div>
+            <div class="counters-section">
+                <h3>Counters</h3>
+                <ul id="modal-counters"></ul>
+            </div>
+            <div class="synergies-section">
+                <h3>Sinergias</h3>
+                <ul id="modal-synergies"></ul>
+            </div>
         </div>
     </div>
 
     <script>
-        // Código JS como antes, asegurando nombres de héroes
+        // Toggle modo claro/oscuro
+        function toggleMode() {
+            document.body.classList.toggle('light');
+            localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+        }
+
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light');
+        }
+
+        // Navegación pages
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+        }
+
+        // Búsqueda
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const term = this.value.toLowerCase();
+            document.querySelectorAll('.hero-item').forEach(item => {
+                const name = item.querySelector('.hero-name').textContent.toLowerCase();
+                item.style.display = name.includes(term) ? 'block' : 'none';
+            });
+        });
+
+        // Inicializar grid de héroes
+        const grid = document.getElementById('heroGrid');
+        heroesData.forEach((h, index) => {
+            const div = document.createElement('div');
+            div.className = 'hero-item';
+            div.style = `--order: ${index};`;
+            div.innerHTML = `<img class="hero-img" src="${h.image}" alt="${h.name}"><div class="hero-name">${h.name}</div>`;
+            div.onclick = () => openHeroModal(h);
+            grid.appendChild(div);
+        });
+
+        // Modal héroe
+        function openHeroModal(hero) {
+            document.getElementById('modal-image').src = hero.image;
+            document.getElementById('modal-name').textContent = hero.name;
+            document.getElementById('modal-role').textContent = hero.role;
+            document.getElementById('modal-build').innerHTML = hero.build.map(item => `<li>${item}</li>`).join('');
+            document.getElementById('modal-emblem').textContent = hero.emblem || "Sin datos";
+            document.getElementById('modal-spell').textContent = hero.spell || "Sin datos";
+            document.getElementById('modal-counters').innerHTML = hero.counters.map(c => `<li>${c}</li>`).join('');
+            document.getElementById('modal-synergies').innerHTML = hero.synergies.map(s => `<li>${s}</li>`).join('');
+            document.getElementById('heroModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('heroModal').style.display = 'none';
+        }
+
+        function openPrivacy() {
+            alert('Política de privacidad: Tus datos están seguros. No recopilamos info personal.');
+        }
     </script>
 </body>
 </html>
