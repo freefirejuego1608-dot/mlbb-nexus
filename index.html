@@ -1,719 +1,524 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MLBB Nexus PRO | Modern Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        /* Estilos Base y Variables Globales */
-        * { margin:0; padding:0; box-sizing:border-box; }
-        :root {
-            /* Tema Oscuro (Defecto) */
-            --primary-color: #ff6b00; 
-            --secondary-color: #ffb400;
-            --bg-color: #000;
-            --text-color: #fff;
-            --card-bg: rgba(30,30,30,0.9);
-            --header-bg: rgba(0,0,0,0.95);
-            --border-color: rgba(255,107,0,0.3);
-            --favorite-color: #ffd700;
-            --bar-color: var(--secondary-color);
-            --transition-duration: 0.4s;
-        }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ML Heroes - Nexus PRO (Lista real + Avatares SVG)</title>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0f0f;
+  --card:#121212;
+  --accent:#ff7a00;
+  --muted:#bdbdbd;
+  --glass: rgba(255,255,255,0.03);
+  font-family: 'Roboto', system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;background:var(--bg);color:#fff;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+header{
+  padding:14px 12px;
+  text-align:center;
+  font-family:'Patrick Hand', cursive;
+  font-size:26px;
+  color:var(--accent);
+}
+.container{padding:12px 12px 100px}
 
-        /* Tema Claro (Activado por la clase .light-mode) - Idea 2 */
-        .light-mode {
-            --primary-color: #006bff; /* Azul */
-            --secondary-color: #00b4ff; /* Azul claro */
-            --bg-color: #f0f0f5;
-            --text-color: #111;
-            --card-bg: rgba(255,255,255,0.95);
-            --header-bg: rgba(255,255,255,0.95);
-            --border-color: rgba(0,107,255,0.3);
-            --bar-color: var(--secondary-color);
-        }
+/* Search/filter */
+.search-wrap{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.search{flex:1;background:var(--card);border-radius:999px;padding:10px 14px;display:flex;align-items:center;gap:10px;border:2px solid rgba(255,122,0,0.12)}
+.search input{background:transparent;border:0;outline:none;color:#fff;font-size:15px;width:100%;font-family:'Patrick Hand'}
 
-        body {
-            font-family: 'Orbitron', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-color);
-            color: var(--text-color);
-            min-height: 100vh;
-            padding-bottom: 90px;
-            overflow-x: hidden;
-            background-image: radial-gradient(#222 1px, transparent 0), radial-gradient(#222 1px, transparent 0);
-            background-size: 50px 50px;
-            background-position: 0 0, 25px 25px;
-            background-attachment: fixed; 
-            transition: background-color 0.5s ease, color 0.5s ease; /* Transición para modo oscuro */
-        }
-        .light-mode body {
-            background-image: radial-gradient(#ccc 1px, transparent 0), radial-gradient(#ccc 1px, transparent 0);
-        }
+.select{background:var(--card);padding:8px 10px;border-radius:10px;border:1px solid rgba(255,122,0,0.08);font-size:13px;color:var(--muted)}
 
-        /* ------------------ Header and Title ------------------ */
-        header {
-            text-align: center;
-            padding: 25px 20px 15px;
-            background: var(--header-bg);
-            backdrop-filter: blur(5px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 2px solid var(--border-color);
-        }
-        h1 {
-            font-size: 2.6rem;
-            font-weight: 900;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(255,107,0,0.8);
-            animation: glow 2s infinite alternate;
-        }
-        .light-mode h1 { text-shadow: none; }
-        @keyframes glow { 
-            from { text-shadow: 0 0 20px rgba(255,107,0,0.8); } 
-            to { text-shadow: 0 0 40px rgba(255,107,0,1); } 
-        }
+/* Grid */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+@media(min-width:700px){ .grid{grid-template-columns:repeat(6,1fr)} header{font-size:34px} }
 
-        /* Botón de Notificación (Idea 5) */
-        .notification-bell {
-            position: absolute;
-            top: 25px;
-            right: 20px;
-            font-size: 28px;
-            cursor: pointer;
-            color: var(--secondary-color);
-            transition: transform 0.2s;
-        }
-        .notification-bell:hover { transform: rotate(10deg) scale(1.1); }
-        .notification-badge {
-            position: absolute;
-            top: 25px;
-            right: 18px;
-            width: 10px;
-            height: 10px;
-            background: red;
-            border-radius: 50%;
-            border: 2px solid var(--header-bg);
-            animation: mini-pulse 1s infinite;
-        }
-        @keyframes mini-pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        /* Contenedor de Alerta */
-        .alert-popover {
-            position: absolute;
-            top: 60px;
-            right: 10px;
-            background: var(--card-bg);
-            border: 1px solid var(--primary-color);
-            border-radius: 8px;
-            padding: 15px;
-            width: 250px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-            z-index: 150;
-            display: none;
-            animation: fadeIn 0.3s;
-        }
+.hero-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border-radius:12px;padding:10px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;border:1px solid rgba(255,122,0,0.04);transition:transform .12s}
+.hero-card:active,.hero-card:hover{transform:translateY(-4px)}
 
-        /* ------------------ Search Box and Tabs ------------------ */
-        .search-box input {
-            border: 2px solid var(--primary-color);
-            background: var(--card-bg);
-            color: var(--text-color);
-            box-shadow: 0 0 20px rgba(255,107,0,0.4);
-        }
-        .search-box input:focus {
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 30px rgba(255,180,0,0.7);
-        }
-        .search-box::after { color: var(--primary-color); }
-        .tab.active { animation: fadeIn var(--transition-duration) ease-out forwards; }
-        @keyframes fadeIn { 
-            from { opacity:0; transform:translateY(20px); } 
-            to { opacity:1; transform:translateY(0); } 
-        }
+.avatar{width:84px;height:84px;border-radius:50%;overflow:hidden;border:3px solid var(--accent);display:flex;align-items:center;justify-content:center;background:#222}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.hname{font-family:'Patrick Hand';font-size:13px;color:#fff;opacity:0.95}
 
-        /* ------------------ Hero Grid and Cards ------------------ */
-        .hero-card {
-            background: var(--card-bg);
-        }
-        .hero-card:hover { 
-            box-shadow: 0 15px 35px rgba(255,107,0,0.6);
-            background: rgba(45,45,45,0.9);
-        }
-        .hero-img {
-            box-shadow: 0 0 10px var(--primary-color), inset 0 0 10px var(--secondary-color);
-            animation: hologramGlow 4s infinite alternate;
-        }
-        .hero-card:hover .hero-img {
-            box-shadow: 0 0 25px var(--secondary-color), inset 0 0 15px var(--primary-color);
-        }
-        
-        /* ------------------ Modal de Héroe ------------------ */
-        .modal-subnav {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #333;
-        }
-        .modal-subnav-item {
-            padding: 8px 15px;
-            cursor: pointer;
-            color: #888;
-            transition: color 0.3s, border-bottom 0.3s;
-        }
-        .modal-subnav-item.active {
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--primary-color);
-            font-weight: bold;
-        }
-        .modal-tab-content {
-            display: none;
-            animation: fadeIn 0.4s;
-        }
-        .modal-tab-content.active {
-            display: block;
-        }
-        .detail-title { color: var(--primary-color); }
-        .build-item { background: #333; color: #fff; }
+/* Tierlist */
+.tierlist{margin-top:16px;display:flex;flex-direction:column;gap:12px}
+.tier-card{border-radius:12px;padding:12px;border:2px solid rgba(255,122,0,0.08);background:linear-gradient(180deg, rgba(255,122,0,0.02), transparent)}
+.tier-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tier-badge{background:var(--accent);color:#111;padding:6px 10px;border-radius:8px;font-weight:700;margin-right:6px}
 
-        /* ------------------ Gráficos Dinámicos (Idea 1) ------------------ */
-        .chart-container {
-            padding: 10px 0;
-        }
-        .chart-row {
-            margin-bottom: 15px;
-            font-size: 13px;
-        }
-        .chart-label {
-            margin-bottom: 5px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-        }
-        .chart-bar-container {
-            height: 15px;
-            background: #222;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        .chart-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #444, var(--bar-color));
-            border-radius: 5px;
-            transition: width 1s ease-out; /* Animación de crecimiento */
-            width: 0%; /* Inicia en cero para la animación */
-        }
-        .light-mode .chart-bar-container { background: #e0e0e0; }
-        .light-mode .chart-bar { background: linear-gradient(90deg, #aaa, var(--bar-color)); }
+/* Detail */
+.detail{display:none;margin-top:12px;padding:12px;border-radius:12px;background:var(--card);border:2px solid rgba(255,122,0,0.08)}
+.detail.show{display:block}
+.detail .head{display:flex;gap:12px;align-items:center}
+.detail .big-avatar{width:96px;height:96px;border-radius:12px;overflow:hidden;border:3px solid var(--accent)}
+.detail h2{font-family:'Patrick Hand';margin:0}
+.muted{color:var(--muted);font-size:13px}
+.section{margin-top:12px}
+.list-small{display:flex;flex-wrap:wrap;gap:8px}
+.counter-card{background:#0b0b0b;padding:6px 8px;border-radius:10px;border:1px solid rgba(255,122,0,0.06);display:flex;align-items:center;gap:8px}
+.counter-card img{width:34px;height:34px;border-radius:50%;object-fit:cover}
 
-        /* ------------------ Navegación Inferior ------------------ */
-        .nav {
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(15px);
-            border-top: 1px solid rgba(255,107,0,0.2);
-        }
-        .light-mode .nav {
-            background: rgba(255,255,255,0.7);
-            border-top: 1px solid rgba(0,0,0,0.1);
-        }
-        .nav-item.active {
-            background: rgba(255,107,0,0.3);
-            color: var(--primary-color);
-            box-shadow: 0 0 10px rgba(255,107,0,0.5);
-        }
+/* footer nav */
+nav.bottom{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(180deg, rgba(0,0,0,0.6), #000);border-top:1px solid rgba(255,255,255,0.03);display:flex;justify-content:space-around;padding:10px 6px}
+.nav-btn{display:flex;flex-direction:column;align-items:center;font-size:12px;color:var(--muted);gap:6px}
+.nav-btn.active{color:var(--accent);font-weight:700}
 
-        /* Alternador de Tema (Idea 2) */
-        .theme-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 30px 0;
-        }
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-            margin: 0 15px;
-        }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #333;
-            transition: 0.4s;
-            border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "🌑";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: var(--secondary-color);
-            transition: 0.4s;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 26px;
-        }
-        input:checked + .slider {
-            background-color: var(--primary-color);
-        }
-        input:checked + .slider:before {
-            transform: translateX(26px);
-            content: "☀️";
-        }
-    </style>
+/* small screens spacing */
+@media(max-width:420px){
+  .avatar{width:68px;height:68px}
+  .grid{grid-template-columns:repeat(3,1fr)}
+}
+</style>
 </head>
-<body class="dark-mode"> <header>
-    <h1>MLBB Nexus PRO</h1>
-    <span class="notification-bell" id="notification-bell">🔔</span>
-    <span class="notification-badge" id="notification-badge"></span>
-    <div class="alert-popover" id="alert-popover">
-        <h4 style="color:var(--primary-color); margin-bottom:5px;">¡Alerta de Parche!</h4>
-        <p style="font-size:12px;">Se ha publicado el Patch 1.9.90. ¡Nerf masivo a Fanny y Buff a Layla!</p>
-    </div>
-    <div class="search-box">
-        <input type="text" id="search" placeholder="Buscar héroe...">
-    </div>
-</header>
+<body>
+<header>MLBB Nexus — Héroes reales</header>
 
-<div class="tab active" id="heroes-tab">
-    <div style="text-align:center; padding: 10px 20px;">
-        <div id="all-heroes-filter" class="lane-btn active" style="margin-right: 15px;">Todos los Héroes</div>
-        <div id="favorites-filter" class="lane-btn" style="margin-right: 15px;">Mis Favoritos ⭐</div>
+<div class="container" id="app">
+  <div class="search-wrap" role="search">
+    <div class="search" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/><circle cx="11" cy="11" r="6" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/></svg>
+      <input id="q" placeholder="Buscar héroe..." aria-label="Buscar héroe">
     </div>
-    <div class="heroes-grid" id="heroes-grid"></div>
+
+    <select id="roleFilter" class="select" title="Filtrar por rol">
+      <option value="all">Rol: Todos</option>
+      <option value="tank">Tank</option>
+      <option value="fighter">Fighter</option>
+      <option value="assassin">Assassin</option>
+      <option value="mage">Mage</option>
+      <option value="marksman">Marksman</option>
+      <option value="support">Support</option>
+    </select>
+
+    <select id="tierFilter" class="select" title="Filtrar por tier">
+      <option value="all">Tier: Todos</option>
+      <option value="SS">SS</option>
+      <option value="S">S</option>
+      <option value="A">A</option>
+      <option value="B">B</option>
+    </select>
+  </div>
+
+  <div id="gridHeroes" class="grid" aria-live="polite"></div>
+
+  <div id="heroDetail" class="detail" role="region" aria-labelledby="detailTitle">
+    <div class="head">
+      <div class="big-avatar" id="dAvatar"><img src="" alt=""></div>
+      <div style="flex:1">
+        <h2 id="detailTitle">Nombre</h2>
+        <div class="muted" id="detailRoleTier">Rol · Tier</div>
+        <div class="muted" id="detailBioShort" style="margin-top:6px">Resumen corto del héroe.</div>
+      </div>
+      <div style="margin-left:12px">
+        <button id="closeDetail" class="select" style="cursor:pointer">Cerrar</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3 style="color:var(--accent);margin:8px 0 6px">Build recomendada</h3>
+      <div id="detailBuilds" class="list-small"></div>
+    </div>
+
+    <div class="section">
+      <h3 style="color:var(--accent);margin:8px 0 6px">Fuerte contra</h3>
+      <div id="detailStrong" class="list-small"></div>
+    </div>
+
+    <div class="section">
+      <h3 style="color:var(--accent);margin:8px 0 6px">Débil contra</h3>
+      <div id="detailWeak" class="list-small"></div>
+    </div>
+  </div>
+
+  <div id="tierlist" class="tierlist" aria-live="polite"></div>
 </div>
 
-<div class="tab" id="ranking-tab">
-    <div class="lanes" id="lane-buttons">
-        <div class="lane-btn active" data-lane="gold">🪙 Gold Lane</div>
-        <div class="lane-btn" data-lane="exp">⚔️ EXP Lane</div>
-        <div class="lane-btn" data-lane="jungle">🌳 Jungla</div>
-        <div class="lane-btn" data-lane="mid">🔮 Mid Lane</div>
-        <div class="lane-btn" data-lane="roam">🛡️ Roam</div>
-    </div>
-    <div id="tier-container"></div>
-</div>
-
-<div class="tab" id="more-tab">
-    <div class="download-section">
-        <h2 style="color:var(--primary-color); margin-bottom:20px;">⚡ ¡Configuración y Utilidades! ⚡</h2>
-        
-        <div class="theme-toggle">
-            <span style="font-size: 14px;">Modo Oscuro</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="theme-toggle-switch">
-                <span class="slider"></span>
-            </label>
-            <span style="font-size: 14px;">Modo Claro</span>
-        </div>
-
-        <p style="margin-bottom: 25px;">Pronto disponible con notificaciones y modo offline.</p>
-        <button class="download-btn">Descargar MLBB Nexus PRO</button>
-    </div>
-</div>
-
-<div id="heroModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <img id="heroDetailImg" class="hero-detail-img" src="" alt="Hero Portrait">
-        
-        <div class="modal-subnav">
-            <div class="modal-subnav-item active" data-modal-tab="details">Detalles</div>
-            <div class="modal-subnav-item" data-modal-tab="stats">Estadísticas</div>
-        </div>
-
-        <div class="modal-tab-content active" id="modal-details">
-            <div id="heroDetail"></div>
-        </div>
-
-        <div class="modal-tab-content" id="modal-stats">
-            <div class="chart-container" id="heroStatsChart">
-                </div>
-        </div>
-    </div>
-</div>
-
-<nav class="nav">
-    <div class="nav-item active" data-tab="heroes-tab">
-        <span>👤</span><small>Héroes</small>
-    </div>
-    <div class="nav-item" data-tab="ranking-tab">
-        <span>🏆</span><small>Tier List</small>
-    </div>
-    <div class="nav-item" data-tab="more-tab">
-        <span>➕</span><small>Más</small>
-    </div>
+<nav class="bottom" role="navigation" aria-label="Navegación inferior">
+  <div class="nav-btn active" id="navHero" title="Héroes">
+    <svg height="18" viewBox="0 0 24 24" width="18" fill="none"><path d="M3 21v-2a4 4 0 014-4h10a4 4 0 014 4v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    <span>Héroes</span>
+  </div>
+  <div class="nav-btn" id="navRanking" title="Tier List">
+    <svg height="18" viewBox="0 0 24 24" width="18" fill="none"><path d="M12 20v-16" stroke="currentColor" stroke-width="1.4"/><path d="M18 20v-10" stroke="currentColor" stroke-width="1.4"/><path d="M6 20v-6" stroke="currentColor" stroke-width="1.4"/></svg>
+    <span>Tier</span>
+  </div>
+  <div class="nav-btn" id="navMore" title="Más">
+    <svg height="18" viewBox="0 0 24 24" width="18" fill="none"><circle cx="12" cy="12" r="1.5" stroke="currentColor" stroke-width="1.2"/><circle cx="19" cy="12" r="1.5" stroke="currentColor" stroke-width="1.2"/><circle cx="5" cy="12" r="1.5" stroke="currentColor" stroke-width="1.2"/></svg>
+    <span>Más</span>
+  </div>
 </nav>
 
 <script>
-// Base de datos de héroes (Añadido 'id' y 'stats')
+/* -------------------------
+   Lista real de héroes (según tu mensaje)
+   Organizamos manualmente por rol
+   ------------------------- */
 const heroes = [
-    {id:1, name:"Miya",img:"https://static.wikia.nocookie.net/mobile-legends/images/3/3a/Portrait_Miya.png/revision/latest", description:"Marksman de daño sostenido, fuerte en late game para derretir tanks con su ultimate. Tier B en gold lane.", build:"Demon Hunter Sword, Wind of Nature, Haas's Claws, Blade of Despair, Rose Gold Meteor, Malefic Roar", strongAgainst:"Tanks y fighters con bajo sustain", counters:"Franco, Kaja, Hayabusa", lane:"gold", tier:"B", stats: {damage: 80, durability: 30, control: 40, difficulty: 60}},
-    {id:2, name:"Balmond",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/1b/Portrait_Balmond.png/revision/latest", description:"Fighter jungle/EXP con regen y AoE. Excelente clear y teamfight. Tier A en EXP.", build:"Bloodlust Axe, Endless Battle, Haas's Claws, Blade of Despair, Oracle, Brute Force Breastplate", strongAgainst:"Squishies y healers", counters:"Phoveus, Khufra, Baxia", lane:"exp", tier:"A", stats: {damage: 70, durability: 90, control: 60, difficulty: 40}},
-    {id:3, name:"Saber",img:"https://static.wikia.nocookie.net/mobile-legends/images/5/5e/Portrait_Saber.png/revision/latest", description:"Assassin burst con charge. Buen pick off pero vulnerable a CC. Tier B en jungle.", build:"Magic Shoes, Starlium Scythe, Holy Crystal, Divine Glaive, Winter Truncheon, Immortality", strongAgainst:"Marksmen y mages solos", counters:"Franco, Chou, Kaja", lane:"jungle", tier:"B", stats: {damage: 95, durability: 20, control: 50, difficulty: 70}},
-    {id:4, name:"Alice",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/0d/Portrait_Alice.png/revision/latest", description:"Tank/Mage S-tier con sustain infinito y burst. Domina teamfights en meta 2025.", build:"Concentrated Energy, Oracle, Holy Crystal, Divine Glaive, Winter Truncheon, Immortality", strongAgainst:"Assassins y fighters", counters:"Phoveus, Minsitthar", lane:"mid", tier:"S", stats: {damage: 80, durability: 80, control: 90, difficulty: 65}},
-    {id:5, name:"Nana",img:"https://static.wikia.nocookie.net/mobile-legends/images/2/2f/Portrait_Nana.png/revision/latest", description:"Mage poke con CC. Tier C en mid, útil para peel.", build:"Clock of Destiny, Lightning Truncheon, Holy Crystal, Divine Glaive, Genius Wand", strongAgainst:"Melee divers", counters:"Fanny, Ling", lane:"mid", tier:"C", stats: {damage: 60, durability: 40, control: 90, difficulty: 45}},
-    {id:6, name:"Tigreal",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/0e/Portrait_Tigreal.png/revision/latest", description:"Tank roam clásico con CC fuerte. Tier B en roam para setups.", build:"Tough Boots, Dominance Ice, Athena's Shield, Immortality, Brute Force Breastplate", strongAgainst:"Grouped teams", counters:"Phoveus, Joy", lane:"roam", tier:"B", stats: {damage: 20, durability: 100, control: 100, difficulty: 50}},
-    {id:7, name:"Franco",img:"https://static.wikia.nocookie.net/mobile-legends/images/4/4c/Portrait_Franco.png/revision/latest", description:"Tank roam S-tier para picks con hook. Domina picks off.", build:"Tough Boots, Dominance Ice, Athena's Shield, Immortality, Oracle", strongAgainst:"Assassins y MM", counters:"Joy, Ling (dodge hook)", lane:"roam", tier:"S", stats: {damage: 30, durability: 90, control: 100, difficulty: 70}},
-    {id:8, name:"Clint",img:"https://static.wikia.nocookie.net/mobile-legends/images/8/8b/Portrait_Clint.png/revision/latest", description:"Marksman A-tier con true damage. Fuerte vs tanks.", build:"Swift Boots, Demon Hunter Sword, Haas's Claws, Malefic Roar", strongAgainst:"Armored heroes", counters:"Hayabusa, Saber", lane:"gold", tier:"A", stats: {damage: 90, durability: 35, control: 50, difficulty: 60}},
-    {id:9, name:"Karina",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/6b/Portrait_Karina.png/revision/latest", description:"Assassin anti-mage. Tier A en jungle contra comps mágicas.", build:"Magic Shoes, Starlium Scythe, Holy Crystal, Divine Glaive, Genius Wand", strongAgainst:"Mages y supports", counters:"Franco, Chou", lane:"jungle", tier:"A", stats: {damage: 95, durability: 40, control: 60, difficulty: 60}},
-    {id:12, name:"Hayabusa",img:"https://static.wikia.nocookie.net/mobile-legends/images/3/3c/Portrait_Hayabusa.png/revision/latest", description:"Assassin S-tier jungle. Burst y mobility top meta 2025.", build:"Magic Shoes, Blade of the Heptaseas, Haas's Claws, Blade of Despair", strongAgainst:"Squishies", counters:"Franco, Kaja", lane:"jungle", tier:"S", stats: {damage: 90, durability: 30, control: 70, difficulty: 90}},
-    {id:20, name:"Wanwan",img:"https://static.wikia.nocookie.net/mobile-legends/images/a/a1/Portrait_Wanwan.png/revision/latest", description:"Marksman hyper-mobile.", build:"Swift Boots, Demon Hunter Sword, Corrosion Scythe", strongAgainst:"Tanks", counters:"Franco, Chou", lane:"gold", tier:"S", stats: {damage: 85, durability: 30, control: 70, difficulty: 85}},
-    {id:21, name:"Khufra",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/6f/Portrait_Khufra.png/revision/latest", description:"Tank anti-dash.", build:"Tough Boots, Dominance Ice, Athena's Shield", strongAgainst:"Dash heroes", counters:"Diggie, Rafaela", lane:"roam", tier:"S", stats: {damage: 20, durability: 95, control: 100, difficulty: 60}},
+  /* Tanques */
+  { id:'tigreal', name:'Tigreal', role:'tank', tier:'A' },
+  { id:'grock', name:'Grock', role:'tank', tier:'S' },
+  { id:'lolita', name:'Lolita', role:'tank', tier:'A' },
+  { id:'franco', name:'Franco', role:'tank', tier:'A' },
+  { id:'akai', name:'Akai', role:'tank', tier:'S' },
+  { id:'belerick', name:'Belerick', role:'tank', tier:'B' },
+  { id:'gatotkaca', name:'Gatotkaca', role:'tank', tier:'S' },
+  { id:'khufra', name:'Khufra', role:'tank', tier:'S' },
+  { id:'atlas', name:'Atlas', role:'tank', tier:'A' },
+  { id:'baxia', name:'Baxia', role:'tank', tier:'B' },
+  { id:'hylos', name:'Hylos', role:'tank', tier:'A' },
+
+  /* Fighters / Combatientes */
+  { id:'zilong', name:'Zilong', role:'fighter', tier:'A' },
+  { id:'freya', name:'Freya', role:'fighter', tier:'S' },
+  { id:'chou', name:'Chou', role:'fighter', tier:'S' },
+  { id:'martis', name:'Martis', role:'fighter', tier:'A' },
+  { id:'lapulapu', name:'Lapu-Lapu', role:'fighter', tier:'S' },
+  { id:'xborg', name:'X.Borg', role:'fighter', tier:'A' },
+  { id:'badang', name:'Badang', role:'fighter', tier:'A' },
+  { id:'guinevere', name:'Guinevere', role:'fighter', tier:'S' },
+  { id:'dyrroth', name:'Dyrroth', role:'fighter', tier:'S' },
+  { id:'yuzhong', name:'Yu Zhong', role:'fighter', tier:'S' },
+  { id:'arlott', name:'Arlott', role:'fighter', tier:'A' },
+  { id:'fredrinn', name:'Fredrinn', role:'fighter', tier:'A' },
+
+  /* Asesinos */
+  { id:'saber', name:'Saber', role:'assassin', tier:'B' },
+  { id:'hayabusa', name:'Hayabusa', role:'assassin', tier:'S' },
+  { id:'lancelot', name:'Lancelot', role:'assassin', tier:'S' },
+  { id:'natalia', name:'Natalia', role:'assassin', tier:'A' },
+  { id:'gusion', name:'Gusion', role:'assassin', tier:'S' },
+  { id:'fanny', name:'Fanny', role:'assassin', tier:'S' },
+  { id:'helcurt', name:'Helcurt', role:'assassin', tier:'S' },
+  { id:'aamon', name:'Aamon', role:'assassin', tier:'S' },
+  { id:'ling', name:'Ling', role:'assassin', tier:'S' },
+  { id:'joy', name:'Joy', role:'assassin', tier:'A' },
+  { id:'nolan', name:'Nolan', role:'assassin', tier:'A' },
+
+  /* Magos */
+  { id:'eudora', name:'Eudora', role:'mage', tier:'B' },
+  { id:'gord', name:'Gord', role:'mage', tier:'A' },
+  { id:'alice', name:'Alice', role:'mage', tier:'A' },
+  { id:'kagura', name:'Kagura', role:'mage', tier:'S' },
+  { id:'cyclops', name:'Cyclops', role:'mage', tier:'A' },
+  { id:'odette', name:'Odette', role:'mage', tier:'S' },
+  { id:'lunox', name:'Lunox', role:'mage', tier:'S' },
+  { id:'valir', name:'Valir', role:'mage', tier:'A' },
+  { id:'pharsa', name:'Pharsa', role:'mage', tier:'S' },
+  { id:'cecilion', name:'Cecilion', role:'mage', tier:'S' },
+  { id:'yve', name:'Yve', role:'mage', tier:'SS' },
+  { id:'xavier', name:'Xavier', role:'mage', tier:'A' },
+  { id:'zhuxin', name:'Zhuxin', role:'mage', tier:'A' },
+
+  /* Marksmen / Tiradores */
+  { id:'layla', name:'Layla', role:'marksman', tier:'B' },
+  { id:'miya', name:'Miya', role:'marksman', tier:'A' },
+  { id:'clint', name:'Clint', role:'marksman', tier:'A' },
+  { id:'moskov', name:'Moskov', role:'marksman', tier:'S' },
+  { id:'bruno', name:'Bruno', role:'marksman', tier:'S' },
+  { id:'irithel', name:'Irithel', role:'marksman', tier:'A' },
+  { id:'granger', name:'Granger', role:'marksman', tier:'S' },
+  { id:'claude', name:'Claude', role:'marksman', tier:'SS' },
+  { id:'natan', name:'Natan', role:'marksman', tier:'SS' },
+  { id:'beatrix', name:'Beatrix', role:'marksman', tier:'S' },
+  { id:'melissa', name:'Melissa', role:'marksman', tier:'A' },
+  { id:'brody', name:'Brody', role:'marksman', tier:'S' },
+
+  /* Supports */
+  { id:'angela', name:'Angela', role:'support', tier:'A' },
+  { id:'estes', name:'Estes', role:'support', tier:'A' },
+  { id:'diggie', name:'Diggie', role:'support', tier:'B' },
+  { id:'rafaela', name:'Rafaela', role:'support', tier:'A' },
+  { id:'carmilla', name:'Carmilla', role:'support', tier:'A' },
+  { id:'mathilda', name:'Mathilda', role:'support', tier:'S' },
+  { id:'faramis', name:'Faramis', role:'support', tier:'A' },
+  { id:'floryn', name:'Floryn', role:'support', tier:'A' },
+  { id:'minotaur', name:'Minotaur', role:'support', tier:'S' }
 ];
 
-const tierOrder = ["S", "A", "B", "C", "D"]; 
-let isFavoriteView = false; 
-
-// ------------------ Funcionalidad de Favoritos ------------------
-
-function getFavorites() {
-    const favorites = localStorage.getItem('mlbb_favorites');
-    return favorites ? JSON.parse(favorites) : [];
+/* -------------------------
+   Utilities: deterministic color & avatar SVG generator
+   ------------------------- */
+function hashCode(str){
+  let h=0;
+  for(let i=0;i<str.length;i++){ h = ((h<<5)-h) + str.charCodeAt(i); h |= 0; }
+  return Math.abs(h);
+}
+function pickTwoColors(seed){
+  const base = seed % 360;
+  const c1 = `hsl(${base},70%,45%)`;
+  const c2 = `hsl(${(base+40)%360},65%,55%)`;
+  return [c1,c2];
+}
+function initials(name){
+  return name.split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+}
+function svgAvatarDataUrl(name, size=512){
+  const seed = hashCode(name);
+  const [c1,c2] = pickTwoColors(seed);
+  const text = initials(name);
+  // create SVG with radial gradient, subtle pattern and initials
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}' viewBox='0 0 ${size} ${size}'>
+    <defs>
+      <radialGradient id='g' cx='30%' cy='20%'>
+        <stop offset='0%' stop-color='${c2}' stop-opacity='1'/>
+        <stop offset='100%' stop-color='${c1}' stop-opacity='1'/>
+      </radialGradient>
+      <filter id='grain'><feTurbulence baseFrequency='0.8' numOctaves='1' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feBlend mode='overlay'/></filter>
+    </defs>
+    <rect width='100%' height='100%' rx='24' ry='24' fill='url(#g)'/>
+    <g opacity='0.08'>
+      <rect width='100%' height='100%' fill='white' filter='url(#grain)'/>
+    </g>
+    <text x='50%' y='54%' text-anchor='middle' font-family='Patrick Hand, Arial, sans-serif' font-size='${Math.round(size*0.22)}' fill='white' font-weight='700' dy='.35em'>${text}</text>
+  </svg>`;
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
 
-function saveFavorites(favorites) {
-    localStorage.setItem('mlbb_favorites', JSON.stringify(favorites));
-}
-
-function toggleFavorite(heroId, event) {
-    event.stopPropagation();
-    const id = parseInt(heroId);
-    let favorites = getFavorites();
-    const isCurrentlyFavorite = favorites.includes(id);
-
-    if (isCurrentlyFavorite) {
-        favorites = favorites.filter(favId => favId !== id);
-    } else {
-        favorites.push(id);
-    }
-
-    saveFavorites(favorites);
-    
-    // Rerenderizar la grid para actualizar el icono y la lista
-    renderHeroes(document.getElementById('search').value, isFavoriteView);
-}
-
-// ------------------ Funcionalidad de Gráficos (Idea 1) ------------------
-
-function renderHeroStats(hero) {
-    const chartContainer = document.getElementById('heroStatsChart');
-    chartContainer.innerHTML = '';
-
-    const statsMap = {
-        damage: 'Daño',
-        durability: 'Durabilidad',
-        control: 'Control',
-        difficulty: 'Dificultad'
-    };
-
-    let html = '';
-    for (const key in hero.stats) {
-        if (hero.stats.hasOwnProperty(key)) {
-            const value = hero.stats[key]; // Valor de 0 a 100
-            const label = statsMap[key] || key;
-            html += `
-                <div class="chart-row">
-                    <div class="chart-label">
-                        <span>${label}</span>
-                        <span>${value}%</span>
-                    </div>
-                    <div class="chart-bar-container">
-                        <div class="chart-bar" style="width: ${value}%;"></div>
-                    </div>
-                </div>
-            `;
-        }
-    }
-    chartContainer.innerHTML = html;
-}
-
-
-// ------------------ Funcionalidad Principal ------------------
-
-function renderHeroes(filterText = '', onlyFavorites = false) {
-    const grid = document.getElementById('heroes-grid');
-    grid.innerHTML = '';
-    
-    let filtered = heroes;
-    
-    if (onlyFavorites) {
-        const favoriteIds = getFavorites();
-        filtered = filtered.filter(hero => favoriteIds.includes(hero.id));
-    }
-    
-    filtered = filtered.filter(hero => hero.name.toLowerCase().includes(filterText.toLowerCase()));
-
-    const favoriteIds = getFavorites();
-
-    if (filtered.length === 0) {
-        grid.innerHTML = `<p style="text-align:center; color:#888; padding:30px;">No se encontraron héroes${onlyFavorites ? ' en tus favoritos.' : '.'}</p>`;
-        return;
-    }
-
-    filtered.forEach(hero => {
-        const isFav = favoriteIds.includes(hero.id);
-        
-        const card = document.createElement('div');
-        card.className = 'hero-card';
-        card.setAttribute('onclick', `openModal('${hero.name}')`);
-        card.innerHTML = `
-            <span class="favorite-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(${hero.id}, event)">${isFav ? '⭐' : '☆'}</span>
-            <img class="hero-img" src="${hero.img}" alt="${hero.name}">
-            <p class="hero-name">${hero.name}</p>
-        `;
-        grid.appendChild(card);
-    });
-}
-
-function renderTierList(lane) {
-    const container = document.getElementById('tier-container');
-    
-    // Mostrar Skeleton Loader
-    container.innerHTML = createSkeletonLoader();
-
-    setTimeout(() => {
-        container.innerHTML = '';
-        const filteredByLane = heroes.filter(hero => hero.lane === lane);
-
-        tierOrder.forEach(tier => {
-            const heroesInTier = filteredByLane.filter(hero => hero.tier === tier);
-            if (heroesInTier.length > 0) {
-                const section = document.createElement('div');
-                section.className = 'tier-section';
-                section.innerHTML = `
-                    <div class="tier-row">
-                        <h3 class="tier-title">Tier ${tier}</h3>
-                        <div class="tier-grid">
-                            ${heroesInTier.map(hero => `
-                                <div class="tier-hero" onclick="openModal('${hero.name}')">
-                                    <img src="${hero.img}" alt="${hero.name}">
-                                    <p>${hero.name}</p>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-                container.appendChild(section);
-            }
-        });
-    }, 500); // 500ms de retraso simulado
-}
-
-function createSkeletonLoader() {
-    let loader = '<div class="skeleton-loader">';
-    for (let i = 0; i < 3; i++) { 
-        loader += `
-            <div class="skeleton-row">
-                <div class="skeleton-title"></div>
-                <div class="skeleton-grid">
-                    <div class="skeleton-item"></div>
-                    <div class="skeleton-item"></div>
-                    <div class="skeleton-item"></div>
-                    <div class="skeleton-item" style="display: none;"></div>
-                </div>
-            </div>
-        `;
-    }
-    loader += '</div>';
-    return loader;
-}
-
-// ------------------ Funcionalidad de Interacción ------------------
-
-function openModal(heroName) {
-    const hero = heroes.find(h => h.name === heroName);
-    if (!hero) return;
-
-    // Reiniciar a la pestaña de "Detalles" al abrir
-    document.querySelector('.modal-subnav-item.active').classList.remove('active');
-    document.querySelector('[data-modal-tab="details"]').classList.add('active');
-    document.querySelectorAll('.modal-tab-content').forEach(c => c.classList.remove('active'));
-    document.getElementById('modal-details').classList.add('active');
-
-
-    document.getElementById('heroDetailImg').src = hero.img;
-    document.getElementById('heroDetail').innerHTML = `
-        <h2 style="color:var(--secondary-color); text-align:center; margin-bottom:15px; font-size: 28px;">${hero.name}</h2>
-        <p class="detail-text"><strong>Rol/Lane:</strong> ${hero.lane} (${hero.tier}-Tier)</p>
-        <p class="detail-text">${hero.description}</p>
-        
-        <h3 class="detail-title">⚙️ Build Recomendada</h3>
-        <div class="build-list">
-            ${hero.build.split(', ').map(item => `<span class="build-item">${item}</span>`).join('')}
-        </div>
-
-        <h3 class="detail-title">👍 Fuerte Contra</h3>
-        <p class="detail-text">${hero.strongAgainst}</p>
-
-        <h3 class="detail-title">👎 Counters</h3>
-        <p class="detail-text">${hero.counters}</p>
-    `;
-
-    // Renderizar los gráficos inmediatamente para el héroe
-    renderHeroStats(hero);
-
-    document.getElementById('heroModal').classList.add('active');
-}
-
-function closeModal() {
-    document.getElementById('heroModal').classList.remove('active');
-}
-
-function switchModalTab(tabId) {
-    document.querySelectorAll('.modal-subnav-item').forEach(item => item.classList.remove('active'));
-    document.querySelectorAll('.modal-tab-content').forEach(content => content.classList.remove('active'));
-
-    document.querySelector(`[data-modal-tab="${tabId}"]`).classList.add('active');
-    document.getElementById(`modal-${tabId}`).classList.add('active');
-}
-
-// ------------------ Funcionalidad de Tema (Idea 2) ------------------
-
-function toggleTheme(event) {
-    const body = document.body;
-    if (event.target.checked) {
-        body.classList.remove('dark-mode');
-        body.classList.add('light-mode');
-        localStorage.setItem('mlbb_theme', 'light');
-    } else {
-        body.classList.remove('light-mode');
-        body.classList.add('dark-mode');
-        localStorage.setItem('mlbb_theme', 'dark');
-    }
-}
-
-// ------------------ Funcionalidad de Notificaciones (Idea 5) ------------------
-
-function toggleNotificationPopover() {
-    const popover = document.getElementById('alert-popover');
-    const badge = document.getElementById('notification-badge');
-
-    if (popover.style.display === 'block') {
-        popover.style.display = 'none';
-    } else {
-        popover.style.display = 'block';
-        // Simular que la notificación se lee al abrir
-        badge.style.display = 'none';
-    }
-}
-
-
-// ------------------ Event Listeners ------------------
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Inicializar el tema basado en localStorage
-    const savedTheme = localStorage.getItem('mlbb_theme') || 'dark';
-    const themeToggle = document.getElementById('theme-toggle-switch');
-    if (savedTheme === 'light') {
-        document.body.classList.add('light-mode');
-        themeToggle.checked = true;
-    } else {
-        document.body.classList.add('dark-mode');
-        themeToggle.checked = false;
-    }
-
-    // Inicializar la grid de héroes (muestra todos por defecto)
-    isFavoriteView = false;
-    renderHeroes('', isFavoriteView);
-
-    // Manejar la búsqueda
-    document.getElementById('search').addEventListener('input', (e) => {
-        renderHeroes(e.target.value, isFavoriteView);
-    });
-
-    // Manejar el cambio de tabs de la navegación principal (código existente)
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-            const tabId = item.getAttribute('data-tab');
-            switchTab(tabId);
-        });
-    });
-
-    // Manejar el cambio de lane en la Tier List (código existente)
-    document.querySelectorAll('.lane-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.lane-btn').forEach(el => el.classList.remove('active'));
-            e.target.classList.add('active');
-            renderTierList(e.target.getAttribute('data-lane'));
-        });
-    });
-
-    // Manejar el filtro de Favoritos (código existente)
-    document.getElementById('all-heroes-filter').addEventListener('click', (e) => {
-        isFavoriteView = false;
-        document.getElementById('favorites-filter').classList.remove('active');
-        e.target.classList.add('active');
-        renderHeroes(document.getElementById('search').value, isFavoriteView);
-    });
-
-    document.getElementById('favorites-filter').addEventListener('click', (e) => {
-        isFavoriteView = true;
-        document.getElementById('all-heroes-filter').classList.remove('active');
-        e.target.classList.add('active');
-        renderHeroes(document.getElementById('search').value, isFavoriteView);
-    });
-    
-    // Event listener para el toggle de tema (Idea 2)
-    themeToggle.addEventListener('change', toggleTheme);
-
-    // Event listener para el sub-navegador del modal (Idea 1)
-    document.querySelectorAll('.modal-subnav-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-            switchModalTab(e.target.getAttribute('data-modal-tab'));
-        });
-    });
-
-    // Event listener para el botón de notificación (Idea 5)
-    document.getElementById('notification-bell').addEventListener('click', toggleNotificationPopover);
-    
-    // Cargar la Tier List inicial (Gold Lane)
-    renderTierList('gold');
+/* Attach image url to heroes (SVG data URIs) and add bios/builds placeholders */
+heroes.forEach(h=>{
+  h.img = svgAvatarDataUrl(h.name, 512);
+  h.bio = `${h.name} — héroe del rol ${h.role}. Juega como ${h.role} con estilo.`;
+  h.builds = [
+    { title:'Core', items:['Botas','Item 1','Item 2'] },
+    { title:'Aggro', items:['Item A','Item B','Item C'] }
+  ];
+  h.strong = []; h.weak = [];
 });
 
-// Switch Tab (función global necesaria para el nav)
-function switchTab(tabId) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    document.querySelector(`.nav-item[data-tab="${tabId}"]`).classList.add('active');
-
-    if (tabId === 'ranking-tab') {
-        const activeLane = document.querySelector('.lanes .lane-btn.active').getAttribute('data-lane');
-        renderTierList(activeLane);
-    }
-    
-    if (tabId === 'heroes-tab') {
-        renderHeroes(document.getElementById('search').value, isFavoriteView);
-    }
+/* Deterministic pseudo-random sampling (stable between loads) */
+function seededSampleArray(seed, arr, count){
+  const res=[];
+  const pool = arr.slice();
+  let s = seed;
+  function rnd(){ s = (s * 9301 + 49297) % 233280; return s / 233280; }
+  while(res.length < count && pool.length){
+    const idx = Math.floor(rnd() * pool.length);
+    res.push(pool.splice(idx,1)[0]);
+  }
+  return res;
 }
 
-// Cerrar modal al hacer clic fuera de él
-window.onclick = function(event) {
-    const modal = document.getElementById('heroModal');
-    const popover = document.getElementById('alert-popover');
-    if (event.target == modal) {
-        closeModal();
-    }
-    // Cerrar popover si se hace clic fuera de la campana
-    if (event.target !== document.getElementById('notification-bell') && event.target !== popover) {
-        popover.style.display = 'none';
-    }
+/* Populate counters: for each hero pick 2 strong (from different roles when possible) and 2 weak */
+(function populateCounters(){
+  const allIds = heroes.map(h=>h.id);
+  heroes.forEach(h=>{
+    const seed = hashCode(h.id);
+    // pick strong: prefer heroes of roles that counter this role (simple heuristic)
+    const preferRoles = {
+      tank:['fighter','marksman','mage'],
+      fighter:['assassin','marksman'],
+      assassin:['mage','marksman'],
+      mage:['tank','assassin'],
+      marksman:['tank','fighter'],
+      support:['assassin','fighter']
+    };
+    const targetRoles = preferRoles[h.role] || rolesFromHeroes();
+    // build candidate list ordered by matching targetRoles first
+    const candidates = heroes.filter(x=> x.id !== h.id ).sort((a,b)=>{
+      const aPref = targetRoles.includes(a.role) ? 0 : 1;
+      const bPref = targetRoles.includes(b.role) ? 0 : 1;
+      return aPref - bPref;
+    }).map(x=>x.id);
+    const strong = seededSampleArray(seed+1, candidates, 3);
+    const weak = seededSampleArray(seed+2, candidates.filter(id=>!strong.includes(id)), 3);
+    h.strong = strong;
+    h.weak = weak;
+  });
+
+  // helper fallback to compute roles list if needed
+  function rolesFromHeroes(){ return Array.from(new Set(heroes.map(h=>h.role))); }
+})();
+
+/* Build heroMap */
+const heroMap = {};
+heroes.forEach(h=>heroMap[h.id]=h);
+
+/* DOM refs */
+const grid = document.getElementById('gridHeroes');
+const q = document.getElementById('q');
+const roleFilter = document.getElementById('roleFilter');
+const tierFilter = document.getElementById('tierFilter');
+const tierlistWrap = document.getElementById('tierlist');
+
+const detailWrap = document.getElementById('heroDetail');
+const dAvatar = document.getElementById('dAvatar');
+const detailTitle = document.getElementById('detailTitle');
+const detailRoleTier = document.getElementById('detailRoleTier');
+const detailBioShort = document.getElementById('detailBioShort');
+const detailBuilds = document.getElementById('detailBuilds');
+const detailStrong = document.getElementById('detailStrong');
+const detailWeak = document.getElementById('detailWeak');
+const closeDetail = document.getElementById('closeDetail');
+
+/* Renderers */
+function renderGrid(){
+  const term = (q.value || '').trim().toLowerCase();
+  const role = roleFilter.value;
+  const tier = tierFilter.value;
+  grid.innerHTML = '';
+  let shown = 0;
+  heroes.forEach(h=>{
+    if(role !== 'all' && h.role !== role) return;
+    if(tier !== 'all' && h.tier !== tier) return;
+    if(term && !h.name.toLowerCase().includes(term) && !h.bio.toLowerCase().includes(term)) return;
+
+    const card = document.createElement('div');
+    card.className = 'hero-card';
+    card.tabIndex = 0;
+    card.innerHTML = `
+      <div class="avatar"><img loading="lazy" src="${h.img}" alt="${h.name}"></div>
+      <div class="hname">${h.name}</div>
+    `;
+    card.addEventListener('click', ()=> navigateToHero(h.id));
+    card.addEventListener('keypress', (e)=>{ if(e.key==='Enter') navigateToHero(h.id) });
+    grid.appendChild(card);
+    shown++;
+  });
+
+  if(shown===0){
+    const emp = document.createElement('div');
+    emp.className='empty';
+    emp.textContent = 'No se encontraron héroes con esos filtros.';
+    emp.style.gridColumn = '1 / -1';
+    grid.appendChild(emp);
+  }
 }
+
+function renderTierlist(){
+  const buckets = {};
+  heroes.forEach(h=>{
+    if(!buckets[h.role]) buckets[h.role]={};
+    if(!buckets[h.role][h.tier]) buckets[h.role][h.tier]=[];
+    buckets[h.role][h.tier].push(h);
+  });
+  tierlistWrap.innerHTML = '';
+  for(const role in buckets){
+    const box = document.createElement('div');
+    box.className='tier-card';
+    box.innerHTML = `<div style="display:flex;align-items:center;gap:12px"><div style="font-weight:700;color:var(--accent);text-transform:capitalize">${role}</div><div class="muted">Meta actual</div></div>`;
+    ['SS','S','A','B'].forEach(t=>{
+      if(buckets[role][t] && buckets[role][t].length){
+        const row = document.createElement('div');
+        row.className='tier-row';
+        row.innerHTML = `<div class="tier-badge">${t}</div>`;
+        buckets[role][t].forEach(h=>{
+          const mini = document.createElement('div');
+          mini.className='counter-card';
+          mini.style.cursor='pointer';
+          mini.title = h.name;
+          mini.innerHTML = `<img src="${h.img}" alt="${h.name}"><div style="font-size:13px;margin-left:6px">${h.name}</div>`;
+          mini.addEventListener('click', ()=> navigateToHero(h.id));
+          row.appendChild(mini);
+        });
+        box.appendChild(row);
+      }
+    });
+    tierlistWrap.appendChild(box);
+  }
+}
+
+/* Detail / hash routing */
+function showDetailById(id){
+  const h = heroMap[id];
+  if(!h) return hideDetail();
+  detailWrap.classList.add('show');
+  const imgEl = dAvatar.querySelector('img');
+  imgEl.src = h.img;
+  imgEl.alt = h.name;
+  detailTitle.textContent = h.name;
+  detailRoleTier.textContent = `${capitalize(h.role)} · Tier ${h.tier || 'A'}`;
+  detailBioShort.textContent = h.bio || '';
+  // builds
+  detailBuilds.innerHTML = '';
+  (h.builds || []).forEach(b=>{
+    const bd = document.createElement('div');
+    bd.className = 'counter-card';
+    bd.style.flexDirection = 'column';
+    bd.innerHTML = `<strong style="color:var(--accent)">${b.title}</strong><div style="font-size:13px;margin-top:6px">${b.items.join(' • ')}</div>`;
+    detailBuilds.appendChild(bd);
+  });
+  // strong
+  detailStrong.innerHTML = '';
+  if(h.strong && h.strong.length){
+    h.strong.forEach(sid=>{
+      const sh = heroMap[sid];
+      if(!sh) return;
+      const card = document.createElement('div');
+      card.className='counter-card';
+      card.innerHTML = `<img src="${sh.img}" alt="${sh.name}"><div style="font-size:13px">${sh.name}</div>`;
+      card.addEventListener('click', ()=> navigateToHero(sh.id));
+      detailStrong.appendChild(card);
+    });
+  } else detailStrong.innerHTML = '<div class="muted">No data.</div>';
+  // weak
+  detailWeak.innerHTML = '';
+  if(h.weak && h.weak.length){
+    h.weak.forEach(sid=>{
+      const sh = heroMap[sid];
+      if(!sh) return;
+      const card = document.createElement('div');
+      card.className='counter-card';
+      card.innerHTML = `<img src="${sh.img}" alt="${sh.name}"><div style="font-size:13px">${sh.name}</div>`;
+      card.addEventListener('click', ()=> navigateToHero(sh.id));
+      detailWeak.appendChild(card);
+    });
+  } else detailWeak.innerHTML = '<div class="muted">No data.</div>';
+
+  setTimeout(()=> detailWrap.scrollIntoView({behavior:'smooth'}), 100);
+}
+function hideDetail(){ detailWrap.classList.remove('show'); }
+
+function navigateToHero(id){ location.hash = 'hero-' + id; }
+
+function handleHash(){
+  const hash = (location.hash||'').replace('#','');
+  if(!hash){ hideDetail(); return; }
+  if(hash.startsWith('hero-')){ const id = hash.replace('hero-',''); showDetailById(id); }
+  else hideDetail();
+}
+
+/* helpers */
+function capitalize(s){ if(!s) return s; return s.charAt(0).toUpperCase()+s.slice(1); }
+
+/* Events */
+q.addEventListener('input', renderGrid);
+roleFilter.addEventListener('change', renderGrid);
+tierFilter.addEventListener('change', renderGrid);
+
+document.getElementById('navHero').addEventListener('click', ()=>{
+  document.getElementById('navHero').classList.add('active');
+  document.getElementById('navRanking').classList.remove('active');
+  document.getElementById('navMore').classList.remove('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+document.getElementById('navRanking').addEventListener('click', ()=>{
+  document.getElementById('navHero').classList.remove('active');
+  document.getElementById('navRanking').classList.add('active');
+  document.getElementById('navMore').classList.remove('active');
+  document.getElementById('tierlist').scrollIntoView({behavior:'smooth'});
+});
+document.getElementById('navMore').addEventListener('click', ()=>{
+  document.getElementById('navHero').classList.remove('active');
+  document.getElementById('navRanking').classList.remove('active');
+  document.getElementById('navMore').classList.add('active');
+  alert('Aquí puedes añadir enlaces a guías, ajustes y más.');
+});
+
+closeDetail.addEventListener('click', ()=>{ location.hash=''; hideDetail(); });
+
+window.addEventListener('hashchange', handleHash);
+window.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ location.hash=''; hideDetail(); } });
+
+/* initial render */
+renderGrid();
+renderTierlist();
+handleHash();
+
+/* expose for debug if needed */
+window._ML_HEROES = heroes;
 </script>
 </body>
 </html>
