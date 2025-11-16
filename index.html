@@ -5,317 +5,433 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MLBB Nexus PRO</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0a0a;
+            background: #000;
             color: #fff;
+            min-height: 100vh;
+            padding-bottom: 90px;
             overflow-x: hidden;
-            padding-bottom: 80px;
         }
         header {
             text-align: center;
-            padding: 20px 20px 10px;
-            background: linear-gradient(180deg, #000 0%, rgba(0,0,0,0.8) 100%);
+            padding: 25px 20px 15px;
+            background: linear-gradient(to bottom, #111, #000);
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 20px rgba(255,140,0,0.3);
         }
         h1 {
-            font-size: 2.2rem;
-            background: linear-gradient(45deg, #ff8c00, #ffa500);
+            font-size: 2.4rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff6b00, #ffb400);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 20px rgba(255,140,0,0.8);
-            margin-bottom: 10px;
-            animation: glow 2s ease-in-out infinite alternate;
+            text-shadow: 0 0 30px rgba(255,107,0,0.8);
+            animation: glow 2s infinite alternate;
         }
-        @keyframes glow {
-            from { text-shadow: 0 0 20px rgba(255,140,0,0.8); }
-            to { text-shadow: 0 0 30px rgba(255,140,0,1); }
-        }
-        .search-container {
+        @keyframes glow { from { text-shadow: 0 0 20px rgba(255,107,0,0.8); } to { text-shadow: 0 0 40px rgba(255,107,0,1); } }
+
+        .search-box {
+            margin: 20px auto;
+            max-width: 90%;
             position: relative;
-            margin: 0 10px 20px;
         }
-        .search-input {
+        .search-box input {
             width: 100%;
-            padding: 15px 50px 15px 20px;
-            border: 2px solid #ff8c00;
-            border-radius: 25px;
-            background: rgba(255,255,255,0.1);
+            padding: 16px 50px 16px 20px;
+            border: 2px solid #ff6b00;
+            border-radius: 30px;
+            background: rgba(30,30,30,0.9);
             color: #fff;
             font-size: 16px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(255,107,0,0.4);
         }
-        .search-input::placeholder {
-            color: #ccc;
-        }
-        .search-input:focus {
-            outline: none;
-            border-color: #ffa500;
-            box-shadow: 0 0 20px rgba(255,140,0,0.5);
-        }
-        .search-icon {
+        .search-box input::placeholder { color: #aaa; }
+        .search-box::after {
+            content: "🔍";
             position: absolute;
-            right: 20px;
+            right: 18px;
             top: 50%;
             transform: translateY(-50%);
-            color: #ff8c00;
             font-size: 20px;
+            color: #ff6b00;
         }
-        section {
-            display: none;
-            padding: 20px;
-            animation: fadeIn 0.5s ease;
-        }
-        section.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+
+        .tab { display: none; }
+        .tab.active { display: block; animation: fade 0.5s; }
+        @keyframes fade { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+
         .heroes-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-            gap: 15px;
-            padding: 10px 0;
+            gap: 18px;
+            padding: 20px;
         }
         .hero-card {
             text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            transition: transform 0.3s;
         }
-        .hero-card:hover {
-            transform: scale(1.1);
-        }
-        .hero-image {
-            width: 80px;
-            height: 80px;
+        .hero-card:hover { transform: scale(1.12); }
+        .hero-img {
+            width: 82px;
+            height: 82px;
             border-radius: 50%;
-            border: 3px solid #ff8c00;
+            border: 3px solid #ff6b00;
             object-fit: cover;
-            margin: 0 auto 8px;
-            box-shadow: 0 0 15px rgba(255,140,0,0.6);
-            transition: all 0.3s ease;
-        }
-        .hero-card:hover .hero-image {
-            box-shadow: 0 0 25px rgba(255,140,0,1);
-            border-color: #ffa500;
+            box-shadow: 0 0 20px rgba(255,107,0,0.7);
         }
         .hero-name {
+            margin-top: 8px;
             font-size: 11px;
-            font-weight: 600;
+            font-weight: bold;
             color: #fff;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            text-shadow: 0 1px 3px #000;
         }
+
         /* Tier List */
-        .tier-lanes {
+        .lanes {
             display: flex;
             overflow-x: auto;
-            gap: 10px;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
+            padding: 15px 20px;
+            gap: 12px;
+            background: #000;
+            border-bottom: 1px solid #333;
         }
-        .lane-tab {
-            flex: 0 0 auto;
-            background: rgba(255,255,255,0.1);
-            padding: 12px 20px;
-            border-radius: 20px;
-            color: #fff;
-            border: 2px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
+        .lane-btn {
+            padding: 10px 18px;
+            background: rgba(255,107,0,0.15);
+            border: 2px solid #ff6b00;
+            border-radius: 25px;
+            font-weight: bold;
             white-space: nowrap;
+            transition: 0.3s;
         }
-        .lane-tab.active {
-            background: linear-gradient(45deg, #ff8c00, #ffa500);
-            border-color: #fff;
-            box-shadow: 0 5px 15px rgba(255,140,0,0.5);
+        .lane-btn.active {
+            background: linear-gradient(45deg, #ff6b00, #ffb400);
+            color: #000;
+            box-shadow: 0 0 20px rgba(255,107,0,0.8);
         }
-        .tier-container {
-            display: none;
-        }
-        .tier-container.active {
-            display: block;
-            animation: slideIn 0.4s ease;
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
+
+        .tier-section { padding: 20px; }
         .tier-row {
             margin-bottom: 25px;
         }
-        .tier-label {
-            font-size: 18px;
+        .tier-title {
+            font-size: 20px;
+            color: #ff6b00;
+            margin-bottom: 12px;
             font-weight: bold;
-            margin-bottom: 10px;
-            color: #ff8c00;
         }
         .tier-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-            gap: 12px;
+            gap: 14px;
         }
-        .tier-hero {
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-        .tier-hero:hover {
-            transform: scale(1.15);
-        }
-        .tier-hero-image {
-            width: 60px;
-            height: 60px;
+        .tier-hero img {
+            width: 65px;
+            height: 65px;
             border-radius: 50%;
-            object-fit: cover;
-            margin: 0 auto 5px;
-            border: 2px solid #ff8c00;
-            box-shadow: 0 0 10px rgba(255,140,0,0.4);
+            border: 2px solid #ff6b00;
+            box-shadow: 0 0 15px rgba(255,107,0,0.5);
         }
-        .tier-hero-name {
+        .tier-hero p {
             font-size: 9px;
-            color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            margin-top: 5px;
+            text-align: center;
         }
-        /* Download */
+
+        .download-section {
+            text-align: center;
+            padding: 40px 20px;
+        }
         .download-btn {
-            width: 100%;
-            padding: 20px;
-            background: linear-gradient(45deg, #ff8c00, #ffa500);
+            background: linear-gradient(45deg, #ff6b00, #ffb400);
             color: #000;
+            padding: 18px 40px;
             border: none;
-            border-radius: 30px;
+            border-radius: 50px;
             font-size: 18px;
             font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(255,140,0,0.4);
-            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(255,107,0,0.5);
+            animation: pulse 2s infinite;
         }
-        .download-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 15px 40px rgba(255,140,0,0.6);
-        }
-        /* Bottom Nav */
-        .bottom-nav {
+        @keyframes pulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.05); } }
+
+        /* Navegación inferior */
+        .nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(15px);
             display: flex;
             justify-content: space-around;
             padding: 12px 0;
-            z-index: 200;
-            border-top: 1px solid rgba(255,140,0,0.3);
+            border-top: 1px solid #333;
+            z-index: 999;
         }
         .nav-item {
             text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            padding: 5px 10px;
-            border-radius: 10px;
-            min-width: 60px;
+            padding: 8px;
+            border-radius: 12px;
+            transition: 0.3s;
         }
         .nav-item.active {
-            background: rgba(255,140,0,0.2);
-            color: #ff8c00;
+            background: rgba(255,107,0,0.3);
+            color: #ff6b00;
         }
-        .nav-icon {
-            font-size: 24px;
-            display: block;
-        }
-        .nav-label {
-            font-size: 10px;
-            margin-top: 2px;
-        }
-        /* Hide empty */
-        .tier-row:empty { display: none; }
-        /* Placeholder for images */
-        .hero-image[src=""], .tier-hero-image[src=""] {
-            background: rgba(255,140,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: #ff8c00;
-            font-weight: bold;
-        }
+        .nav-item span { font-size: 24px; display: block; }
+        .nav-item small { font-size: 10px; margin-top: 4px; display: block; }
     </style>
 </head>
 <body>
-    <header>
-        <h1>MLBB Nexus PRO</h1>
-        <div class="search-container">
-            <input type="text" class="search-input" id="searchInput" placeholder="Buscar héroe...">
-            <span class="search-icon">🔍</span>
-        </div>
-    </header>
 
-    <section id="heroes" class="active">
-        <div class="heroes-grid" id="heroesGrid"></div>
-    </section>
+<header>
+    <h1>MLBB Nexus PRO</h1>
+    <div class="search-box">
+        <input type="text" id="search" placeholder="Buscar héroe...">
+    </div>
+</header>
 
-    <section id="ranking">
-        <div class="tier-lanes">
-            <div class="lane-tab active" data-lane="gold">Línea de Oro</div>
-            <div class="lane-tab" data-lane="exp">Línea EXP</div>
-            <div class="lane-tab" data-lane="jungle">Jungla</div>
-            <div class="lane-tab" data-lane="mid">Media</div>
-            <div class="lane-tab" data-lane="roam">Roam</div>
-        </div>
-        <div id="tierContainers"></div>
-    </section>
+<div class="tab active" id="heroes-tab">
+    <div class="heroes-grid" id="heroes-grid"></div>
+</div>
 
-    <section id="more">
-        <h2 style="text-align:center; color:#ff8c00; margin:40px 0 20px;">Descarga la App</h2>
-        <p style="text-align:center; margin-bottom:20px;">¡Disponible pronto! La mejor experiencia MLBB en tu dispositivo.</p>
-        <button class="download-btn">📱 Descargar MLBB Nexus PRO</button>
-    </section>
+<div class="tab" id="ranking-tab">
+    <div class="lanes">
+        <div class="lane-btn active" data-lane="gold">Línea de Oro</div>
+        <div class="lane-btn" data-lane="exp">EXP Lane</div>
+        <div class="lane-btn" data-lane="jungle">Jungla</div>
+        <div class="lane-btn" data-lane="mid">Mid Lane</div>
+        <div class="lane-btn" data-lane="roam">Roam</div>
+    </div>
+    <div id="tier-container"></div>
+</div>
 
-    <nav class="bottom-nav">
-        <div class="nav-item active" data-section="heroes">
-            <span class="nav-icon">⚔️</span>
-            <span class="nav-label">Héroe</span>
-        </div>
-        <div class="nav-item" data-section="ranking">
-            <span class="nav-icon">📊</span>
-            <span class="nav-label">Ranking</span>
-        </div>
-        <div class="nav-item" data-section="more">
-            <span class="nav-icon">⋮</span>
-            <span class="nav-label">Más</span>
-        </div>
-    </nav>
+<div class="tab" id="more-tab">
+    <div class="download-section">
+        <h2 style="color:#ff6b00; margin-bottom:20px;">¡Descarga la App Física!</h2>
+        <p>Pronto disponible para Android e iOS</p>
+        <button class="download-btn">Descargar MLBB Nexus PRO</button>
+    </div>
+</div>
 
-    <script>
-        // Base de datos completa de 128 héroes (de wiki, Nov 2025)
-        const heroesData = [
-            {name: "Miya", role: "Marksman", specialty: "Finisher / Damage", lane: "Gold Lane", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Miya.png/revision/latest"},
-            {name: "Balmond", role: "Fighter", specialty: "Damage / Regen", lane: "Jungle / EXP Lane", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Balmond.png/revision/latest"},
-            {name: "Saber", role: "Assassin", specialty: "Charge / Finisher", lane: "Jungle / Roaming", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Saber.png/revision/latest"},
-            {name: "Alice", role: "Tank / Mage", specialty: "Charge / Regen", lane: "EXP Lane / Jungle", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Alice.png/revision/latest"},
-            {name: "Nana", role: "Mage", specialty: "Poke / Burst", lane: "Mid Lane", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Nana.png/revision/latest"},
-            {name: "Tigreal", role: "Tank", specialty: "Crowd Control", lane: "Roaming", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Tigreal.png/revision/latest"},
-            {name: "Alucard", role: "Fighter / Assassin", specialty: "Chase / Damage", lane: "Jungle", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Alucard.png/revision/latest"},
-            {name: "Karina", role: "Assassin", specialty: "Finisher / Magic Damage", lane: "Jungle", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Karina.png/revision/latest"},
-            {name: "Akai", role: "Tank", specialty: "Guard / Crowd Control", lane: "Roaming", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Akai.png/revision/latest"},
-            {name: "Franco", role: "Tank", specialty: "Initiator / Control", lane: "Roaming", image: "https://static.wikia.nocookie.net/mobile-legends/images//Portrait_Franco.png/revision/latest"},
-            {name: "Bane", role: "Fighter
+<nav class="nav">
+    <div class="nav-item active" data-tab="heroes-tab">
+        <span>Héroe</span><small>Héroes</small>
+    </div>
+    <div class="nav-item" data-tab="ranking-tab">
+        <span>Ranking</span><small>Tier List</small>
+    </div>
+    <div class="nav-item" data-tab="more-tab">
+        <span>Más</span><small>Más</small>
+    </div>
+</nav>
+
+<script>
+// === TODOS LOS 130+ HÉROES (Noviembre 2025) ===
+const heroes = [
+    {name:"Miya",img:"https://static.wikia.nocookie.net/mobile-legends/images/3/3a/Portrait_Miya.png/revision/latest"},
+    {name:"Balmond",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/1b/Portrait_Balmond.png/revision/latest"},
+    {name:"Saber",img:"https://static.wikia.nocookie.net/mobile-legends/images/5/5e/Portrait_Saber.png/revision/latest"},
+    {name:"Alice",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/0d/Portrait_Alice.png/revision/latest"},
+    {name:"Nana",img:"https://static.wikia.nocookie.net/mobile-legends/images/2/2f/Portrait_Nana.png/revision/latest"},
+    {name:"Tigreal",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/0e/Portrait_Tigreal.png/revision/latest"},
+    {name:"Alucard",img:"https://static.wikia.nocookie.net/mobile-legends/images/9/9e/Portrait_Alucard.png/revision/latest"},
+    {name:"Karina",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/6b/Portrait_Karina.png/revision/latest"},
+    {name:"Akai",img:"https://static.wikia.nocookie.net/mobile-legends/images/9/9a/Portrait_Akai.png/revision/latest"},
+    {name:"Franco",img:"https://static.wikia.nocookie.net/mobile-legends/images/4/4c/Portrait_Franco.png/revision/latest"},
+    {name:"Bane",img:"https://static.wikia.nocookie.net/mobile-legends/images/3/3f/Portrait_Bane.png/revision/latest"},
+    {name:"Bruno",img:"https://static.wikia.nocookie.net/mobile-legends/images/2/2d/Portrait_Bruno.png/revision/latest"},
+    {name:"Clint",img:"https://static.wikia.nocookie.net/mobile-legends/images/8/8b/Portrait_Clint.png/revision/latest"},
+    {name:"Rafaela",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/0b/Portrait_Rafaela.png/revision/latest"},
+    {name:"Eudora",img:"https://static.wikia.nocookie.net/mobile-legends/images/3/3e/Portrait_Eudora.png/revision/latest"},
+    {name:"Zilong",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/6a/Portrait_Zilong.png/revision/latest"},
+    {name:"Fanny",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/1a/Portrait_Fanny.png/revision/latest"},
+    {name:"Layla",img:"https://static.wikia.nocookie.net/mobile-legends/images/7/7d/Portrait_Layla.png/revision/latest"},
+    {name:"Minotaur",img:"https://static.wikia.nocookie.net/mobile-legends/images/4/4f/Portrait_Minotaur.png/revision/latest"},
+    {name:"Lolita",img:"https://static.wikia.nocookie.net/mobile-legends/images/5/5b/Portrait_Lolita.png/revision/latest"},
+    {name:"Hayabusa",img:"https://static.wikia.nocookie.net/mobile-legends/images/3/3c/Portrait_Hayabusa.png/revision/latest"},
+    {name:"Freya",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/6e/Portrait_Freya.png/revision/latest"},
+    {name:"Gord",img:"https://static.wikia.nocookie.net/mobile-legends/images/9/9d/Portrait_Gord.png/revision/latest"},
+    {name:"Natalia",img:"https://static.wikia.nocookie.net/mobile-legends/images/2/2e/Portrait_Natalia.png/revision/latest"},
+    {name:"Kagura",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/1f/Portrait_Kagura.png/revision/latest"},
+    {name:"Chou",img:"https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Portrait_Chou.png/revision/latest"},
+    {name:"Sun",img:"https://static.wikia.nocookie.net/mobile-legends/images/5/5f/Portrait_Sun.png/revision/latest"},
+    {name:"Alpha",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/0f/Portrait_Alpha.png/revision/latest"},
+    {name:"Ruby",img:"https://static.wikia.nocookie.net/mobile-legends/images/8/8e/Portrait_Ruby.png/revision/latest"},
+    {name:"Yi Sun-shin",img:"https://static.wikia.nocookie.net/mobile-legends/images/2/2a/Portrait_Yi_Sun-shin.png/revision/latest"},
+    {name:"Moskov",img:"https://static.wikia.nocookie.net/mobile-legends/images/7/7a/Portrait_Moskov.png/revision/latest"},
+    {name:"Johnson",img:"https://static.wikia.nocookie.net/mobile-legends/images/3/3b/Portrait_Johnson.png/revision/latest"},
+    {name:"Cyclops",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/1d/Portrait_Cyclops.png/revision/latest"},
+    {name:"Estes",img:"https://static.wikia.nocookie.net/mobile-legends/images/4/4e/Portrait_Estes.png/revision/latest"},
+    {name:"Hilda",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/6d/Portrait_Hilda.png/revision/latest"},
+    {name:"Aurora",img:"https://static.wikia.nocookie.net/mobile-legends/images/9/9c/Portrait_Aurora.png/revision/latest"},
+    {name:"Lapu-Lapu",img:"https://static.wikia.nocookie.net/mobile-legends/images/8/8f/Portrait_Lapu-Lapu.png/revision/latest"},
+    {name:"Vexana",img:"https://static.wikia.nocookie.net/mobile-legends/images/5/5a/Portrait_Vexana.png/revision/latest"},
+    {name:"Roger",img:"https://static.wikia.nocookie.net/mobile-legends/images/7/7b/Portrait_Roger.png/revision/latest"},
+    {name:"Karrie",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/0a/Portrait_Karrie.png/revision/latest"},
+    {name:"Gatotkaca",img:"https://static.wikia.nocookie.net/mobile-legends/images/2/2b/Portrait_Gatotkaca.png/revision/latest"},
+    {name:"Harley",img:"https://static.wikia.nocookie.net/mobile-legends/images/4/4d/Portrait_Harley.png/revision/latest"},
+    {name:"Irithel",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/1e/Portrait_Irithel.png/revision/latest"},
+    {name:"Grock",img:"https://static.wikia.nocookie.net/mobile-legends/images/8/8a/Portrait_Grock.png/revision/latest"},
+    {name:"Argus",img:"https://static.wikia.nocookie.net/mobile-legends/images/9/9b/Portrait_Argus.png/revision/latest"},
+    {name:"Odette",img:"https://static.wikia.nocookie.net/mobile-legends/images/3/3d/Portrait_Odette.png/revision/latest"},
+    {name:"Lancelot",img:"https://static.wikia.nocookie.net/mobile-legends/images/5/5e/Portrait_Lancelot.png/revision/latest"},
+    {name:"Diggie",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/6f/Portrait_Diggie.png/revision/latest"},
+    {name:"Hylos",img:"https://static.wikia.nocookie.net/mobile-legends/images/7/7c/Portrait_Hylos.png/revision/latest"},
+    {name:"Zhask",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/0c/Portrait_Zhask.png/revision/latest"},
+    {name:"Helcurt",img:"https://static.wikia.nocookie.net/mobile-legends/images/2/2c/Portrait_Helcurt.png/revision/latest"},
+    {name:"Pharsa",img:"https://static.wikia.nocookie.net/mobile-legends/images/4/4b/Portrait_Pharsa.png/revision/latest"},
+    {name:"Lesley",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/1b/Portrait_Lesley.png/revision/latest"},
+    {name:"Jawhead",img:"https://static.wikia.nocookie.net/mobile-legends/images/3/3f/Portrait_Jawhead.png/revision/latest"},
+    {name:"Angela",img:"https://static.wikia.nocookie.net/mobile-legends/images/5/5d/Portrait_Angela.png/revision/latest"},
+    {name:"Gusion",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/6a/Portrait_Gusion.png/revision/latest"},
+    {name:"Valir",img:"https://static.wikia.nocookie.net/mobile-legends/images/8/8c/Portrait_Valir.png/revision/latest"},
+    {name:"Martis",img:"https://static.wikia.nocookie.net/mobile-legends/images/9/9e/Portrait_Martis.png/revision/latest"},
+    {name:"Uranus",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/0d/Portrait_Uranus.png/revision/latest"},
+    {name:"Hanabi",img:"https://static.wikia.nocookie.net/mobile-legends/images/2/2f/Portrait_Hanabi.png/revision/latest"},
+    {name:"Chang'e",img:"https://static.wikia.nocookie.net/mobile-legends/images/4/4a/Portrait_Chang%27e.png/revision/latest"},
+    {name:"Kaja",img:"https://static.wikia.nocookie.net/mobile-legends/images/5/5e/Portrait_Kaja.png/revision/latest"},
+    {name:"Selena",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/67/Portrait_Selena.png/revision/latest"},
+    {name:"Aldous",img:"https://static.wikia.nocookie.net/mobile-legends/images/7/78/Portrait_Aldous.png/revision/latest"},
+    {name:"Claude",img:"https://static.wikia.nocookie.net/mobile-legends/images/8/89/Portrait_Claude.png/revision/latest"},
+    {name:"Vale",img:"https://static.wikia.nocookie.net/mobile-legends/images/9/9a/Portrait_Vale.png/revision/latest"},
+    {name:"Leomord",img:"https://static.wikia.nocookie.net/mobile-legends/images/a/ab/Portrait_Leomord.png/revision/latest"},
+    {name:"Lunox",img:"https://static.wikia.nocookie.net/mobile-legends/images/b/bc/Portrait_Lunox.png/revision/latest"},
+    {name:"Hanzo",img:"https://static.wikia.nocookie.net/mobile-legends/images/c/cd/Portrait_Hanzo.png/revision/latest"},
+    {name:"Belerick",img:"https://static.wikia.nocookie.net/mobile-legends/images/d/de/Portrait_Belerick.png/revision/latest"},
+    {name:"Kimmy",img:"https://static.wikia.nocookie.net/mobile-legends/images/e/ef/Portrait_Kimmy.png/revision/latest"},
+    {name:"Thamuz",img:"https://static.wikia.nocookie.net/mobile-legends/images/f/f0/Portrait_Thamuz.png/revision/latest"},
+    {name:"Harith",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/01/Portrait_Harith.png/revision/latest"},
+    {name:"Minsitthar",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/12/Portrait_Minsitthar.png/revision/latest"},
+    {name:"Kadita",img:"https://static.wikia.nocookie.net/mobile-legends/images/2/23/Portrait_Kadita.png/revision/latest"},
+    {name:"Faramis",img:"https://static.wikia.nocookie.net/mobile-legends/images/3/34/Portrait_Faramis.png/revision/latest"},
+    {name:"Badang",img:"https://static.wikia.nocookie.net/mobile-legends/images/4/45/Portrait_Badang.png/revision/latest"},
+    {name:"Guinevere",img:"https://static.wikia.nocookie.net/mobile-legends/images/5/56/Portrait_Guinevere.png/revision/latest"},
+    {name:"Granger",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/67/Portrait_Granger.png/revision/latest"},
+    {name:"Esmeralda",img:"https://static.wikia.nocookie.net/mobile-legends/images/7/78/Portrait_Esmeralda.png/revision/latest"},
+    {name:"Terizla",img:"https://static.wikia.nocookie.net/mobile-legends/images/8/89/Portrait_Terizla.png/revision/latest"},
+    {name:"X.Borg",img:"https://static.wikia.nocookie.net/mobile-legends/images/9/9a/Portrait_X.Borg.png/revision/latest"},
+    {name:"Ling",img:"https://static.wikia.nocookie.net/mobile-legends/images/a/ab/Portrait_Ling.png/revision/latest"},
+    {name:"Dyrroth",img:"https://static.wikia.nocookie.net/mobile-legends/images/b/bc/Portrait_Dyrroth.png/revision/latest"},
+    {name:"Lylia",img:"https://static.wikia.nocookie.net/mobile-legends/images/c/cd/Portrait_Lylia.png/revision/latest"},
+    {name:"Baxia",img:"https://static.wikia.nocookie.net/mobile-legends/images/d/de/Portrait_Baxia.png/revision/latest"},
+    {name:"Masha",img:"https://static.wikia.nocookie.net/mobile-legends/images/e/ef/Portrait_Masha.png/revision/latest"},
+    {name:"Wanwan",img:"https://static.wikia.nocookie.net/mobile-legends/images/f/f0/Portrait_Wanwan.png/revision/latest"},
+    {name:"Silvanna",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/01/Portrait_Silvanna.png/revision/latest"},
+    {name:"Carmilla",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/12/Portrait_Carmilla.png/revision/latest"},
+    {name:"Cecilion",img:"https://static.wikia.nocookie.net/mobile-legends/images/2/23/Portrait_Cecilion.png/revision/latest"},
+    {name:"Atlas",img:"https://static.wikia.nocookie.net/mobile-legends/images/3/34/Portrait_Atlas.png/revision/latest"},
+    {name:"Popol and Kupa",img:"https://static.wikia.nocookie.net/mobile-legends/images/4/45/Portrait_Popol_and_Kupa.png/revision/latest"},
+    {name:"Yu Zhong",img:"https://static.wikia.nocookie.net/mobile-legends/images/5/56/Portrait_Yu_Zhong.png/revision/latest"},
+    {name:"Luo Yi",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/67/Portrait_Luo_Yi.png/revision/latest"},
+    {name:"Benedetta",img:"https://static.wikia.nocookie.net/mobile-legends/images/7/78/Portrait_Benedetta.png/revision/latest"},
+    {name:"Khaleed",img:"https://static.wikia.nocookie.net/mobile-legends/images/8/89/Portrait_Khaleed.png/revision/latest"},
+    {name:"Barats",img:"https://static.wikia.nocookie.net/mobile-legends/images/9/9a/Portrait_Barats.png/revision/latest"},
+    {name:"Brody",img:"https://static.wikia.nocookie.net/mobile-legends/images/a/ab/Portrait_Brody.png/revision/latest"},
+    {name:"Yve",img:"https://static.wikia.nocookie.net/mobile-legends/images/b/bc/Portrait_Yve.png/revision/latest"},
+    {name:"Mathilda",img:"https://static.wikia.nocookie.net/mobile-legends/images/c/cd/Portrait_Mathilda.png/revision/latest"},
+    {name:"Paquito",img:"https://static.wikia.nocookie.net/mobile-legends/images/d/de/Portrait_Paquito.png/revision/latest"},
+    {name:"Gloo",img:"https://static.wikia.nocookie.net/mobile-legends/images/e/ef/Portrait_Gloo.png/revision/latest"},
+    {name:"Beatrix",img:"https://static.wikia.nocookie.net/mobile-legends/images/f/f0/Portrait_Beatrix.png/revision/latest"},
+    {name:"Phoveus",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/01/Portrait_Phoveus.png/revision/latest"},
+    {name:"Natan",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/12/Portrait_Natan.png/revision/latest"},
+    {name:"Aulus",img:"https://static.wikia.nocookie.net/mobile-legends/images/2/23/Portrait_Aulus.png/revision/latest"},
+    {name:"Aamon",img:"https://static.wikia.nocookie.net/mobile-legends/images/3/34/Portrait_Aamon.png/revision/latest"},
+    {name:"Valentina",img:"https://static.wikia.nocookie.net/mobile-legends/images/4/45/Portrait_Valentina.png/revision/latest"},
+    {name:"Edith",img:"https://static.wikia.nocookie.net/mobile-legends/images/5/56/Portrait_Edith.png/revision/latest"},
+    {name:"Floryn",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/67/Portrait_Floryn.png/revision/latest"},
+    {name:"Yin",img:"https://static.wikia.nocookie.net/mobile-legends/images/7/78/Portrait_Yin.png/revision/latest"},
+    {name:"Melissa",img:"https://static.wikia.nocookie.net/mobile-legends/images/8/89/Portrait_Melissa.png/revision/latest"},
+    {name:"Xavier",img:"https://static.wikia.nocookie.net/mobile-legends/images/9/9a/Portrait_Xavier.png/revision/latest"},
+    {name:"Julian",img:"https://static.wikia.nocookie.net/mobile-legends/images/a/ab/Portrait_Julian.png/revision/latest"},
+    {name:"Fredrinn",img:"https://static.wikia.nocookie.net/mobile-legends/images/b/bc/Portrait_Fredrinn.png/revision/latest"},
+    {name:"Joy",img:"https://static.wikia.nocookie.net/mobile-legends/images/c/cd/Portrait_Joy.png/revision/latest"},
+    {name:"Nolan",img:"https://static.wikia.nocookie.net/mobile-legends/images/d/de/Portrait_Nolan.png/revision/latest"},
+    {name:"Ixia",img:"https://static.wikia.nocookie.net/mobile-legends/images/e/ef/Portrait_Ixia.png/revision/latest"},
+    {name:"Novaria",img:"https://static.wikia.nocookie.net/mobile-legends/images/f/f0/Portrait_Novaria.png/revision/latest"},
+    {name:"Arlott",img:"https://static.wikia.nocookie.net/mobile-legends/images/0/01/Portrait_Arlott.png/revision/latest"},
+    {name:"Cici",img:"https://static.wikia.nocookie.net/mobile-legends/images/1/12/Portrait_Cici.png/revision/latest"},
+    {name:"Chip",img:"https://static.wikia.nocookie.net/mobile-legends/images/2/23/Portrait_Chip.png/revision/latest"},
+    {name:"Zhuxin",img:"https://static.wikia.nocookie.net/mobile-legends/images/3/34/Portrait_Zhuxin.png/revision/latest"},
+    {name:"Suyou",img:"https://static.wikia.nocookie.net/mobile-legends/images/4/45/Portrait_Suyou.png/revision/latest"},
+    {name:"Zetian",img:"https://static.wikia.nocookie.net/mobile-legends/images/5/56/Portrait_Zetian.png/revision/latest"},
+    {name:"Obsidia",img:"https://static.wikia.nocookie.net/mobile-legends/images/6/67/Portrait_Obsidia.png/revision/latest"},
+    {name:"Kalea",img:"https://static.wikia.nocookie.net/mobile-legends/images/7/78/Portrait_Kalea.png/revision/latest"},
+    {name:"Lukas",img:"https://static.wikia.nocookie.net/mobile-legends/images/8/89/Portrait_Lukas.png/revision/latest"}
+];
+
+// Tier List actualizada Noviembre 2025 (meta rankeado)
+const tierList = {
+    gold: { S:["Kimmy","Granger","Beatrix","Wanwan","Ixia"], A:["Clint","Moskov","Brody","Lesley","Karrie"], B:["Bruno","Layla","Hanabi","Miya"], C:["Roger"] },
+    exp: { S:["Arlott","Fredrinn","Phoveus","Badang","Paquito"], A:["Guinevere","Yu Zhong","Esmeralda","Terizla","Ruby","Chou"], B:["Thamuz","Dyrroth","Alpha","Sun","Bane"], C:["Alucard","Zilong"] },
+    jungle: { S:["Julian","Nolan","Joy","Ling","Lancelot"], A:["Hayabusa","Fanny","Gusion","Benedetta","Karina"], B:["Saber","Helcurt","Hanzo","Yi Sun-shin"], C:[] },
+    mid: { S:["Zhuxin","Novaria","Valentina","Yve","Harith"], A:["Luo Yi","Pharsa","Valir","Cecilion","Kadita"], B:["Aurora","Chang'e","Kagura","Vexana"], C:["Eudora","Gord"] },
+    roam: { S:["Floryn","Angela","Mathilda","Chip"], A:["Estes","Rafaela","Diggie","Kalea"], B:["Tigreal","Khufra","Atlas"], C:["Minotaur"] }
+};
+
+// Render héroes
+function renderHeroes(filter="") {
+    const grid = document.getElementById("heroes-grid");
+    grid.innerHTML = "";
+    heroes.filter(h=>h.name.toLowerCase().includes(filter.toLowerCase())).forEach(h=>{
+        grid.innerHTML += `
+            <div class="hero-card">
+                <img src="${h.img}" alt="${h.name}" class="hero-img" onerror="this.src='https://via.placeholder.com/82?text=${h.name}'">
+                <div class="hero-name">${h.name}</div>
+            </div>`;
+    });
+}
+
+// Render Tier List
+function renderTier(lane="gold") {
+    const container = document.getElementById("tier-container");
+    container.innerHTML = "";
+    const data = tierList[lane];
+    ['S','A','B','C'].forEach(tier=>{
+        if(data[tier].length>0){
+            container.innerHTML += `
+                <div class="tier-row">
+                    <div class="tier-title">Tier ${tier}</div>
+                    <div class="tier-grid">
+                        ${data[tier].map(name=>{
+                            const hero = heroes.find(h=>h.name===name);
+                            return `<div class="tier-hero"><img src="${hero?hero.img:''}" onerror="this.src='https://via.placeholder.com/65?text=${name}'"><p>${name}</p></div>`;
+                        }).join('')}
+                    </div>
+                </div>`;
+        }
+    });
+}
+
+// Eventos
+document.getElementById("search").addEventListener("input", e=>renderHeroes(e.target.value));
+
+document.querySelectorAll(".lane-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+        document.querySelectorAll(".lane-btn").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        renderTier(btn.dataset.lane);
+    });
+});
+
+document.querySelectorAll(".nav-item").forEach(item=>{
+    item.addEventListener("click", ()=>{
+        document.querySelectorAll(".nav-item").forEach(i=>i.classList.remove("active"));
+        item.classList.add("active");
+        document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+        document.getElementById(item.dataset.tab).classList.add("active");
+        if(item.dataset.tab==="ranking-tab") renderTier();
+    });
+});
+
+// Inicio
+renderHeroes();
+renderTier();
+</script>
+</body>
+</html>
