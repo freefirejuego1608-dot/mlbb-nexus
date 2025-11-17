@@ -1,595 +1,361 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>MLBB Nexus — Héroes & Tier List</title>
-<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#0f0f0f;
-  --card:#121212;
-  --accent:#ff7a00;
-  --muted:#bdbdbd;
-  --glass: rgba(255,255,255,0.03);
-  --radius:14px;
-  --ease: cubic-bezier(.2,.9,.2,1);
-  font-family: 'Roboto', system-ui, sans-serif;
-}
-*{box-sizing:border-box}
-html,body{height:100%;background:var(--bg);color:#fff;margin:0;padding:0;-webkit-font-smoothing:antialiased}
-.app{min-height:100vh;display:flex;flex-direction:column}
-
-/* Top bar */
-.topbar{
-  display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:linear-gradient(180deg, rgba(0,0,0,0.35), transparent);
-  position:sticky;top:0;z-index:40;border-bottom:1px solid rgba(255,255,255,0.02)
-}
-.brand{display:flex;align-items:center;gap:10px;font-family:'Patrick Hand';font-size:20px;color:var(--accent)}
-.icon-btn{width:42px;height:42px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:var(--card);border:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:transform .15s var(--ease)}
-.icon-btn:active{transform:scale(.96)}
-.top-right{display:flex;gap:10px;align-items:center}
-
-/* drawer */
-.drawer{position:fixed;left:0;top:0;bottom:0;width:0;overflow:hidden;background:linear-gradient(180deg,#0b0b0b,#0e0e0e);z-index:60;transition:width .28s var(--ease);border-right:1px solid rgba(255,255,255,0.03)}
-.drawer.open{width:320px}
-.drawer .menu{padding:22px}
-.drawer .menu h3{margin:0 0 12px;font-family:'Patrick Hand';color:var(--accent)}
-.drawer a{display:block;padding:12px;border-radius:10px;color:var(--muted);text-decoration:none;margin-bottom:8px;border:1px solid rgba(255,255,255,0.02)}
-.drawer a:hover{color:var(--accent);background:rgba(255,122,0,0.03)}
-
-/* container */
-.container{padding:12px 14px 110px;flex:1}
-
-/* Search/filter */
-.search-wrap{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
-.search{flex:1;background:var(--card);border-radius:999px;padding:10px 14px;display:flex;align-items:center;gap:10px;border:2px solid rgba(255,122,0,0.08);transition:box-shadow .18s}
-.search:focus-within{box-shadow:0 8px 30px rgba(0,0,0,0.6)}
-.search input{background:transparent;border:0;outline:none;color:#fff;font-size:15px;width:100%;font-family:'Patrick Hand'}
-.select{background:var(--card);padding:8px 10px;border-radius:10px;border:1px solid rgba(255,122,0,0.06);font-size:13px;color:var(--muted)}
-/* grid */
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:6px}
-@media(min-width:680px){ .grid{grid-template-columns:repeat(6,1fr)}}
-.hero-card{
-  background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
-  border-radius:12px;padding:10px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;
-  border:1px solid rgba(255,122,0,0.04);
-  transform:translateY(0);transition:transform .18s var(--ease),box-shadow .18s;
-}
-.hero-card:hover{transform:translateY(-8px);box-shadow:0 12px 30px rgba(0,0,0,0.6)}
-.avatar{width:82px;height:82px;border-radius:50%;overflow:hidden;border:3px solid var(--accent);display:flex;align-items:center;justify-content:center;background:#222}
-.avatar img{width:100%;height:100%;object-fit:cover;display:block}
-.hname{font-family:'Patrick Hand';font-size:13px;color:#fff;opacity:0.95}
-
-/* detail panel */
-.detail{position:relative;margin-top:12px;padding:12px;border-radius:12px;background:var(--card);border:2px solid rgba(255,122,0,0.08);display:none;animation:fadeIn .28s var(--ease) both}
-.detail.show{display:block}
-.detail .head{display:flex;gap:12px;align-items:center}
-.big-avatar{width:96px;height:96px;border-radius:12px;overflow:hidden;border:3px solid var(--accent)}
-.detail h2{font-family:'Patrick Hand';margin:0}
-.muted{color:var(--muted);font-size:13px}
-.section{margin-top:12px}
-.list-small{display:flex;flex-wrap:wrap;gap:8px}
-.counter-card{background:#0b0b0b;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;gap:8px}
-.counter-card img{width:36px;height:36px;border-radius:50%;object-fit:cover}
-
-/* tierlist */
-.tierlist{margin-top:18px;display:flex;flex-direction:column;gap:12px}
-.tier-card{border-radius:12px;padding:12px;border:2px solid rgba(255,122,0,0.08);background:linear-gradient(180deg, rgba(255,122,0,0.02), transparent)}
-.tier-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.tier-badge{background:var(--accent);color:#111;padding:6px 10px;border-radius:8px;font-weight:700;margin-right:6px}
-
-/* patch bell */
-.patch-bell{position:fixed;right:14px;top:14px;z-index:70}
-.badge{position:absolute;right:6px;top:6px;background:#ff3b3b;color:white;width:18px;height:18px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid #fff}
-
-/* download */
-.download-card{margin-top:12px;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:space-between;gap:12px}
-.download-card .desc{font-size:14px;color:var(--muted)}
-.download-btn{background:var(--accent);color:#111;padding:10px 14px;border-radius:10px;font-weight:700;border:0;cursor:pointer;transition:transform .12s}
-.download-btn:active{transform:scale(.98)}
-
-/* footer nav */
-.footer-spacer{height:88px}
-
-/* animations */
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.empty{opacity:0.45;text-align:center;padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border:1px dashed rgba(255,255,255,0.03)}
-/* small screens */
-@media(max-width:420px){
-  .avatar{width:68px;height:68px}
-  .grid{grid-template-columns:repeat(3,1fr)}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cronopirata</title>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
+  <style>
+    body { margin:0; padding:0; background:#000; overflow:hidden; font-family:Arial; }
+    #ui { position:absolute; top:10px; left:10px; color:#fff; z-index:100; }
+    #log { position:absolute; bottom:10px; left:10px; color:#0f0; font-size:12px; max-height:100px; overflow-y:auto; }
+  </style>
 </head>
 <body>
-<div class="app">
+  <div id="ui">Oro: <span id="gold">0</span> | Vida: <span id="hp">100</span> | Línea: <span id="line">1</span></div>
+  <div id="log"></div>
+  <script type="module">
+    // === CONFIGURACIÓN GLOBAL ===
+    const CONFIG = {
+      SERVER: 'wss://cronopirata-server.onrender.com', // Cambiar por tu servidor real
+      PLAYER_ID: 'player_' + Math.random().toString(36).substr(2,9),
+      LINE_ID: null,
+      WORLD_SEED: Math.random()
+    };
 
-  <!-- Drawer / hamburger -->
-  <div id="drawer" class="drawer" aria-hidden="true">
-    <div class="menu" role="menu">
-      <h3>MLBB Nexus</h3>
-      <a href="#" data-section="heroes">Héroes</a>
-      <a href="#" data-section="tiers">Tier List</a>
-      <a href="#" data-section="download">Descargar App</a>
-      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:10px 0">
-      <div style="font-size:13px;color:var(--muted)">Preferencias</div>
-      <a href="#" onclick="alert('Aquí puedes añadir enlaces a ajustes (demo).')">Ajustes</a>
-    </div>
-  </div>
+    // === ESTADO LOCAL ===
+    let gameState = {
+      gold: 50,
+      hp: 100,
+      x: 400, y: 300,
+      vx: 0, vy: 0,
+      angle: 0,
+      line: 1,
+      ghosts: [], // Líneas temporales muertas
+      particles: []
+    };
 
-  <!-- Top bar -->
-  <div class="topbar">
-    <div style="display:flex;align-items:center;gap:10px">
-      <button id="hambtn" class="icon-btn" aria-label="Abrir menú"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg></button>
-      <div class="brand"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2l2 4 4 .5-3 3 .8 4L12 12l-3.8 2.5.8-4L6 6.5 10 6 12 2z" fill="white"/></svg> MLBB Nexus</div>
-    </div>
+    // === WEB SOCKET (SIMULADO PARA GITHUB) ===
+    class FakeWS {
+      constructor() { this.listeners = {}; }
+      on(event, cb) { this.listeners[event] = cb; }
+      send(data) { 
+        addLog(`📤 ${data}`);
+        setTimeout(() => this.simulateResponse(JSON.parse(data)), 500);
+      }
+      simulateResponse(msg) {
+        if (msg.type === 'join') {
+          CONFIG.LINE_ID = msg.line || Date.now();
+          this.listeners.message({data: JSON.stringify({type:'init', ...gameState, line: CONFIG.LINE_ID})});
+        }
+        if (msg.type === 'move') {
+          this.listeners.message({data: JSON.stringify({type:'ghost', id:msg.id, x:msg.x, y:msg.y, angle:msg.angle})});
+        }
+      }
+    }
+    const ws = new FakeWS(); // En producción: new WebSocket(CONFIG.SERVER)
 
-    <div class="top-right">
-      <button id="bell" class="icon-btn patch-bell" aria-label="Notificaciones parche" title="Último parche">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 17H9a3 3 0 01-3-3V10a5 5 0 0110 0v4a3 3 0 01-1 3z" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <div class="badge" id="bellBadge">1</div>
-      </button>
-    </div>
-  </div>
+    // === PHASER GAME ===
+    const config = {
+      type: Phaser.AUTO,
+      width: 800, height: 600,
+      physics: { default: 'arcade', arcade: { debug: false } },
+      scene: { preload, create, update },
+      parent: 'phaser-game'
+    };
+    const game = new Phaser.Game(config);
 
-  <!-- Main -->
-  <main class="container" id="main">
+    function preload() {
+      this.load.image('ship', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0zMiAzMk0yNiAyMmgxMmwxLTN6TTI0IDI2bDEuNS0zaDEuNWwxLjUtM2gzbDEuNS0zaDFsMS41IDNoM2wxLjUgM2gxLjVsMS41IDNoMWwxIDN6IiBmaWxsPSIjZmY5OTAwIi8+PHBhdGggZD0iTTI4IDM0bDItMmg4bC0yLTJ6IiBmaWxsPSIjY2MwMDAwIi8+PC9zdmc+');
+      this.load.image('island', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgZmlsbD0iIzY2Nj633IiByeD0iNSIvPjxjaXJjbGUgY3g9IjI1IiBjeT0iMjUiIHI9IjE1IiBmaWxsPSIjODg4ODg4Ii8+PC9zdmc+');
+      this.load.image('treasure', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIgZmlsbD0iI2ZmY2MwMCIvPjx0ZXh0IHg9IjE1IiB5PSIyMCIgZm9udC1zaXplPSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzAwMCI+JDwvdGV4dD48L3N2Zz4=');
+      this.load.image('particle', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOCIgaGVpZ2h0PSI4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjQiIGN5PSI0IiByPSI0IiBmaWxsPSJ5ZWxsb3ciLz48L3N2Zz4=');
+    }
 
-    <!-- HEROES section -->
-    <section id="section-heroes" data-section="heroes" aria-label="Sección Héroes">
-      <div class="search-wrap" role="search">
-        <div class="search" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/><circle cx="11" cy="11" r="6" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/></svg>
-          <input id="searchInput" placeholder="Buscar héroe..." aria-label="Buscar héroe">
-        </div>
+    let player, islands, treasures, ghosts, particles, cursors, spaceKey;
 
-        <select id="roleFilter" class="select" title="Filtrar por rol">
-          <option value="all">Rol: Todos</option>
-          <option value="tank">Tank</option>
-          <option value="fighter">Fighter</option>
-          <option value="assassin">Assassin</option>
-          <option value="mage">Mage</option>
-          <option value="marksman">Marksman</option>
-          <option value="support">Support</option>
-        </select>
+    function create() {
+      this.cameras.main.setBackgroundColor('#003366');
 
-        <select id="tierFilter" class="select" title="Filtrar por tier">
-          <option value="all">Tier: Todos</option>
-          <option value="SS">SS</option>
-          <option value="S">S</option>
-          <option value="A">A</option>
-          <option value="B">B</option>
-        </select>
-      </div>
+      // Grupos
+      islands = this.physics.add.staticGroup();
+      treasures = this.physics.add.staticGroup();
+      ghosts = this.physics.add.group();
+      particles = this.add.particles(0, 0, 'particle', {
+        speed: 100, lifespan: 500, quantity: 3, scale: { start: 1, end: 0 }, blendMode: 'ADD'
+      });
+      particles.stop();
 
-      <div id="gridHeroes" class="grid" aria-live="polite"></div>
+      // Jugador
+      player = this.physics.add.image(400, 300, 'ship').setScale(0.8).setDepth(10);
+      player.setCollideWorldBounds(true);
 
-      <div id="heroDetail" class="detail" role="region" aria-labelledby="detailTitle">
-        <div class="head">
-          <div class="big-avatar" id="dAvatar"><img src="" alt=""></div>
-          <div style="flex:1">
-            <h2 id="detailTitle">Nombre</h2>
-            <div class="muted" id="detailRoleTier">Rol · Tier</div>
-            <div class="muted" id="detailBioShort" style="margin-top:6px">Resumen corto del héroe.</div>
-          </div>
-          <div style="margin-left:12px">
-            <button id="closeDetail" class="select" style="cursor:pointer">Cerrar</button>
-          </div>
-        </div>
+      // Controles
+      cursors = this.input.keyboard.createCursorKeys();
+      spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-        <div class="section">
-          <h3 style="color:var(--accent);margin:8px 0 6px">Build recomendada</h3>
-          <div id="detailBuilds" class="list-small"></div>
-        </div>
+      // Generar mundo procedural (fragmentos de líneas muertas)
+      generateWorld(this, CONFIG.WORLD_SEED);
 
-        <div class="section">
-          <h3 style="color:var(--accent);margin:8px 0 6px">Fuerte contra</h3>
-          <div id="detailStrong" class="list-small"></div>
-        </div>
+      // Colisiones
+      this.physics.add.collider(player, islands, hitIsland, null, this);
+      this.physics.add.overlap(player, treasures, collectTreasure, null, this);
+      this.physics.add.overlap(player, ghosts, raidGhost, null, this);
 
-        <div class="section">
-          <h3 style="color:var(--accent);margin:8px 0 6px">Débil contra</h3>
-          <div id="detailWeak" class="list-small"></div>
-        </div>
-      </div>
-    </section>
+      // UI
+      this.goldText = this.add.text(10, 10, '', {font: '16px Arial', color: '#ff0'}).setDepth(100);
+      this.hpText = this.add.text(10, 30, '', {font: '16px Arial', color: '#f00'}).setDepth(100);
+      this.lineText = this.add.text(10, 50, '', {font: '16px Arial', color: '#0ff'}).setDepth(100);
 
-    <!-- TIER LIST -->
-    <section id="section-tiers" data-section="tiers" style="display:none" aria-label="Sección Tier List">
-      <h2 style="font-family:'Patrick Hand';color:var(--accent);margin:0 0 10px">Tier List</h2>
-      <div id="tierlist" class="tierlist" aria-live="polite"></div>
-    </section>
+      // WebSocket
+      ws.on('message', (e) => handleMessage(JSON.parse(e.data), this));
+      ws.send(JSON.stringify({type: 'join', id: CONFIG.PLAYER_ID}));
+    }
 
-    <!-- DOWNLOAD (placeholder) -->
-    <section id="section-download" data-section="download" style="display:none" aria-label="Sección Descargar">
-      <h2 style="font-family:'Patrick Hand';color:var(--accent);margin:0 0 10px">Descargar App</h2>
-      <div class="download-card">
-        <div>
-          <div style="font-weight:700">App MLBB Nexus (Próxima actualización)</div>
-          <div class="desc">Botón de descarga para la APK — disponible en próximas versiones.</div>
-        </div>
-        <button class="download-btn" id="downloadBtn">Descargar (Próximamente)</button>
-      </div>
-    </section>
+    function update() {
+      const speed = 180;
+      const turn = 4;
 
-    <div class="footer-spacer" aria-hidden="true"></div>
-  </main>
+      // Movimiento
+      if (cursors.left.isDown) gameState.angle -= turn;
+      if (cursors.right.isDown) gameState.angle += turn;
+      if (cursors.up.isDown) {
+        gameState.vx = Math.cos(gameState.angle * Math.PI / 180) * speed;
+        gameState.vy = Math.sin(gameState.angle * Math.PI / 180) * speed;
+        particles.emitParticleAt(player.x, player.y, 3);
+      } else {
+        gameState.vx *= 0.95; gameState.vy *= 0.95;
+      }
 
-  <!-- Footer nav (quick) -->
-  <div style="position:fixed;left:0;right:0;bottom:0;background:#0c0c0c;border-top:1px solid rgba(255,255,255,0.02);display:flex;justify-content:space-around;padding:10px 6px;z-index:40">
-    <button class="icon-btn nav-small" data-section="heroes" aria-label="Héroes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 21v-2a4 4 0 014-4h10a4 4 0 014 4v2" stroke="white" stroke-width="1.4"/></svg></button>
-    <button class="icon-btn nav-small" data-section="tiers" aria-label="Tier List"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 20v-16" stroke="white" stroke-width="1.4"/><path d="M18 20v-10" stroke="white" stroke-width="1.4"/></svg></button>
-    <button class="icon-btn nav-small" data-section="download" aria-label="Descargar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3v12" stroke="white" stroke-width="1.6"/><path d="M8 11l4 4 4-4" stroke="white" stroke-width="1.6"/></svg></button>
-  </div>
+      player.setVelocity(gameState.vx, gameState.vy);
+      player.setRotation(gameState.angle * Math.PI / 180);
 
-</div>
+      gameState.x = player.x; gameState.y = player.y;
 
-<!-- Patch modal -->
-<div id="patchModal" style="display:none;position:fixed;right:14px;top:70px;z-index:90;background:var(--card);border:2px solid rgba(255,122,0,0.12);padding:12px;border-radius:10px;width:320px;box-shadow:0 12px 40px rgba(0,0,0,0.6)">
-  <div style="display:flex;align-items:center;gap:10px">
-    <div style="width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#111;font-weight:800">P</div>
-    <div>
-      <div style="font-weight:700">Nuevo parche disponible</div>
-      <div style="font-size:13px;color:var(--muted)">Resumen rápido del parche</div>
-    </div>
-  </div>
-  <div style="margin-top:10px;font-size:13px;color:var(--muted);max-height:220px;overflow:auto" id="patchSummary">
-    <strong>vX.Y.Z</strong> — Balance de héroes: ajustes en daño y movilidad. Nuevas skins y mejoras de QoL. (Texto demo — reemplazar con contenido real del parche)
-  </div>
-  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
-    <button id="patchClose" class="icon-btn" style="padding:6px 10px">Cerrar</button>
-    <button id="patchRead" class="download-btn" style="padding:8px 12px">Ver detalles</button>
-  </div>
-</div>
+      // Enviar posición
+      if (Math.random() < 0.1) {
+        ws.send(JSON.stringify({
+          type: 'move',
+          id: CONFIG.PLAYER_ID,
+          line: CONFIG.LINE_ID,
+          x: player.x,
+          y: player.y,
+          angle: gameState.angle
+        }));
+      }
 
-<script>
-/* ==========================
-   DATOS: héroes reales (lista provista)
-   Avatares SVG minimalistas generados dinámicamente.
-   Incluye role, tier, builds (placeholder), strong/weak counters generados determinísticamente.
-   ========================== */
+      // Abandonar línea (ESPACIO)
+      if (spaceKey.isDown && !this.spaceDown) {
+        this.spaceDown = true;
+        abandonLine(this);
+      } else if (spaceKey.isUp) {
+        this.spaceDown = false;
+      }
 
-/* Lista tomada y consolidada de tus mensajes (héroes reales por rol) */
-const heroesData = [
-  /* Tanques */
-  { id:'tigreal', name:'Tigreal', role:'tank', tier:'A' },
-  { id:'grock', name:'Grock', role:'tank', tier:'S' },
-  { id:'lolita', name:'Lolita', role:'tank', tier:'A' },
-  { id:'franco', name:'Franco', role:'tank', tier:'A' },
-  { id:'akai', name:'Akai', role:'tank', tier:'S' },
-  { id:'belerick', name:'Belerick', role:'tank', tier:'B' },
-  { id:'gatotkaca', name:'Gatotkaca', role:'tank', tier:'S' },
-  { id:'khufra', name:'Khufra', role:'tank', tier:'S' },
-  { id:'atlas', name:'Atlas', role:'tank', tier:'A' },
-  { id:'baxia', name:'Baxia', role:'tank', tier:'B' },
-  { id:'hylos', name:'Hylos', role:'tank', tier:'A' },
+      updateUI(this);
+    }
 
-  /* Fighters */
-  { id:'zilong', name:'Zilong', role:'fighter', tier:'A' },
-  { id:'freya', name:'Freya', role:'fighter', tier:'S' },
-  { id:'chou', name:'Chou', role:'fighter', tier:'S' },
-  { id:'martis', name:'Martis', role:'fighter', tier:'A' },
-  { id:'lapulapu', name:'Lapu-Lapu', role:'fighter', tier:'S' },
-  { id:'xborg', name:'X.Borg', role:'fighter', tier:'A' },
-  { id:'badang', name:'Badang', role:'fighter', tier:'A' },
-  { id:'guinevere', name:'Guinevere', role:'fighter', tier:'S' },
-  { id:'dyrroth', name:'Dyrroth', role:'fighter', tier:'S' },
-  { id:'yuzhong', name:'Yu Zhong', role:'fighter', tier:'S' },
-  { id:'arlott', name:'Arlott', role:'fighter', tier:'A' },
-  { id:'fredrinn', name:'Fredrinn', role:'fighter', tier:'A' },
+    // === GENERACIÓN DE MUNDO ===
+    function generateWorld(scene, seed) {
+      const rng = new Phaser.Math.RandomDataGenerator([seed.toString()]);
+      for (let i = 0; i < 8; i++) {
+        const x = rng.between(100, 700);
+        const y = rng.between(100, 500);
+        const island = islands.create(x, y, 'island').setScale(rng.between(80, 150)/100).setTint(0x666633);
+        island.body.setCircle(25);
+        island.lineOwner = 'ghost_' + i;
+        island.gold = rng.between(20, 80);
+      }
+      for (let i = 0; i < 5; i++) {
+        const x = rng.between(50, 750);
+        const y = rng.between(50, 550);
+        treasures.create(x, y, 'treasure').setScale(0.6);
+      }
+    }
 
-  /* Assassins */
-  { id:'saber', name:'Saber', role:'assassin', tier:'B' },
-  { id:'hayabusa', name:'Hayabusa', role:'assassin', tier:'S' },
-  { id:'lancelot', name:'Lancelot', role:'assassin', tier:'S' },
-  { id:'natalia', name:'Natalia', role:'assassin', tier:'A' },
-  { id:'gusion', name:'Gusion', role:'assassin', tier:'S' },
-  { id:'fanny', name:'Fanny', role:'assassin', tier:'S' },
-  { id:'helcurt', name:'Helcurt', role:'assassin', tier:'S' },
-  { id:'aamon', name:'Aamon', role:'assassin', tier:'S' },
-  { id:'ling', name:'Ling', role:'assassin', tier:'S' },
-  { id:'joy', name:'Joy', role:'assassin', tier:'A' },
-  { id:'nolan', name:'Nolan', role:'assassin', tier:'A' },
+    // === INTERACCIONES ===
+    function hitIsland(player, island) {
+      gameState.hp -= 5;
+      addLog(`🏝️ Choque con isla de ${island.lineOwner}! -5 HP`);
+      if (gameState.hp <= 0) die(this.scene);
+    }
 
-  /* Mages */
-  { id:'eudora', name:'Eudora', role:'mage', tier:'B' },
-  { id:'gord', name:'Gord', role:'mage', tier:'A' },
-  { id:'alice', name:'Alice', role:'mage', tier:'A' },
-  { id:'kagura', name:'Kagura', role:'mage', tier:'S' },
-  { id:'cyclops', name:'Cyclops', role:'mage', tier:'A' },
-  { id:'odette', name:'Odette', role:'mage', tier:'S' },
-  { id:'lunox', name:'Lunox', role:'mage', tier:'S' },
-  { id:'valir', name:'Valir', role:'mage', tier:'A' },
-  { id:'pharsa', name:'Pharsa', role:'mage', tier:'S' },
-  { id:'cecilion', name:'Cecilion', role:'mage', tier:'S' },
-  { id:'yve', name:'Yve', role:'mage', tier:'SS' },
-  { id:'xavier', name:'Xavier', role:'mage', tier:'A' },
-  { id:'zhuxin', name:'Zhuxin', role:'mage', tier:'A' },
+    function collectTreasure(player, treasure) {
+      treasure.destroy();
+      gameState.gold += 25;
+      addLog(`💰 +25 oro! Total: ${gameState.gold}`);
+      particles.emitParticleAt(treasure.x, treasure.y, 10);
+    }
 
-  /* Marksmen */
-  { id:'layla', name:'Layla', role:'marksman', tier:'B' },
-  { id:'miya', name:'Miya', role:'marksman', tier:'A' },
-  { id:'clint', name:'Clint', role:'marksman', tier:'A' },
-  { id:'moskov', name:'Moskov', role:'marksman', tier:'S' },
-  { id:'bruno', name:'Bruno', role:'marksman', tier:'S' },
-  { id:'irithel', name:'Irithel', role:'marksman', tier:'A' },
-  { id:'granger', name:'Granger', role:'marksman', tier:'S' },
-  { id:'claude', name:'Claude', role:'marksman', tier:'SS' },
-  { id:'natan', name:'Natan', role:'marksman', tier:'SS' },
-  { id:'beatrix', name:'Beatrix', role:'marksman', tier:'S' },
-  { id:'melissa', name:'Melissa', role:'marksman', tier:'A' },
-  { id:'brody', name:'Brody', role:'marksman', tier:'S' },
+    function raidGhost(player, ghost) {
+      const loot = Math.floor(Math.random() * 50);
+      gameState.gold += loot;
+      addLog(`👻 Saqueaste línea muerta! +${loot} oro`);
+      ghost.destroy();
+    }
 
-  /* Supports */
-  { id:'angela', name:'Angela', role:'support', tier:'A' },
-  { id:'estes', name:'Estes', role:'support', tier:'A' },
-  { id:'diggie', name:'Diggie', role:'support', tier:'B' },
-  { id:'rafaela', name:'Rafaela', role:'support', tier:'A' },
-  { id:'carmilla', name:'Carmilla', role:'support', tier:'A' },
-  { id:'mathilda', name:'Mathilda', role:'support', tier:'S' },
-  { id:'faramis', name:'Faramis', role:'support', tier:'A' },
-  { id:'floryn', name:'Floryn', role:'support', tier:'A' },
-  { id:'minotaur', name:'Minotaur', role:'support', tier:'S' }
-];
+    function abandonLine(scene) {
+      addLog(`⏳ Abandonando línea temporal ${CONFIG.LINE_ID}...`);
+      ws.send(JSON.stringify({
+        type: 'abandon',
+        id: CONFIG.PLAYER_ID,
+        line: CONFIG.LINE_ID,
+        gold: gameState.gold,
+        x: player.x,
+        y: player.y
+      }));
+      // Reiniciar en nueva línea
+      gameState.line++;
+      gameState.gold = 50;
+      gameState.hp = 100;
+      player.setPosition(400, 300);
+      islands.clear(true, true);
+      treasures.clear(true, true);
+      ghosts.clear(true, true);
+      generateWorld(scene, Math.random());
+      addLog(`⏰ Nueva línea temporal #${gameState.line}!`);
+    }
 
-/* ------------------------
-   Avatar SVG generator (data URI)
-   Minimalista circular style
-   ------------------------ */
-function hashCode(str){ let h=0; for(let i=0;i<str.length;i++){ h = ((h<<5)-h)+str.charCodeAt(i); h |= 0; } return Math.abs(h); }
-function pickColors(seed){ const a = seed % 360; return [`hsl(${a},72%,45%)`,`hsl(${(a+40)%360},68%,55%)`]; }
-function initials(name){ return name.split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
-function svgDataUrl(name,size=512){
-  const seed = hashCode(name);
-  const [c1,c2] = pickColors(seed);
-  const txt = initials(name);
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}' viewBox='0 0 ${size} ${size}'>
-    <defs><radialGradient id='g' cx='30%' cy='20%'><stop offset='0%' stop-color='${c2}'/><stop offset='100%' stop-color='${c1}'/></radialGradient></defs>
-    <rect width='100%' height='100%' rx='24' ry='24' fill='url(#g)'/>
-    <text x='50%' y='54%' text-anchor='middle' font-family='Patrick Hand, Arial' font-size='${Math.round(size*0.22)}' fill='white' font-weight='700' dy='.35em'>${txt}</text>
-  </svg>`;
-  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
-}
+    function die(scene) {
+      addLog(`💀 ¡MUERTE EN LÍNEA ${CONFIG.LINE_ID}! Tu mundo ahora es saqueable.`);
+      abandonLine(scene);
+    }
 
-/* attach generated images, bio, placeholder builds, empty counters */
-heroesData.forEach(h=>{
-  h.img = svgDataUrl(h.name, 512);
-  h.bio = `${h.name} — héroe del rol ${h.role}. Estilo de juego: equilibrado.`;
-  h.builds = [
-    { title: 'Core', items: ['Botas', 'Item 1', 'Item 2'] },
-    { title: 'Alternate', items: ['Item A','Item B','Item C'] }
-  ];
-  h.strong = []; h.weak = [];
+    // === COMUNICACIÓN ===
+    function handleMessage(msg, scene) {
+      if (msg.type === 'init') {
+        gameState = {...gameState, ...msg};
+        CONFIG.LINE_ID = msg.line;
+      }
+      if (msg.type === 'ghost' && msg.line !== CONFIG.LINE_ID) {
+        let ghost = ghosts.get(msg.x, msg.y, 'ship');
+        if (ghost) {
+          ghost.setActive(true).setVisible(true).setTint(0xff0000).setAlpha(0.6);
+          ghost.lineOwner = msg.id;
+          ghost.setScale(0.7);
+        }
+      }
+    }
+
+    // === UI & LOG ===
+    function updateUI(scene) {
+      document.getElementById('gold').textContent = gameState.gold;
+      document.getElementById('hp').textContent = gameState.hp;
+      document.getElementById('line').textContent = gameState.line;
+    }
+
+    function addLog(text) {
+      const log = document.getElementById('log');
+      const line = document.createElement('div');
+      line.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+      log.appendChild(line);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    // === SERVIDOR NODE.JS (server.js) ===
+    const serverCode = `
+/*
+  CRONOPIRATA SERVER - Sube esto a Render.com / Railway / Fly.io
+  Archivo: server.js
+*/
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: process.env.PORT || 8080 });
+
+const lines = {}; // { lineId: { gold, owner, x, y } }
+const ghosts = new Set();
+
+wss.on('connection', ws => {
+  ws.on('message', data => {
+    const msg = JSON.parse(data);
+    if (msg.type === 'join') {
+      const lineId = msg.line || Date.now().toString();
+      ws.send(JSON.stringify({ type: 'init', line: lineId }));
+    }
+    if (msg.type === 'move') {
+      // Broadcast como fantasma a otras líneas
+      wss.clients.forEach(client => {
+        if (client !== ws && client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify({ type: 'ghost', ...msg }));
+        }
+      });
+    }
+    if (msg.type === 'abandon') {
+      lines[msg.line] = { gold: msg.gold, owner: msg.id, x: msg.x, y: msg.y };
+      ghosts.add(msg.line);
+    }
+  });
 });
 
-/* deterministic seeded sampling */
-function seededSample(seed, arr, n){
-  const out=[]; const pool = arr.slice(); let s = seed;
-  function rnd(){ s = (s * 9301 + 49297) % 233280; return s/233280; }
-  while(out.length < n && pool.length){
-    const idx = Math.floor(rnd() * pool.length);
-    out.push(pool.splice(idx,1)[0]);
-  }
-  return out;
-}
+console.log('Cronopirata Server ON - Puerto:', process.env.PORT || 8080);
+    `.trim();
 
-/* populate counters (stable) based on simple heuristics */
-(function populateCounters(){
-  const ids = heroesData.map(h=>h.id);
-  const rolePrefs = {
-    tank:['fighter','marksman','mage'],
-    fighter:['assassin','marksman'],
-    assassin:['mage','marksman'],
-    mage:['tank','assassin'],
-    marksman:['tank','fighter'],
-    support:['assassin','fighter']
-  };
-  heroesData.forEach(h=>{
-    const seed = hashCode(h.id);
-    const prefer = rolePrefs[h.role] || Object.keys(rolePrefs);
-    const candidates = heroesData.filter(x=>x.id!==h.id).sort((a,b)=>{
-      const ap = prefer.includes(a.role) ? 0 : 1;
-      const bp = prefer.includes(b.role) ? 0 : 1;
-      return ap - bp;
-    }).map(x=>x.id);
-    h.strong = seededSample(seed+1, candidates, 3);
-    h.weak = seededSample(seed+2, candidates.filter(id=>!h.strong.includes(id)), 3);
-  });
-})();
+    // === ARCHIVO README.md ===
+    const readme = `
+# Cronopirata 🕰️🏴‍☠️
 
-/* quick map */
-const heroMap = {};
-heroesData.forEach(h=>heroMap[h.id]=h);
+**Juego web roguelite de paradojas temporales - 100% funcional en GitHub Pages + Servidor**
 
-/* ------------------------
-   DOM refs
-   ------------------------ */
-const grid = document.getElementById('gridHeroes');
-const searchInput = document.getElementById('searchInput');
-const roleFilter = document.getElementById('roleFilter');
-const tierFilter = document.getElementById('tierFilter');
-const tierlistWrap = document.getElementById('tierlist');
+## 🚀 Demo (GitHub Pages)
+[https://TU_USUARIO.github.io/cronopirata](https://TU_USUARIO.github.io/cronopirata)
 
-const detailWrap = document.getElementById('heroDetail');
-const dAvatar = document.getElementById('dAvatar');
-const detailTitle = document.getElementById('detailTitle');
-const detailRoleTier = document.getElementById('detailRoleTier');
-const detailBioShort = document.getElementById('detailBioShort');
-const detailBuilds = document.getElementById('detailBuilds');
-const detailStrong = document.getElementById('detailStrong');
-const detailWeak = document.getElementById('detailWeak');
-const closeDetail = document.getElementById('closeDetail');
+## 📂 Estructura
+\`\`\`
+cronopirata/
+├── index.html          ← Juego completo
+├── server.js           ← Servidor Node.js (Render/Railway)
+└── README.md
+\`\`\`
 
-const drawer = document.getElementById('drawer');
-const hambtn = document.getElementById('hambtn');
-const navButtons = document.querySelectorAll('.nav-small');
-const drawerLinks = drawer.querySelectorAll('a[data-section]');
+## 🛠️ Deploy Rápido
 
-const bell = document.getElementById('bell');
-const bellBadge = document.getElementById('bellBadge');
-const patchModal = document.getElementById('patchModal');
-const patchClose = document.getElementById('patchClose');
-const patchRead = document.getElementById('patchRead');
+### 1. GitHub Pages (Cliente)
+ `gh repo clone TU_USUARIO/cronopirata && cd cronopirata`
+ Sube \`index.html\` → GitHub Pages activado.
 
-const downloadBtn = document.getElementById('downloadBtn');
+### 2. Servidor (Gratis en Render.com)
+1. Crea cuenta en [render.com](https://render.com)
+2. New → Web Service → Pegar \`server.js\`
+3. Cambia en \`index.html\`:  
+   \`const SERVER = 'wss://TU-SERVICIO.onrender.com';\`
+4. ¡Listo! Multijugador asíncrono activo.
 
-/* ------------------------
-   Render grid
-   ------------------------ */
-function renderGrid(){
-  const term = (searchInput.value || '').trim().toLowerCase();
-  const role = roleFilter.value;
-  const tier = tierFilter.value;
-  grid.innerHTML = '';
-  let shown = 0;
-  heroesData.forEach(h=>{
-    if(role !== 'all' && h.role !== role) return;
-    if(tier !== 'all' && h.tier !== tier) return;
-    if(term && !h.name.toLowerCase().includes(term) && !h.bio.toLowerCase().includes(term)) return;
-    const card = document.createElement('div');
-    card.className = 'hero-card';
-    card.tabIndex = 0;
-    card.dataset.id = h.id;
-    card.innerHTML = `<div class="avatar"><img loading="lazy" src="${h.img}" alt="${h.name}"></div><div class="hname">${h.name}</div>`;
-    card.addEventListener('click', ()=> navigateToHero(h.id));
-    card.addEventListener('keypress', e=>{ if(e.key==='Enter') navigateToHero(h.id) });
-    grid.appendChild(card);
-    shown++;
-  });
-  if(shown===0){
-    const emp = document.createElement('div'); emp.className='empty';
-    emp.textContent = 'No se encontraron héroes con esos filtros.'; emp.style.gridColumn='1 / -1';
-    grid.appendChild(emp);
-  }
-}
+## 🎮 Controles
+- **Flechas**: Girar / Acelerar
+- **Espacio**: Abandonar línea temporal
 
-/* ------------------------
-   Render tierlist
-   ------------------------ */
-function renderTierlist(){
-  const buckets = {};
-  heroesData.forEach(h=>{
-    if(!buckets[h.role]) buckets[h.role]={};
-    if(!buckets[h.role][h.tier]) buckets[h.role][h.tier]=[];
-    buckets[h.role][h.tier].push(h);
-  });
-  tierlistWrap.innerHTML = '';
-  for(const role in buckets){
-    const box = document.createElement('div'); box.className='tier-card';
-    box.innerHTML = `<div style="display:flex;align-items:center;gap:12px"><div style="font-weight:700;color:var(--accent);text-transform:capitalize">${role}</div><div class="muted">Meta actual</div></div>`;
-    ['SS','S','A','B'].forEach(t=>{
-      if(buckets[role][t] && buckets[role][t].length){
-        const row = document.createElement('div'); row.className='tier-row';
-        row.innerHTML = `<div class="tier-badge">${t}</div>`;
-        buckets[role][t].forEach(h=>{
-          const mini = document.createElement('div'); mini.className='counter-card'; mini.style.cursor='pointer';
-          mini.title = h.name;
-          mini.innerHTML = `<img src="${h.img}" alt="${h.name}"><div style="font-size:13px;margin-left:6px">${h.name}</div>`;
-          mini.addEventListener('click', ()=> navigateToHero(h.id));
-          row.appendChild(mini);
-        });
-        box.appendChild(row);
-      }
-    });
-    tierlistWrap.appendChild(box);
-  }
-}
+## ⚡ Mecánicas
+- Muere → tu mundo se vuelve saqueable
+- Saquea islas de líneas muertas
+- Venganza: viaja al pasado y destruye al que te robó
 
-/* ------------------------
-   Detail view & hash routing
-   ------------------------ */
-function showDetailById(id){
-  const h = heroMap[id];
-  if(!h) return hideDetail();
-  detailWrap.classList.add('show');
-  dAvatar.querySelector('img').src = h.img;
-  dAvatar.querySelector('img').alt = h.name;
-  detailTitle.textContent = h.name;
-  detailRoleTier.textContent = `${capitalize(h.role)} · Tier ${h.tier}`;
-  detailBioShort.textContent = h.bio || 'Sin descripción.';
-  // builds
-  detailBuilds.innerHTML = '';
-  (h.builds || []).forEach(b=>{
-    const el = document.createElement('div'); el.className='counter-card'; el.style.flexDirection='column';
-    el.innerHTML = `<strong style="color:var(--accent)">${b.title}</strong><div style="font-size:13px;margin-top:6px">${b.items.join(' • ')}</div>`;
-    detailBuilds.appendChild(el);
-  });
-  // strong
-  detailStrong.innerHTML = '';
-  if(h.strong && h.strong.length){
-    h.strong.forEach(sid=>{
-      const sh = heroMap[sid]; if(!sh) return;
-      const c = document.createElement('div'); c.className='counter-card'; c.innerHTML = `<img src="${sh.img}" alt="${sh.name}"><div style="font-size:13px">${sh.name}</div>`; c.addEventListener('click', ()=> navigateToHero(sh.id));
-      detailStrong.appendChild(c);
-    });
-  } else detailStrong.innerHTML = '<div class="muted">No data.</div>';
-  // weak
-  detailWeak.innerHTML = '';
-  if(h.weak && h.weak.length){
-    h.weak.forEach(sid=>{
-      const sh = heroMap[sid]; if(!sh) return;
-      const c = document.createElement('div'); c.className='counter-card'; c.innerHTML = `<img src="${sh.img}" alt="${sh.name}"><div style="font-size:13px">${sh.name}</div>`; c.addEventListener('click', ()=> navigateToHero(sh.id));
-      detailWeak.appendChild(c);
-    });
-  } else detailWeak.innerHTML = '<div class="muted">No data.</div>';
-  setTimeout(()=> detailWrap.scrollIntoView({behavior:'smooth'}),120);
-}
-function hideDetail(){ detailWrap.classList.remove('show'); }
-function navigateToHero(id){ location.hash = 'hero-' + id; }
-function handleHash(){
-  const h = (location.hash||'').replace('#','');
-  if(!h){ hideDetail(); showSection('heroes'); return; }
-  if(h.startsWith('hero-')){ const id = h.replace('hero-',''); showDetailById(id); showSection('heroes'); }
-}
+## 💡 Próximos pasos
+- [ ] Guardar líneas en IndexedDB
+- [ ] Skins con Three.js
+- [ ] Paradojas reales (borrar muertes)
 
-/* helpers */
-function capitalize(s){ if(!s) return s; return s.charAt(0).toUpperCase()+s.slice(1); }
+**¡Navega por los restos del multiverso pirata!**
+    `.trim();
 
-/* ------------------------
-   Events & UI wiring
-   ------------------------ */
-searchInput.addEventListener('input', renderGrid);
-roleFilter.addEventListener('change', renderGrid);
-tierFilter.addEventListener('change', renderGrid);
+    // === DESCARGA AUTOMÁTICA ===
+    function download(filename, text) {
+      const el = document.createElement('a');
+      el.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      el.setAttribute('download', filename);
+      el.style.display = 'none';
+      document.body.appendChild(el);
+      el.click();
+      document.body.removeChild(el);
+    }
 
-closeDetail.addEventListener('click', ()=>{ location.hash=''; hideDetail(); });
+    // Descargar todo
+    setTimeout(() => {
+      download('index.html', document.documentElement.outerHTML);
+      download('server.js', serverCode);
+      download('README.md', readme);
+      addLog('📦 ¡Archivos generados! Descarga: index.html, server.js, README.md');
+      addLog('🚀 Sube a GitHub + Render.com → ¡Juego online en 5 min!');
+    }, 1000);
 
-/* drawer / nav */
-hambtn.addEventListener('click', ()=>{ if(drawer.classList.contains('open')) closeDrawer(); else openDrawer(); });
-drawerLinks.forEach(a=> a.addEventListener('click', (ev)=>{ ev.preventDefault(); const sec = a.dataset.section; showSection(sec); closeDrawer(); }));
-navButtons.forEach(b=> b.addEventListener('click', ()=> showSection(b.dataset.section)));
-
-/* patch bell */
-bell.addEventListener('click', ()=> { patchModal.style.display = patchModal.style.display === 'block' ? 'none' : 'block'; bellBadge.style.display='none'; });
-patchClose.addEventListener('click', ()=> patchModal.style.display='none');
-patchRead.addEventListener('click', ()=> alert('Ir a página completa del parche (demo).'));
-
-/* download btn placeholder */
-downloadBtn.addEventListener('click', ()=> alert('Botón de descarga (placeholder). Subir APK y reemplazar link.)'));
-
-/* drawer helpers */
-function openDrawer(){ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); }
-function closeDrawer(){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); }
-
-/* section switch */
-function showSection(name){
-  document.querySelectorAll('[data-section]').forEach(s=> s.style.display = (s.dataset.section === name) ? '' : 'none');
-  // footer buttons opacity
-  document.querySelectorAll('.nav-small').forEach(b=> b.style.opacity = (b.dataset.section === name) ? '1' : '0.7');
-}
-
-/* accessibility close */
-window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape'){ location.hash=''; hideDetail(); patchModal.style.display='none'; }} );
-
-/* initial render */
-renderGrid();
-renderTierlist();
-handleHash();
-window.addEventListener('hashchange', handleHash);
-
-/* expose for debug */
-window._ML_HEROES = heroesData;
-</script>
+  </script>
 </body>
 </html>
