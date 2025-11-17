@@ -7,13 +7,15 @@
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
   <style>
     body { margin:0; padding:0; background:#000; overflow:hidden; font-family:Arial; }
-    #ui { position:absolute; top:10px; left:10px; color:#fff; z-index:100; }
-    #log { position:absolute; bottom:10px; left:10px; color:#0f0; font-size:12px; max-height:100px; overflow-y:auto; }
+    #ui { position:absolute; top:10px; left:10px; color:#fff; z-index:100; font-size:14px; }
+    #log { position:absolute; bottom:10px; left:10px; color:#0f0; font-size:12px; max-height:100px; overflow-y:auto; width:300px; }
+    #error { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#f00; z-index:200; text-align:center; display:none; }
   </style>
 </head>
 <body>
   <div id="ui">Oro: <span id="gold">0</span> | Vida: <span id="hp">100</span> | Línea: <span id="line">1</span></div>
   <div id="log"></div>
+  <div id="error">Error al cargar el juego. Revisa la consola (F12). <br><button onclick="location.reload()">Recargar</button></div>
   <script type="module">
     // === CONFIGURACIÓN GLOBAL ===
     const CONFIG = {
@@ -56,25 +58,34 @@
     const ws = new FakeWS(); // En producción: new WebSocket(CONFIG.SERVER)
 
     // === PHASER GAME ===
-    const config = {
-      type: Phaser.AUTO,
-      width: 800, height: 600,
-      physics: { default: 'arcade', arcade: { debug: false } },
-      scene: { preload, create, update },
-      parent: 'phaser-game'
-    };
-    const game = new Phaser.Game(config);
-
-    function preload() {
-      this.load.image('ship', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0zMiAzMk0yNiAyMmgxMmwxLTN6TTI0IDI2bDEuNS0zaDEuNWwxLjUtM2gzbDEuNS0zaDFsMS41IDNoM2wxLjUgM2gxLjVsMS41IDNoMWwxIDN6IiBmaWxsPSIjZmY5OTAwIi8+PHBhdGggZD0iTTI4IDM0bDItMmg4bC0yLTJ6IiBmaWxsPSIjY2MwMDAwIi8+PC9zdmc+');
-      this.load.image('island', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgZmlsbD0iIzY2Nj633IiByeD0iNSIvPjxjaXJjbGUgY3g9IjI1IiBjeT0iMjUiIHI9IjE1IiBmaWxsPSIjODg4ODg4Ii8+PC9zdmc+');
-      this.load.image('treasure', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIgZmlsbD0iI2ZmY2MwMCIvPjx0ZXh0IHg9IjE1IiB5PSIyMCIgZm9udC1zaXplPSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzAwMCI+JDwvdGV4dD48L3N2Zz4=');
-      this.load.image('particle', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOCIgaGVpZ2h0PSI4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjQiIGN5PSI0IiByPSI0IiBmaWxsPSJ5ZWxsb3ciLz48L3N2Zz4=');
+    let game;
+    function initGame() {
+      const config = {
+        type: Phaser.AUTO,
+        width: 800, height: 600,
+        physics: { default: 'arcade', arcade: { debug: false } },
+        scene: { preload, create, update },
+        parent: 'body', // Cambiado para renderizar en body
+        backgroundColor: '#003366'
+      };
+      game = new Phaser.Game(config);
     }
 
-    let player, islands, treasures, ghosts, particles, cursors, spaceKey;
+    function preload() {
+      console.log('Preload iniciado');
+      // Assets inline para evitar fallos de carga
+      this.load.image('ship', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTMyIDMyTTI2IDIyaDEybDEtM3pNMjQgMjZsMS41LTNoMS41bDEuNS0zaDNsMS41LTNoMWwxLjUgM2gzbDEuNSAzYzEuNSAzIDEuNSAzIDFoMWwxIDN6IiBmaWxsPSIjZmY5OTAwIi8+PHBhdGggZD0iTTI4IDM0bDItMmg4bC0yLTJ6IiBmaWxsPSIjY2MwMDAwIi8+PC9zdmc+');
+      this.load.image('island', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjNjY2NjMzIiByeD0iNSIvPjxjaXJjbGUgY3g9IjI1IiBjeT0iMjUiIHI9IjE1IiBmaWxsPSIjODg4ODg4Ii8+PC9zdmc+');
+      this.load.image('treasure', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjZmZjYzAwIi8+PHRleHQgeD0iMTUiIHk9IjIwIiBmb250LXNpemU9IjE4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDAwIj4kPC90ZXh0Pjwvc3ZnPg==');
+      this.load.image('particle', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOCIgaGVpZ2h0PSI4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjQiIGN5PSI0IiByPSI0IiBmaWxsPSJ5ZWxsb3ciLz48L3N2Zz4=');
+      console.log('Assets cargados');
+    }
+
+    let player, islands, treasures, ghosts, particles, cursors, spaceKey, sceneRef;
 
     function create() {
+      console.log('Create iniciado');
+      sceneRef = this;
       this.cameras.main.setBackgroundColor('#003366');
 
       // Grupos
@@ -102,14 +113,17 @@
       this.physics.add.overlap(player, treasures, collectTreasure, null, this);
       this.physics.add.overlap(player, ghosts, raidGhost, null, this);
 
-      // UI
-      this.goldText = this.add.text(10, 10, '', {font: '16px Arial', color: '#ff0'}).setDepth(100);
-      this.hpText = this.add.text(10, 30, '', {font: '16px Arial', color: '#f00'}).setDepth(100);
-      this.lineText = this.add.text(10, 50, '', {font: '16px Arial', color: '#0ff'}).setDepth(100);
+      // UI en Phaser (para evitar conflictos con DOM)
+      this.goldText = this.add.text(10, 10, '', {font: '16px Arial', color: '#ff0', depth: 100});
+      this.hpText = this.add.text(10, 30, '', {font: '16px Arial', color: '#f00', depth: 100});
+      this.lineText = this.add.text(10, 50, '', {font: '16px Arial', color: '#0ff', depth: 100});
 
       // WebSocket
       ws.on('message', (e) => handleMessage(JSON.parse(e.data), this));
       ws.send(JSON.stringify({type: 'join', id: CONFIG.PLAYER_ID}));
+
+      console.log('Juego creado exitosamente');
+      document.getElementById('error').style.display = 'none';
     }
 
     function update() {
@@ -171,13 +185,14 @@
         const y = rng.between(50, 550);
         treasures.create(x, y, 'treasure').setScale(0.6);
       }
+      console.log('Mundo generado');
     }
 
     // === INTERACCIONES ===
     function hitIsland(player, island) {
       gameState.hp -= 5;
       addLog(`🏝️ Choque con isla de ${island.lineOwner}! -5 HP`);
-      if (gameState.hp <= 0) die(this.scene);
+      if (gameState.hp <= 0) die(sceneRef);
     }
 
     function collectTreasure(player, treasure) {
@@ -239,18 +254,33 @@
 
     // === UI & LOG ===
     function updateUI(scene) {
+      scene.goldText.setText(`Oro: ${gameState.gold}`);
+      scene.hpText.setText(`Vida: ${gameState.hp}`);
+      scene.lineText.setText(`Línea: ${gameState.line}`);
+      // Actualizar DOM también por si acaso
       document.getElementById('gold').textContent = gameState.gold;
       document.getElementById('hp').textContent = gameState.hp;
       document.getElementById('line').textContent = gameState.line;
     }
 
     function addLog(text) {
+      console.log(text);
       const log = document.getElementById('log');
       const line = document.createElement('div');
       line.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
       log.appendChild(line);
       log.scrollTop = log.scrollHeight;
     }
+
+    // Error handling
+    window.addEventListener('error', (e) => {
+      console.error('Error global:', e);
+      document.getElementById('error').innerHTML = `Error: ${e.message} <br><button onclick="location.reload()">Recargar</button>`;
+      document.getElementById('error').style.display = 'block';
+    });
+
+    // Iniciar juego
+    initGame();
 
     // === SERVIDOR NODE.JS (server.js) ===
     const serverCode = `
@@ -309,24 +339,31 @@ cronopirata/
 ## 🛠️ Deploy Rápido
 
 ### 1. GitHub Pages (Cliente)
- `gh repo clone TU_USUARIO/cronopirata && cd cronopirata`
- Sube \`index.html\` → GitHub Pages activado.
+1. Crea repo: \`TU_USUARIO/cronopirata\`
+2. Sube \`index.html\` a la rama \`main\`
+3. Ve a Settings > Pages > Source: main > Save
+4. URL: https://TU_USUARIO.github.io/cronopirata
 
 ### 2. Servidor (Gratis en Render.com)
 1. Crea cuenta en [render.com](https://render.com)
-2. New → Web Service → Pegar \`server.js\`
-3. Cambia en \`index.html\`:  
-   \`const SERVER = 'wss://TU-SERVICIO.onrender.com';\`
-4. ¡Listo! Multijugador asíncrono activo.
+2. New → Web Service → Build: Node → Runtime: Node → Start: \`node server.js\`
+3. Pegar \`server.js\` en el repo de Render (conecta a GitHub si quieres)
+4. Cambia en \`index.html\`: \`const SERVER = 'wss://TU-SERVICIO.onrender.com';\`
+5. ¡Listo! Multijugador asíncrono activo.
 
 ## 🎮 Controles
-- **Flechas**: Girar / Acelerar
+- **Flechas**: Girar / Acelerar (arriba para mover)
 - **Espacio**: Abandonar línea temporal
 
 ## ⚡ Mecánicas
 - Muere → tu mundo se vuelve saqueable
 - Saquea islas de líneas muertas
 - Venganza: viaja al pasado y destruye al que te robó
+
+## 🔧 Troubleshooting
+- **Pantalla negra con UI**: Presiona F12 > Console para ver errores. Verifica que Phaser cargue (internet requerido).
+- **Oro en 0**: Bug inicial; mueve el barco para generar oro.
+- **Móvil**: Usa controles táctiles (agrega en futuras versiones).
 
 ## 💡 Próximos pasos
 - [ ] Guardar líneas en IndexedDB
@@ -336,7 +373,7 @@ cronopirata/
 **¡Navega por los restos del multiverso pirata!**
     `.trim();
 
-    // === DESCARGA AUTOMÁTICA ===
+    // === DESCARGA AUTOMÁTICA (opcional, para testing local) ===
     function download(filename, text) {
       const el = document.createElement('a');
       el.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
@@ -347,14 +384,12 @@ cronopirata/
       document.body.removeChild(el);
     }
 
-    // Descargar todo
+    // Si hay error, mostrar
     setTimeout(() => {
-      download('index.html', document.documentElement.outerHTML);
-      download('server.js', serverCode);
-      download('README.md', readme);
-      addLog('📦 ¡Archivos generados! Descarga: index.html, server.js, README.md');
-      addLog('🚀 Sube a GitHub + Render.com → ¡Juego online en 5 min!');
-    }, 1000);
+      if (!game) {
+        document.getElementById('error').style.display = 'block';
+      }
+    }, 3000);
 
   </script>
 </body>
