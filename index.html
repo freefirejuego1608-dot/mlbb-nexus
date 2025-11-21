@@ -1,396 +1,364 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cronopirata</title>
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
-  <style>
-    body { margin:0; padding:0; background:#000; overflow:hidden; font-family:Arial; }
-    #ui { position:absolute; top:10px; left:10px; color:#fff; z-index:100; font-size:14px; }
-    #log { position:absolute; bottom:10px; left:10px; color:#0f0; font-size:12px; max-height:100px; overflow-y:auto; width:300px; }
-    #error { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#f00; z-index:200; text-align:center; display:none; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #87CEEB, #1E90FF);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+        
+        #game-container {
+            position: relative;
+            width: 320px;
+            height: 480px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        #game-canvas {
+            background-color: #70c5ce;
+        }
+        
+        #start-screen, #game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            text-align: center;
+        }
+        
+        #game-over {
+            display: none;
+        }
+        
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #f1c40f;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #f39c12;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        p {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        
+        #score-display {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px black;
+        }
+    </style>
 </head>
 <body>
-  <div id="ui">Oro: <span id="gold">0</span> | Vida: <span id="hp">100</span> | Línea: <span id="line">1</span></div>
-  <div id="log"></div>
-  <div id="error">Error al cargar el juego. Revisa la consola (F12). <br><button onclick="location.reload()">Recargar</button></div>
-  <script type="module">
-    // === CONFIGURACIÓN GLOBAL ===
-    const CONFIG = {
-      SERVER: 'wss://cronopirata-server.onrender.com', // Cambiar por tu servidor real
-      PLAYER_ID: 'player_' + Math.random().toString(36).substr(2,9),
-      LINE_ID: null,
-      WORLD_SEED: Math.random()
-    };
+    <div id="game-container">
+        <canvas id="game-canvas" width="320" height="480"></canvas>
+        <div id="score-display">Puntuación: 0</div>
+        
+        <div id="start-screen">
+            <h1>Flappy Bird</h1>
+            <p>Haz clic o presiona ESPACIO para volar</p>
+            <p>Evita los tubos y el suelo</p>
+            <button id="start-button">Comenzar</button>
+        </div>
+        
+        <div id="game-over">
+            <h1>¡Juego Terminado!</h1>
+            <p id="final-score">Puntuación: 0</p>
+            <button id="restart-button">Jugar de Nuevo</button>
+        </div>
+    </div>
 
-    // === ESTADO LOCAL ===
-    let gameState = {
-      gold: 50,
-      hp: 100,
-      x: 400, y: 300,
-      vx: 0, vy: 0,
-      angle: 0,
-      line: 1,
-      ghosts: [], // Líneas temporales muertas
-      particles: []
-    };
+    <script>
+        // Elementos del DOM
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        const startScreen = document.getElementById('start-screen');
+        const gameOverScreen = document.getElementById('game-over');
+        const startButton = document.getElementById('start-button');
+        const restartButton = document.getElementById('restart-button');
+        const scoreDisplay = document.getElementById('score-display');
+        const finalScoreDisplay = document.getElementById('final-score');
 
-    // === WEB SOCKET (SIMULADO PARA GITHUB) ===
-    class FakeWS {
-      constructor() { this.listeners = {}; }
-      on(event, cb) { this.listeners[event] = cb; }
-      send(data) { 
-        addLog(`📤 ${data}`);
-        setTimeout(() => this.simulateResponse(JSON.parse(data)), 500);
-      }
-      simulateResponse(msg) {
-        if (msg.type === 'join') {
-          CONFIG.LINE_ID = msg.line || Date.now();
-          this.listeners.message({data: JSON.stringify({type:'init', ...gameState, line: CONFIG.LINE_ID})});
+        // Variables del juego
+        let gameRunning = false;
+        let score = 0;
+        let frames = 0;
+        
+        // Configuración del pájaro
+        const bird = {
+            x: 50,
+            y: canvas.height / 2,
+            width: 34,
+            height: 24,
+            gravity: 0.5,
+            velocity: 0,
+            jump: -8,
+            
+            draw: function() {
+                ctx.fillStyle = '#FFD700'; // Color amarillo para el pájaro
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.width / 2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Ojo del pájaro
+                ctx.fillStyle = 'black';
+                ctx.beginPath();
+                ctx.arc(this.x + 8, this.y - 5, 4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Pico del pájaro
+                ctx.fillStyle = 'orange';
+                ctx.beginPath();
+                ctx.moveTo(this.x + 15, this.y);
+                ctx.lineTo(this.x + 25, this.y - 5);
+                ctx.lineTo(this.x + 25, this.y + 5);
+                ctx.closePath();
+                ctx.fill();
+            },
+            
+            update: function() {
+                if (gameRunning) {
+                    this.velocity += this.gravity;
+                    this.y += this.velocity;
+                    
+                    // Detectar colisión con el suelo
+                    if (this.y + this.height/2 >= canvas.height - 80) {
+                        this.y = canvas.height - 80 - this.height/2;
+                        gameOver();
+                    }
+                    
+                    // Detectar colisión con el techo
+                    if (this.y - this.height/2 <= 0) {
+                        this.y = this.height/2;
+                        this.velocity = 0;
+                    }
+                }
+            },
+            
+            flap: function() {
+                if (gameRunning) {
+                    this.velocity = this.jump;
+                }
+            },
+            
+            reset: function() {
+                this.y = canvas.height / 2;
+                this.velocity = 0;
+            }
+        };
+        
+        // Configuración de los tubos
+        const pipes = {
+            position: [],
+            gap: 120,
+            maxYPos: -150,
+            dx: 2,
+            
+            draw: function() {
+                for (let i = 0; i < this.position.length; i++) {
+                    let p = this.position[i];
+                    
+                    // Tubo superior
+                    ctx.fillStyle = '#2ecc71';
+                    ctx.fillRect(p.x, 0, p.width, p.top);
+                    
+                    // Tubo inferior
+                    ctx.fillStyle = '#27ae60';
+                    ctx.fillRect(p.x, p.top + this.gap, p.width, canvas.height);
+                    
+                    // Bordes de los tubos
+                    ctx.strokeStyle = '#1e8449';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(p.x, 0, p.width, p.top);
+                    ctx.strokeRect(p.x, p.top + this.gap, p.width, canvas.height);
+                }
+            },
+            
+            update: function() {
+                if (frames % 100 === 0) {
+                    this.position.push({
+                        x: canvas.width,
+                        y: 0,
+                        width: 50,
+                        top: Math.floor(Math.random() * this.maxYPos) + 50
+                    });
+                }
+                
+                for (let i = 0; i < this.position.length; i++) {
+                    let p = this.position[i];
+                    p.x -= this.dx;
+                    
+                    // Detectar colisión con el pájaro
+                    if (
+                        bird.x + bird.width/2 > p.x && 
+                        bird.x - bird.width/2 < p.x + p.width && 
+                        (bird.y - bird.height/2 < p.top || 
+                         bird.y + bird.height/2 > p.top + this.gap)
+                    ) {
+                        gameOver();
+                    }
+                    
+                    // Sumar puntos cuando pasa un tubo
+                    if (p.x + p.width < bird.x && !p.passed) {
+                        score++;
+                        scoreDisplay.textContent = `Puntuación: ${score}`;
+                        p.passed = true;
+                    }
+                    
+                    // Eliminar tubos que salen de la pantalla
+                    if (p.x + p.width <= 0) {
+                        this.position.shift();
+                    }
+                }
+            },
+            
+            reset: function() {
+                this.position = [];
+            }
+        };
+        
+        // Suelo
+        const ground = {
+            y: canvas.height - 80,
+            height: 80,
+            
+            draw: function() {
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(0, this.y, canvas.width, this.height);
+                
+                // Hierba
+                ctx.fillStyle = '#2ecc71';
+                ctx.fillRect(0, this.y, canvas.width, 10);
+                
+                // Patrón de suelo
+                ctx.fillStyle = '#A0522D';
+                for (let i = 0; i < canvas.width; i += 30) {
+                    ctx.fillRect(i, this.y + 10, 15, 5);
+                }
+            }
+        };
+        
+        // Fondo
+        function drawBackground() {
+            // Cielo
+            ctx.fillStyle = '#70c5ce';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Nubes
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(100, 80, 20, 0, Math.PI * 2);
+            ctx.arc(130, 70, 25, 0, Math.PI * 2);
+            ctx.arc(160, 80, 20, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(250, 120, 20, 0, Math.PI * 2);
+            ctx.arc(280, 110, 25, 0, Math.PI * 2);
+            ctx.arc(310, 120, 20, 0, Math.PI * 2);
+            ctx.fill();
         }
-        if (msg.type === 'move') {
-          this.listeners.message({data: JSON.stringify({type:'ghost', id:msg.id, x:msg.x, y:msg.y, angle:msg.angle})});
+        
+        // Iniciar juego
+        function startGame() {
+            gameRunning = true;
+            startScreen.style.display = 'none';
+            gameOverScreen.style.display = 'none';
+            score = 0;
+            scoreDisplay.textContent = `Puntuación: ${score}`;
+            bird.reset();
+            pipes.reset();
+            frames = 0;
         }
-      }
-    }
-    const ws = new FakeWS(); // En producción: new WebSocket(CONFIG.SERVER)
-
-    // === PHASER GAME ===
-    let game;
-    function initGame() {
-      const config = {
-        type: Phaser.AUTO,
-        width: 800, height: 600,
-        physics: { default: 'arcade', arcade: { debug: false } },
-        scene: { preload, create, update },
-        parent: 'body', // Cambiado para renderizar en body
-        backgroundColor: '#003366'
-      };
-      game = new Phaser.Game(config);
-    }
-
-    function preload() {
-      console.log('Preload iniciado');
-      // Assets inline para evitar fallos de carga
-      this.load.image('ship', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTMyIDMyTTI2IDIyaDEybDEtM3pNMjQgMjZsMS41LTNoMS41bDEuNS0zaDNsMS41LTNoMWwxLjUgM2gzbDEuNSAzYzEuNSAzIDEuNSAzIDFoMWwxIDN6IiBmaWxsPSIjZmY5OTAwIi8+PHBhdGggZD0iTTI4IDM0bDItMmg4bC0yLTJ6IiBmaWxsPSIjY2MwMDAwIi8+PC9zdmc+');
-      this.load.image('island', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjNjY2NjMzIiByeD0iNSIvPjxjaXJjbGUgY3g9IjI1IiBjeT0iMjUiIHI9IjE1IiBmaWxsPSIjODg4ODg4Ii8+PC9zdmc+');
-      this.load.image('treasure', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjZmZjYzAwIi8+PHRleHQgeD0iMTUiIHk9IjIwIiBmb250LXNpemU9IjE4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDAwIj4kPC90ZXh0Pjwvc3ZnPg==');
-      this.load.image('particle', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOCIgaGVpZ2h0PSI4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjQiIGN5PSI0IiByPSI0IiBmaWxsPSJ5ZWxsb3ciLz48L3N2Zz4=');
-      console.log('Assets cargados');
-    }
-
-    let player, islands, treasures, ghosts, particles, cursors, spaceKey, sceneRef;
-
-    function create() {
-      console.log('Create iniciado');
-      sceneRef = this;
-      this.cameras.main.setBackgroundColor('#003366');
-
-      // Grupos
-      islands = this.physics.add.staticGroup();
-      treasures = this.physics.add.staticGroup();
-      ghosts = this.physics.add.group();
-      particles = this.add.particles(0, 0, 'particle', {
-        speed: 100, lifespan: 500, quantity: 3, scale: { start: 1, end: 0 }, blendMode: 'ADD'
-      });
-      particles.stop();
-
-      // Jugador
-      player = this.physics.add.image(400, 300, 'ship').setScale(0.8).setDepth(10);
-      player.setCollideWorldBounds(true);
-
-      // Controles
-      cursors = this.input.keyboard.createCursorKeys();
-      spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-
-      // Generar mundo procedural (fragmentos de líneas muertas)
-      generateWorld(this, CONFIG.WORLD_SEED);
-
-      // Colisiones
-      this.physics.add.collider(player, islands, hitIsland, null, this);
-      this.physics.add.overlap(player, treasures, collectTreasure, null, this);
-      this.physics.add.overlap(player, ghosts, raidGhost, null, this);
-
-      // UI en Phaser (para evitar conflictos con DOM)
-      this.goldText = this.add.text(10, 10, '', {font: '16px Arial', color: '#ff0', depth: 100});
-      this.hpText = this.add.text(10, 30, '', {font: '16px Arial', color: '#f00', depth: 100});
-      this.lineText = this.add.text(10, 50, '', {font: '16px Arial', color: '#0ff', depth: 100});
-
-      // WebSocket
-      ws.on('message', (e) => handleMessage(JSON.parse(e.data), this));
-      ws.send(JSON.stringify({type: 'join', id: CONFIG.PLAYER_ID}));
-
-      console.log('Juego creado exitosamente');
-      document.getElementById('error').style.display = 'none';
-    }
-
-    function update() {
-      const speed = 180;
-      const turn = 4;
-
-      // Movimiento
-      if (cursors.left.isDown) gameState.angle -= turn;
-      if (cursors.right.isDown) gameState.angle += turn;
-      if (cursors.up.isDown) {
-        gameState.vx = Math.cos(gameState.angle * Math.PI / 180) * speed;
-        gameState.vy = Math.sin(gameState.angle * Math.PI / 180) * speed;
-        particles.emitParticleAt(player.x, player.y, 3);
-      } else {
-        gameState.vx *= 0.95; gameState.vy *= 0.95;
-      }
-
-      player.setVelocity(gameState.vx, gameState.vy);
-      player.setRotation(gameState.angle * Math.PI / 180);
-
-      gameState.x = player.x; gameState.y = player.y;
-
-      // Enviar posición
-      if (Math.random() < 0.1) {
-        ws.send(JSON.stringify({
-          type: 'move',
-          id: CONFIG.PLAYER_ID,
-          line: CONFIG.LINE_ID,
-          x: player.x,
-          y: player.y,
-          angle: gameState.angle
-        }));
-      }
-
-      // Abandonar línea (ESPACIO)
-      if (spaceKey.isDown && !this.spaceDown) {
-        this.spaceDown = true;
-        abandonLine(this);
-      } else if (spaceKey.isUp) {
-        this.spaceDown = false;
-      }
-
-      updateUI(this);
-    }
-
-    // === GENERACIÓN DE MUNDO ===
-    function generateWorld(scene, seed) {
-      const rng = new Phaser.Math.RandomDataGenerator([seed.toString()]);
-      for (let i = 0; i < 8; i++) {
-        const x = rng.between(100, 700);
-        const y = rng.between(100, 500);
-        const island = islands.create(x, y, 'island').setScale(rng.between(80, 150)/100).setTint(0x666633);
-        island.body.setCircle(25);
-        island.lineOwner = 'ghost_' + i;
-        island.gold = rng.between(20, 80);
-      }
-      for (let i = 0; i < 5; i++) {
-        const x = rng.between(50, 750);
-        const y = rng.between(50, 550);
-        treasures.create(x, y, 'treasure').setScale(0.6);
-      }
-      console.log('Mundo generado');
-    }
-
-    // === INTERACCIONES ===
-    function hitIsland(player, island) {
-      gameState.hp -= 5;
-      addLog(`🏝️ Choque con isla de ${island.lineOwner}! -5 HP`);
-      if (gameState.hp <= 0) die(sceneRef);
-    }
-
-    function collectTreasure(player, treasure) {
-      treasure.destroy();
-      gameState.gold += 25;
-      addLog(`💰 +25 oro! Total: ${gameState.gold}`);
-      particles.emitParticleAt(treasure.x, treasure.y, 10);
-    }
-
-    function raidGhost(player, ghost) {
-      const loot = Math.floor(Math.random() * 50);
-      gameState.gold += loot;
-      addLog(`👻 Saqueaste línea muerta! +${loot} oro`);
-      ghost.destroy();
-    }
-
-    function abandonLine(scene) {
-      addLog(`⏳ Abandonando línea temporal ${CONFIG.LINE_ID}...`);
-      ws.send(JSON.stringify({
-        type: 'abandon',
-        id: CONFIG.PLAYER_ID,
-        line: CONFIG.LINE_ID,
-        gold: gameState.gold,
-        x: player.x,
-        y: player.y
-      }));
-      // Reiniciar en nueva línea
-      gameState.line++;
-      gameState.gold = 50;
-      gameState.hp = 100;
-      player.setPosition(400, 300);
-      islands.clear(true, true);
-      treasures.clear(true, true);
-      ghosts.clear(true, true);
-      generateWorld(scene, Math.random());
-      addLog(`⏰ Nueva línea temporal #${gameState.line}!`);
-    }
-
-    function die(scene) {
-      addLog(`💀 ¡MUERTE EN LÍNEA ${CONFIG.LINE_ID}! Tu mundo ahora es saqueable.`);
-      abandonLine(scene);
-    }
-
-    // === COMUNICACIÓN ===
-    function handleMessage(msg, scene) {
-      if (msg.type === 'init') {
-        gameState = {...gameState, ...msg};
-        CONFIG.LINE_ID = msg.line;
-      }
-      if (msg.type === 'ghost' && msg.line !== CONFIG.LINE_ID) {
-        let ghost = ghosts.get(msg.x, msg.y, 'ship');
-        if (ghost) {
-          ghost.setActive(true).setVisible(true).setTint(0xff0000).setAlpha(0.6);
-          ghost.lineOwner = msg.id;
-          ghost.setScale(0.7);
+        
+        // Fin del juego
+        function gameOver() {
+            gameRunning = false;
+            gameOverScreen.style.display = 'flex';
+            finalScoreDisplay.textContent = `Puntuación: ${score}`;
         }
-      }
-    }
-
-    // === UI & LOG ===
-    function updateUI(scene) {
-      scene.goldText.setText(`Oro: ${gameState.gold}`);
-      scene.hpText.setText(`Vida: ${gameState.hp}`);
-      scene.lineText.setText(`Línea: ${gameState.line}`);
-      // Actualizar DOM también por si acaso
-      document.getElementById('gold').textContent = gameState.gold;
-      document.getElementById('hp').textContent = gameState.hp;
-      document.getElementById('line').textContent = gameState.line;
-    }
-
-    function addLog(text) {
-      console.log(text);
-      const log = document.getElementById('log');
-      const line = document.createElement('div');
-      line.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
-      log.appendChild(line);
-      log.scrollTop = log.scrollHeight;
-    }
-
-    // Error handling
-    window.addEventListener('error', (e) => {
-      console.error('Error global:', e);
-      document.getElementById('error').innerHTML = `Error: ${e.message} <br><button onclick="location.reload()">Recargar</button>`;
-      document.getElementById('error').style.display = 'block';
-    });
-
-    // Iniciar juego
-    initGame();
-
-    // === SERVIDOR NODE.JS (server.js) ===
-    const serverCode = `
-/*
-  CRONOPIRATA SERVER - Sube esto a Render.com / Railway / Fly.io
-  Archivo: server.js
-*/
-const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: process.env.PORT || 8080 });
-
-const lines = {}; // { lineId: { gold, owner, x, y } }
-const ghosts = new Set();
-
-wss.on('connection', ws => {
-  ws.on('message', data => {
-    const msg = JSON.parse(data);
-    if (msg.type === 'join') {
-      const lineId = msg.line || Date.now().toString();
-      ws.send(JSON.stringify({ type: 'init', line: lineId }));
-    }
-    if (msg.type === 'move') {
-      // Broadcast como fantasma a otras líneas
-      wss.clients.forEach(client => {
-        if (client !== ws && client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify({ type: 'ghost', ...msg }));
+        
+        // Bucle del juego
+        function gameLoop() {
+            // Limpiar canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Dibujar elementos
+            drawBackground();
+            pipes.draw();
+            ground.draw();
+            bird.draw();
+            
+            // Actualizar elementos
+            if (gameRunning) {
+                bird.update();
+                pipes.update();
+                frames++;
+            }
+            
+            // Solicitar siguiente frame
+            requestAnimationFrame(gameLoop);
         }
-      });
-    }
-    if (msg.type === 'abandon') {
-      lines[msg.line] = { gold: msg.gold, owner: msg.id, x: msg.x, y: msg.y };
-      ghosts.add(msg.line);
-    }
-  });
-});
-
-console.log('Cronopirata Server ON - Puerto:', process.env.PORT || 8080);
-    `.trim();
-
-    // === ARCHIVO README.md ===
-    const readme = `
-# Cronopirata 🕰️🏴‍☠️
-
-**Juego web roguelite de paradojas temporales - 100% funcional en GitHub Pages + Servidor**
-
-## 🚀 Demo (GitHub Pages)
-[https://TU_USUARIO.github.io/cronopirata](https://TU_USUARIO.github.io/cronopirata)
-
-## 📂 Estructura
-\`\`\`
-cronopirata/
-├── index.html          ← Juego completo
-├── server.js           ← Servidor Node.js (Render/Railway)
-└── README.md
-\`\`\`
-
-## 🛠️ Deploy Rápido
-
-### 1. GitHub Pages (Cliente)
-1. Crea repo: \`TU_USUARIO/cronopirata\`
-2. Sube \`index.html\` a la rama \`main\`
-3. Ve a Settings > Pages > Source: main > Save
-4. URL: https://TU_USUARIO.github.io/cronopirata
-
-### 2. Servidor (Gratis en Render.com)
-1. Crea cuenta en [render.com](https://render.com)
-2. New → Web Service → Build: Node → Runtime: Node → Start: \`node server.js\`
-3. Pegar \`server.js\` en el repo de Render (conecta a GitHub si quieres)
-4. Cambia en \`index.html\`: \`const SERVER = 'wss://TU-SERVICIO.onrender.com';\`
-5. ¡Listo! Multijugador asíncrono activo.
-
-## 🎮 Controles
-- **Flechas**: Girar / Acelerar (arriba para mover)
-- **Espacio**: Abandonar línea temporal
-
-## ⚡ Mecánicas
-- Muere → tu mundo se vuelve saqueable
-- Saquea islas de líneas muertas
-- Venganza: viaja al pasado y destruye al que te robó
-
-## 🔧 Troubleshooting
-- **Pantalla negra con UI**: Presiona F12 > Console para ver errores. Verifica que Phaser cargue (internet requerido).
-- **Oro en 0**: Bug inicial; mueve el barco para generar oro.
-- **Móvil**: Usa controles táctiles (agrega en futuras versiones).
-
-## 💡 Próximos pasos
-- [ ] Guardar líneas en IndexedDB
-- [ ] Skins con Three.js
-- [ ] Paradojas reales (borrar muertes)
-
-**¡Navega por los restos del multiverso pirata!**
-    `.trim();
-
-    // === DESCARGA AUTOMÁTICA (opcional, para testing local) ===
-    function download(filename, text) {
-      const el = document.createElement('a');
-      el.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-      el.setAttribute('download', filename);
-      el.style.display = 'none';
-      document.body.appendChild(el);
-      el.click();
-      document.body.removeChild(el);
-    }
-
-    // Si hay error, mostrar
-    setTimeout(() => {
-      if (!game) {
-        document.getElementById('error').style.display = 'block';
-      }
-    }, 3000);
-
-  </script>
+        
+        // Event listeners
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', startGame);
+        
+        // Control con clic o espacio
+        canvas.addEventListener('click', function() {
+            bird.flap();
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space') {
+                if (!gameRunning && startScreen.style.display !== 'none') {
+                    startGame();
+                } else {
+                    bird.flap();
+                }
+            }
+        });
+        
+        // Iniciar bucle del juego
+        gameLoop();
+    </script>
 </body>
 </html>
