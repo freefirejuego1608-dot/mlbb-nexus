@@ -6,253 +6,203 @@
   <title>Flappy Bird Mobile</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { 
-      background: #000; 
-      overflow: hidden; 
-      touch-action: manipulation;
-      font-family: Arial, sans-serif;
-    }
-    canvas { 
-      display: block; 
-      margin: 0 auto;
-      image-rendering: pixelated; /* look retro */
-    }
-    #startScreen, #gameOverScreen {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.7);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.5em;
-      text-align: center;
-      z-index: 10;
-    }
-    #gameOverScreen div {
-      margin: 20px;
+    body { background:#000; overflow:hidden; touch-action:manipulation; font-family:Arial; }
+    canvas { display:block; background:#4ec0ca; }
+    #start, #gameover {
+      position:absolute; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.75); color:white; display:flex;
+      flex-direction:column; align-items:center; justify-content:center;
+      font-size:2.5em; text-align:center; z-index:10;
     }
     button {
-      margin-top: 30px;
-      padding: 15px 30px;
-      font-size: 1.2em;
-      background: #ffcc00;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    .medal {
-      font-size: 4em;
-      margin: 20px;
+      margin-top:30px; padding:15px 40px; font-size:1.2em;
+      background:#ffb400; border:none; border-radius:12px; cursor:pointer;
     }
   </style>
 </head>
 <body>
-  <div id="startScreen">
-    <h1>FLAPPY BIRD</h1>
-    <p>Toca la pantalla para volar</p>
-    <button onclick="startGame()">JUGAR</button>
-  </div>
 
-  <div id="gameOverScreen" style="display:none;">
-    <h1>¡Game Over!</h1>
-    <div>Puntuación: <span id="finalScore">0</span></div>
-    <div class="medal">
-      <span id="medal">🏅</span>
-    </div>
-    <button onclick="restartGame()">Jugar de nuevo</button>
-  </div>
+<div id="start">
+  <h1>FLAPPY BIRD</h1>
+  <p style="font-size:0.6em;">Toca la pantalla para volar</p>
+  <button onclick="iniciar()">JUGAR</button>
+</div>
 
-  <canvas id="canvas"></canvas>
+<div id="gameover" style="display:none;">
+  <h1>Game Over</h1>
+  <p>Puntuación: <span id="puntos">0</span></p>
+  <button onclick="iniciar()">Jugar de nuevo</button>
+</div>
 
-  <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Adaptar al tamaño de pantalla (móvil)
-    function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+<canvas id="c"></canvas>
+
+<script>
+// === VARIABLES GLOBALES ===
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let w, h, bird, pipes, score, gameRunning;
+
+// === REDIMENSIONAR CANVAS ===
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+// === OBJETO PÁJARO ===
+function crearPajaro() {
+  bird = {
+    x: w * 0.25,
+    y: h * 0.5,
+    size: Math.min(w,h) * 0.08,
+    vy: 0,
+    gravity: 0.5,
+    jump: -11,
+    rot: 0
+  };
+}
+
+// === TUBOS ===
+pipes = [];
+score = 0;
+gameRunning = false;
+
+function nuevoTubo() {
+  const hueco = 150;
+  const min = 80;
+  const max = h - hueco - 80;
+  const top = Math.random() * (max - min) + min;
+
+  pipes.push({
+    x: w,
+    top: top,
+    bottom: top + hueco,
+    pasado: false
+  });
+}
+
+// === INICIAR / REINICIAR JUEGO ===
+function iniciar() {
+  document.getElementById('start').style.display = 'none';
+  document.getElementById('gameover').style.display = 'none';
+  
+  resize();
+  crearPajaro();
+  pipes = [];
+  score = 0;
+  gameRunning = true;
+  nuevoTubo();
+  loop();
+}
+
+// === INPUT (toque o click) ===
+canvas.addEventListener('touchstart', saltar);
+canvas.addEventListener('click', saltar);
+function saltar(e) {
+  e.preventDefault();
+  if (gameRunning) bird.vy = bird.jump;
+}
+
+// === BUCLE PRINCIPAL ===
+function loop() {
+  // Fondo
+  ctx.fillStyle = '#4ec0ca';
+  ctx.fillRect(0, 0, w, h);
+
+  // Suelo
+  ctx.fillStyle = '#8fce00';
+  ctx.fillRect(0, h-50, w, 50);
+
+  if (gameRunning) {
+    // Física pájaro
+    bird.vy += bird.gravity;
+    bird.y += bird.vy;
+    bird.rot = Math.min(Math.max(bird.vy * 3, -30), 90);
+
+    // Generar tubos cada 100 frames aprox
+    if (pipes.length === 0 || pipes[pipes.length-1].x < w - 300) {
+      nuevoTubo();
     }
-    resize();
-    window.addEventListener('resize', resize);
 
-    // Variables del juego
-    let bird = {
-      x: canvas.width / 4,
-      y: canvas.height / 2,
-      size: Math.min(canvas.width, canvas.height) * 0.08,
-      velocity: 0,
-      gravity: 0.5,
-      jump: -10,
-      alive: true
-    };
+    // Actualizar y dibujar tubos
+    for (let i = pipes.length-1; i >= 0; i--) {
+      let p = pipes[i];
+      p.x -= 2.5;
 
-    let pipes = [];
-    let score = 0;
-    let frame = 0;
-    let gameStarted = false;
+      // Dibujar
+      ctx.fillStyle = '#4caf50';
+      // superior
+      ctx.fillRect(p.x, 0, 90, p.top);
+      ctx.fillRect(p.x-15, p.top-50, 120, 50);
+      // inferior
+      ctx.fillRect(p.x, p.bottom, 90, h);
+      ctx.fillRect(p.x-15, p.bottom, 120, 50);
 
-    // Generar tubos
-    function spawnPipe() {
-      const minHeight = 50;
-      const maxHeight = canvas.height - 200;
-      const height = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
-      const gap = 140;
+      // Colisión
+      if (
+        bird.x + bird.size/2 > p.x &&
+        bird.x - bird.size/2 < p.x + 90 &&
+        (bird.y - bird.size/2 < p.top || bird.y + bird.size/2 > p.bottom)
+      ) gameRunning = false;
 
-      pipes.push({
-        x: canvas.width,
-        top: height,
-        bottom: height + gap,
-        passed: false
-      });
-    }
-
-    // Reiniciar juego
-    function resetGame() {
-      bird.y = canvas.height / 2;
-      bird.velocity = 0;
-      bird.alive = true;
-      pipes = [];
-      score = 0;
-      frame = 0;
-      document.getElementById('gameOverScreen').style.display = 'none';
-    }
-
-    function startGame() {
-      document.getElementById('startScreen').style.display = 'none';
-      resetGame();
-      gameStarted = true;
-      spawnPipe();
-      requestAnimationFrame(gameLoop);
-    }
-
-    function restartGame() {
-      startGame();
-    }
-
-    // Input táctil y clic
-    function flap() {
-      if (bird.alive && gameStarted) {
-        bird.velocity = bird.jump;
-      }
-    }
-    canvas.addEventListener('touchstart', flap);
-    canvas.addEventListener('click', flap);
-
-    // Bucle principal
-    function gameLoop() {
-      if (!gameStarted) return;
-
-      // Fondo
-      ctx.fillStyle = '#4ec0ca';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Suelo
-      ctx.fillStyle = '#8bce5e';
-      ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
-
-      // Actualizar pájaro
-      if (bird.alive) {
-        bird.velocity += bird.gravity;
-        bird.y += bird.velocity;
-
-        // Rotación del pájaro
-        bird.rotation = Math.min(Math.max(bird.velocity * 3, -30), 90);
-      }
-
-      // Dibujar pájaro
-      ctx.save();
-      ctx.translate(bird.x, bird.y);
-      ctx.rotate(bird.rotation * Math.PI / 180);
-      ctx.fillStyle = '#ffeb3b';
-      ctx.fillRect(-bird.size/2, -bird.size/2, bird.size, bird.size);
-      // Ojo
-      ctx.fillStyle = 'white';
-      ctx.fillRect(bird.size/4, -bird.size/4, bird.size/4, bird.size/4);
-      ctx.fillStyle = 'black';
-      ctx.fillRect(bird.size/3, -bird.size/5, bird.size/6, bird.size/6);
-      // Pico
-      ctx.fillStyle = '#ff9800';
-      ctx.beginPath();
-      ctx.moveTo(bird.size/2, 0);
-      ctx.lineTo(bird.size/1.5, -5);
-      ctx.lineTo(bird.size/1.5, 5);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
-
-      // Tubos
-      if (frame % 90 === 0) spawnPipe();
-
-      for (let i = pipes.length - 1; i >= 0; i--) {
-        let p = pipes[i];
-        p.x -= 2;
-
-        // Dibujar tubos
-        ctx.fillStyle = '#4caf50';
-        // Tubo superior
-        ctx.fillRect(p.x, 0, 80, p.top);
-        ctx.fillRect(p.x - 10, p.top - 40, 100, 40); // tapa
-        // Tubo inferior
-        ctx.fillRect(p.x, p.bottom, 80, canvas.height);
-        ctx.fillRect(p.x - 10, p.bottom, 100, 40); // tapa
-
-        // Colisión
-        if (
-          bird.x + bird.size/2 > p.x &&
-          bird.x - bird.size/2 < p.x + 80 &&
-          (bird.y - bird.size/2 < p.top || bird.y + bird.size/2 > p.bottom)
-        ) {
-          bird.alive = false;
-        }
-
-        // Puntuación
-        if (!p.passed && bird.x > p.x + 80) {
-          p.passed = true;
-          score++;
-        }
-
-        // Eliminar tubos fuera de pantalla
-        if (p.x < -100) pipes.splice(i, 1);
+      // Punto
+      if (!p.pasado && bird.x > p.x + 90) {
+        p.pasado = true;
+        score++;
       }
 
-      // Colisión con suelo o techo
-      if (bird.y + bird.size/2 > canvas.height - 50 || bird.y - bird.size/2 < 0) {
-        bird.alive = false;
-      }
-
-      // Mostrar puntuación
-      ctx.fillStyle = 'white';
-      ctx.font = 'bold 60px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText(score, canvas.width / 2, 100);
-
-      // Game Over
-      if (!bird.alive) {
-        document.getElementById('finalScore').textContent = score;
-        document.getElementById('gameOverScreen').style.display = 'flex';
-        gameStarted = false;
-
-        // Medalla según puntuación
-        const medal = document.getElementById('medal');
-        if (score >= 40) medal.textContent = '🥇';
-        else if (score >= 30) medal.textContent = '🥈';
-        else if (score >= 20) medal.textContent = '🥉';
-        else if (score >= 10) medal.textContent = '🏅';
-        else medal.textContent = '💔';
-      }
-
-      frame++;
-      if (bird.alive) requestAnimationFrame(gameLoop);
+      // Eliminar fuera de pantalla
+      if (p.x < -150) pipes.splice(i,1);
     }
 
-    // Empezar al cargar
-    window.onload = () => {
-      bird.x = canvas.width / 4;
-      bird.size = Math.min(canvas.width, canvas.height) * 0.08;
-    };
-  </script>
+    // Colisión suelo/techo
+    if (bird.y + bird.size/2 > h-50 || bird.y - bird.size/2 < 0) {
+      gameRunning = false;
+    }
+  }
+
+  // Dibujar pájaro
+  ctx.save();
+  ctx.translate(bird.x, bird.y);
+  ctx.rotate(bird.rot * Math.PI / 180);
+  
+  // cuerpo
+  ctx.fillStyle = '#ffeb3b';
+  ctx.fillRect(-bird.size/2, -bird.size/2, bird.size, bird.size);
+  // ojo
+  ctx.fillStyle = 'white';
+  ctx.fillRect(bird.size/4, -bird.size/3, bird.size/3, bird.size/3);
+  ctx.fillStyle = 'black';
+  ctx.fillRect(bird.size/3, -bird.size/4, bird.size/6, bird.size/6);
+  // pico
+  ctx.fillStyle = '#ff5722';
+  ctx.beginPath();
+  ctx.moveTo(bird.size/2, 0);
+  ctx.lineTo(bird.size, -8);
+  ctx.lineTo(bird.size, 8);
+  ctx.closePath();
+  ctx.fill();
+  
+  ctx.restore();
+
+  // Puntuación
+  ctx.fillStyle = 'white';
+  ctx.font = 'bold ' + Math.min(w/8, 80) + 'px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText(score, w/2, 100);
+
+  // Game Over
+  if (!gameRunning) {
+    document.getElementById('puntos').textContent = score;
+    document.getElementById('gameover').style.display = 'flex';
+  } else {
+    requestAnimationFrame(loop);
+  }
+}
+
+// Iniciar al cargar
+window.onload = resize;
+</script>
 </body>
 </html>
