@@ -1,208 +1,430 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Flappy Bird Mobile</title>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#000; overflow:hidden; touch-action:manipulation; font-family:Arial; }
-    canvas { display:block; background:#4ec0ca; }
-    #start, #gameover {
-      position:absolute; top:0; left:0; width:100%; height:100%;
-      background:rgba(0,0,0,0.75); color:white; display:flex;
-      flex-direction:column; align-items:center; justify-content:center;
-      font-size:2.5em; text-align:center; z-index:10;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Pixel Brawl: V5.1 FIXED</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin:0; padding:0; }
+    body { margin: 0; overflow: hidden; background:#000; font-family: 'VT323', monospace; touch-action: none; user-select: none; }
+    #gameContainer { position: relative; width: 100vw; height: 100vh; background: #111; }
+    canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; position: absolute; top:0; left:0; }
+    
+    #uiLayer { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:10; display:flex; flex-direction:column; justify-content:space-between; padding:15px; }
+    .bar-box { width:140px; height:22px; background:#222; border:3px solid #fff; }
+    .bar-fill { height:100%; width:100%; background:#e74c3c; transition:width 0.15s; }
+
+    .screen { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(10,10,20,0.98); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:1000; pointer-events:auto; }
+    h1 { color:#f1c40f; font-size:68px; margin:0 0 20px; line-height:0.9; text-shadow:5px 5px 0 #e74c3c; }
+    
+    .hero-select { display:flex; gap:25px; margin-bottom:40px; }
+    .hero-card { width:100px; height:120px; background:#222; border:5px solid #555; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:all .2s; }
+    .hero-card.selected { border-color:#f1c40f; background:#333; transform:scale(1.15); box-shadow:0 0 30px rgba(241,196,15,0.6); }
+    .hero-icon { font-size:48px; margin-bottom:8px; }
+
+    .big-btn { background:#e74c3c; border:none; border-bottom:10px solid #c0392b; color:white; font-family:'VT323',monospace; font-size:40px; padding:18px 70px; cursor:pointer; transition:all .1s; }
+    .big-btn:active { transform:translateY(6px); border-bottom-width:4px; }
+
+    .controls-hint { position:absolute; bottom:20px; width:100%; display:flex; justify-content:space-between; padding:0 50px; opacity:0.4; pointer-events:none; color:white; font-size:18px; }
+    .circle { width:70px; height:70px; border:3px solid white; border-radius:50%; display:grid; place-items:center; background:rgba(255,255,255,0.05); }
+
+    @media (min-width:1024px) {
+        body { background:#fff; color:#000; }
+        #gameContainer { display:none; }
+        body:after { content:"USE TU MÓVIL PARA JUGAR"; display:block; text-align:center; padding:100px; font-size:40px; }
     }
-    button {
-      margin-top:30px; padding:15px 40px; font-size:1.2em;
-      background:#ffb400; border:none; border-radius:12px; cursor:pointer;
-    }
-  </style>
+</style>
 </head>
 <body>
 
-<div id="start">
-  <h1>FLAPPY BIRD</h1>
-  <p style="font-size:0.6em;">Toca la pantalla para volar</p>
-  <button onclick="iniciar()">JUGAR</button>
-</div>
+<div id="gameContainer">
+    <canvas id="gameCanvas"></canvas>
 
-<div id="gameover" style="display:none;">
-  <h1>Game Over</h1>
-  <p>Puntuación: <span id="puntos">0</span></p>
-  <button onclick="iniciar()">Jugar de nuevo</button>
-</div>
+    <div id="uiLayer" style="display:none;">
+        <div>
+            <div style="color:white; font-size:28px; margin-bottom:4px;">HP <span id="hpText">100</span></div>
+            <div class="bar-box"><div id="hpBar" class="bar-fill"></div></div>
+        </div>
+        <div style="text-align:right; color:white;">
+            <div style="font-size:22px; color:#bbb">SCORE</div>
+            <div style="font-size:48px; color:#f1c40f; text-shadow:0 0 10px #f1c40f" id="scoreVal">0</div>
+        </div>
 
-<canvas id="c"></canvas>
+        <div class="controls-hint">
+            <div class="circle">MOVE</div>
+            <div class="circle" style="background:rgba(231,76,60,0.3)">FIRE</div>
+        </div>
+    </div>
+
+    <!-- MENÚ -->
+    <div id="startScreen" class="screen">
+        <h1>PIXEL<br>BRAWL</h1>
+        <div style="color:#aaa; font-size:24px; margin-bottom:15px">ELIGE TU HÉROE</div>
+        <div class="hero-select">
+            <div class="hero-card selected" id="card-soldier" onclick="selectHero('soldier')">
+                <div class="hero-icon">GUN</div>
+                <div>SOLDIER</div>
+            </div>
+            <div class="hero-card" id="card-tank" onclick="selectHero('tank')">
+                <div class="hero-icon">SHIELD</div>
+                <div>TANK</div>
+            </div>
+        </div>
+        <button class="big-btn" onclick="initGame()">JUGAR</button>
+    </div>
+
+    <!-- GAME OVER -->
+    <div id="gameOverScreen" class="screen" style="display:none">
+        <h1 style="color:#e74c3c">GAME OVER</h1>
+        <p style="color:white; font-size:36px; margin:20px 0">PUNTUACIÓN: <span id="finalScore">0</span></p>
+        <button class="big-btn" onclick="location.reload()">JUGAR DE NUEVO</button>
+    </div>
+</div>
 
 <script>
-// === VARIABLES GLOBALES ===
-const canvas = document.getElementById('c');
+// PIXEL BRAWL V5.1 - 100% FUNCIONAL EN MÓVIL
+const CW = 480, CH = 270, MAP_SIZE = 1200;
+
+const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-let w, h, bird, pipes, score, gameRunning;
+canvas herpes = CW; canvas.height = CH;
 
-// === REDIMENSIONAR CANVAS ===
-function resize() {
-  w = canvas.width = window.innerWidth;
-  h = canvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resize);
-resize();
+let state = 'MENU';
+let heroType = 'soldier';
+let score = 0;
 
-// === OBJETO PÁJARO ===
-function crearPajaro() {
-  bird = {
-    x: w * 0.25,
-    y: h * 0.5,
-    size: Math.min(w,h) * 0.08,
-    vy: 0,
-    gravity: 0.5,
-    jump: -11,
-    rot: 0
-  };
-}
+// Entidades
+let player, enemies = [], bullets = [], particles = [];
+let cam = {x:0, y:0, shake:0};
 
-// === TUBOS ===
-pipes = [];
-score = 0;
-gameRunning = false;
+// Input mejorado: usamos un array de touches activos
+let activeTouches = {}; // id → {x,y, zone:'move'|'shoot'}
 
-function nuevoTubo() {
-  const hueco = 150;
-  const min = 80;
-  const max = h - hueco - 80;
-  const top = Math.random() * (max - min) + min;
+let moveVector = {x:0, y:0};
+let shooting = false;
 
-  pipes.push({
-    x: w,
-    top: top,
-    bottom: top + hueco,
-    pasado: false
-  });
+function selectHero(t) {
+    heroType = t;
+    document.querySelectorAll('.hero-card').forEach(c=>c.classList.remove('selected'));
+    document.getElementById('card-'+t).classList.add('selected');
 }
 
-// === INICIAR / REINICIAR JUEGO ===
-function iniciar() {
-  document.getElementById('start').style.display = 'none';
-  document.getElementById('gameover').style.display = 'none';
-  
-  resize();
-  crearPajaro();
-  pipes = [];
-  score = 0;
-  gameRunning = true;
-  nuevoTubo();
-  loop();
-}
+function initGame() {
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('uiLayer').style.display = 'flex';
+    
+    // Audio (requiere interacción)
+    if (AudioSys.ctx?.state === 'suspended') AudioSys.ctx.resume();
+    else AudioSys.init();
 
-// === INPUT (toque o click) ===
-canvas.addEventListener('touchstart', saltar);
-canvas.addEventListener('click', saltar);
-function saltar(e) {
-  e.preventDefault();
-  if (gameRunning) bird.vy = bird.jump;
-}
-
-// === BUCLE PRINCIPAL ===
-function loop() {
-  // Fondo
-  ctx.fillStyle = '#4ec0ca';
-  ctx.fillRect(0, 0, w, h);
-
-  // Suelo
-  ctx.fillStyle = '#8fce00';
-  ctx.fillRect(0, h-50, w, 50);
-
-  if (gameRunning) {
-    // Física pájaro
-    bird.vy += bird.gravity;
-    bird.y += bird.vy;
-    bird.rot = Math.min(Math.max(bird.vy * 3, -30), 90);
-
-    // Generar tubos cada 100 frames aprox
-    if (pipes.length === 0 || pipes[pipes.length-1].x < w - 300) {
-      nuevoTubo();
-    }
-
-    // Actualizar y dibujar tubos
-    for (let i = pipes.length-1; i >= 0; i--) {
-      let p = pipes[i];
-      p.x -= 2.5;
-
-      // Dibujar
-      ctx.fillStyle = '#4caf50';
-      // superior
-      ctx.fillRect(p.x, 0, 90, p.top);
-      ctx.fillRect(p.x-15, p.top-50, 120, 50);
-      // inferior
-      ctx.fillRect(p.x, p.bottom, 90, h);
-      ctx.fillRect(p.x-15, p.bottom, 120, 50);
-
-      // Colisión
-      if (
-        bird.x + bird.size/2 > p.x &&
-        bird.x - bird.size/2 < p.x + 90 &&
-        (bird.y - bird.size/2 < p.top || bird.y + bird.size/2 > p.bottom)
-      ) gameRunning = false;
-
-      // Punto
-      if (!p.pasado && bird.x > p.x + 90) {
-        p.pasado = true;
-        score++;
-      }
-
-      // Eliminar fuera de pantalla
-      if (p.x < -150) pipes.splice(i,1);
-    }
-
-    // Colisión suelo/techo
-    if (bird.y + bird.size/2 > h-50 || bird.y - bird.size/2 < 0) {
-      gameRunning = false;
-    }
-  }
-
-  // Dibujar pájaro
-  ctx.save();
-  ctx.translate(bird.x, bird.y);
-  ctx.rotate(bird.rot * Math.PI / 180);
-  
-  // cuerpo
-  ctx.fillStyle = '#ffeb3b';
-  ctx.fillRect(-bird.size/2, -bird.size/2, bird.size, bird.size);
-  // ojo
-  ctx.fillStyle = 'white';
-  ctx.fillRect(bird.size/4, -bird.size/3, bird.size/3, bird.size/3);
-  ctx.fillStyle = 'black';
-  ctx.fillRect(bird.size/3, -bird.size/4, bird.size/6, bird.size/6);
-  // pico
-  ctx.fillStyle = '#ff5722';
-  ctx.beginPath();
-  ctx.moveTo(bird.size/2, 0);
-  ctx.lineTo(bird.size, -8);
-  ctx.lineTo(bird.size, 8);
-  ctx.closePath();
-  ctx.fill();
-  
-  ctx.restore();
-
-  // Puntuación
-  ctx.fillStyle = 'white';
-  ctx.font = 'bold ' + Math.min(w/8, 80) + 'px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText(score, w/2, 100);
-
-  // Game Over
-  if (!gameRunning) {
-    document.getElementById('puntos').textContent = score;
-    document.getElementById('gameover').style.display = 'flex';
-  } else {
+    createPlayer();
+    enemies = []; bullets = []; particles = []; score = 0;
+    state = 'PLAY';
+    
+    for(let i=0; i<6; i++) spawnEnemy();
+    
     requestAnimationFrame(loop);
-  }
 }
 
-// Iniciar al cargar
-window.onload = resize;
+function createPlayer() {
+    const stats = heroType==='tank' ? {hp:200, spd:75} : {hp:100, spd:130};
+    player = {x:MAP_SIZE/2, y:MAP_SIZE/2, maxHp:stats.hp, hp:stats.hp, spd:stats.spd, cd:0};
+}
+
+// ===================== INPUT FIABLE =====================
+function getTouchPos(touch) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+        x: (touch.clientX - rect.left) * (CW / rect.width),
+        y: (touch.clientY - rect.top) * (CH / rect.height)
+    };
+}
+
+// Detectamos zona inicial del toque
+function classifyTouch(x) {
+    return x < CW/2 ? 'move' : 'shoot';
+}
+
+canvas.addEventListener('touchstart', e => {
+    if(state !== 'PLAY') return;
+    e.preventDefault();
+    
+    for(let t of e.changedTouches) {
+        const pos = getTouchPos(t);
+        const zone = classifyTouch(pos.x);
+        activeTouches[t.identifier] = {x: pos.x, y: pos.y, startX: pos.x, startY: pos.y, zone};
+        
+        if(zone === 'shoot') shooting = true;
+    }
+}, {passive:false});
+
+canvas.addEventListener('touchmove', e => {
+    if(state !== 'PLAY') return;
+    e.preventDefault();
+    
+    moveVector.x = moveVector.y = 0;
+    
+    for(let t of e.changedTouches) {
+        if(!(t.identifier in activeTouches)) continue;
+        const touch = activeTouches[t.identifier];
+        const pos = getTouchPos(t);
+        touch.x = pos.x; touch.y = pos.y;
+        
+        if(touch.zone === 'move') {
+            let dx = pos.x - touch.startX;
+            let dy = pos.y - touch.startY;
+            let dist = Math.hypot(dx, dy);
+            if(dist > 60) { dx *= 60/dist; dy *= 60/dist; }
+            moveVector.x = dx/60;
+            moveVector.y = dy/60;
+        }
+    }
+}, {passive:false});
+
+canvas.addEventListener('touchend', e => {
+    if(state !== 'PLAY') return;
+    e.preventDefault();
+    
+    for(let t of e.changedTouches) {
+        const touch = activeTouches[t.identifier];
+        if(touch) {
+            if(touch.zone === 'shoot') shooting = false;
+            delete activeTouches[t.identifier];
+        }
+    }
+    
+    // Si no queda ningún dedo en move → parar
+    if(!Object.values(activeTouches).some(t=>t.zone==='move')) {
+        moveVector.x = moveVector.y = 0;
+    }
+});
+
+canvas.addEventListener('touchcancel', e => { // importante!
+    for(let t of e.changedTouches) delete activeTouches[t.identifier];
+    moveVector.x = moveVector.y = 0;
+    shooting = false;
+});
+
+// ===================== AUDIO =====================
+const AudioSys = {
+    ctx: null,
+    init() {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new Ctx();
+    },
+    play(freq=440, type='square', vol=0.1, dur=0.1) {
+        if(!this.ctx) return;
+        const o = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        o.type = type; o.frequency.value = freq;
+        g.gain.setValueAtTime(vol, this.ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
+        o.connect(g); g.connect(this.ctx.destination);
+        o.start(); o.stop(this.ctx.currentTime + dur);
+    }
+};
+
+// ===================== GAME LOOP =====================
+let lastTime = 0;
+function loop(now) {
+    if(state !== 'PLAY') return;
+    if(!lastTime) lastTime = now;
+    const dt = Math.min((now - lastTime)/1000, 0.1);
+    lastTime = now;
+
+    update(dt);
+    draw();
+    requestAnimationFrame(loop);
+}
+
+function update(dt) {
+    // Movimiento jugador
+    player.x += moveVector.x * player.spd * dt;
+    player.y += moveVector.y * player.spd * dt;
+    player.x = Math.max(25, Math.min(MAP_SIZE-25, player.x));
+    player.y = Math.max(25, Math.min(MAP_SIZE-25, player.y));
+
+    // Disparo automático con cooldown
+    if(player.cd > 0) player.cd -= dt;
+    if(shooting && player.cd <= 0) {
+        // Auto-aim
+        let target = null, best = Infinity;
+        for(const e of enemies) {
+            const d = Math.hypot(e.x-player.x, e.y-player.y);
+            if(d < best) { best = d; target = e; }
+        }
+        const angle = target 
+            ? Math.atan2(target.y-player.y, target.x-player.x)
+            : Math.atan2(moveVector.y, moveVector.x) + (moveVector.x===0 && moveVector.y===0 ? 0 : 0);
+
+        bullets.push({
+            x: player.x, y: player.y,
+            vx: Math.cos(angle)*550, vy: Math.sin(angle)*550,
+            life: 1.2
+        });
+        player.cd = heroType==='tank' ? 0.45 : 0.18;
+        AudioSys.play(320, 'square', 0.15, 0.08);
+        cam.shake += 4;
+    }
+
+    // Enemigos
+    for(const e of enemies) {
+        const a = Math.atan2(player.y-e.y, player.x-e.x);
+        e.x += Math.cos(a) * e.spd * dt;
+        e.y += Math.sin(a) * e.spd * dt;
+
+        if(Math.hypot(player.x-e.x, player.y-e.y) < 24) {
+            player.hp -= 1.5;
+            cam.shake += 8;
+            AudioSys.play(80, 'sawtooth', 0.2, 0.15);
+            if(player.hp <= 0) gameOver();
+        }
+    }
+
+    // Balas
+    for(let i=bullets.length-1; i>=0; i--) {
+        const b = bullets[i];
+        b.x += b.vx*dt; b.y += b.vy*dt; b.life -= dt;
+        if(b.life <= 0) { bullets.splice(i,1); continue; }
+
+        for(let j=enemies.length-1; j>=0; j--) {
+            const e = enemies[j];
+            if(Math.hypot(e.x-b.x, e.y-b.y) < 20) {
+                e.hp -= heroType==='tank'? 35 : 18;
+                bullets.splice(i,1);
+                AudioSys.play(120, 'sawtooth', 0.15, 0.1);
+                createBlood(e.x, e.y);
+                if(e.hp <= 0) {
+                    score += 100;
+                    createBlood(e.x, e.y, 12);
+                    enemies.splice(j,1);
+                }
+                break;
+            }
+        }
+    }
+
+    // Spawn progresivo
+    const targetCount = 5 + Math.floor(score/400);
+    while(enemies.length < targetCount) spawnEnemy();
+
+    // Partículas
+    for(let i=particles.length-1; i>=0; i--) {
+        const p = particles[i];
+        p.x += p.vx*dt; p.y += p.vy*dt; p.life -= dt;
+        if(p.life <= 0) particles.splice(i,1);
+    }
+
+    // Cámara suave + shake
+    cam.x += (player.x - CW/2 - cam.x) * 0.08;
+    cam.y += (player.y - CH/2 - cam.y) * 0.08;
+    cam.shake = Math.max(0, cam.shake - dt*15);
+
+    // UI
+    document.getElementById('hpBar').style.width = (player.hp/player.maxHp*100)+'%';
+    document.getElementById('hpText').innerText = Math.max(0, Math.floor(player.hp));
+    document.getElementById('scoreVal').innerText = score;
+}
+
+function spawnEnemy() {
+    const angle = Math.random()*Math.PI*2;
+    const dist = 350 + Math.random()*200;
+    let x = player.x + Math.cos(angle)*dist;
+    let y = player.y + Math.sin(angle)*dist;
+    x = Math.max(30, Math.min(MAP_SIZE-30, x));
+    y = Math.max(30, Math.min(MAP_SIZE-30, y));
+    enemies.push({x, y, hp:30, spd:55 + Math.random()*45});
+}
+
+function createBlood(x,y,count=6) {
+    for(let i=0; i<count; i++) {
+        particles.push({
+            x, y,
+            vx: (Math.random()-0.5)*180,
+            vy: (Math.random()-0.5)*180,
+            life: 0.4 + Math.random()*0.3,
+            col: '#e74c3c'
+        });
+    }
+}
+
+function gameOver() {
+    state = 'GAME_OVER';
+    document.getElementById('finalScore').innerText = score;
+    document.getElementById('gameOverScreen').style.display = 'flex';
+    document.getElementById('uiLayer').style.display = 'none';
+}
+
+// ===================== DIBUJO =====================
+function draw() {
+    ctx.fillStyle = '#0a0a0f'; ctx.fillRect(0,0,CW,CH);
+    
+    ctx.save();
+    const shake = cam.shake * (Math.random()-0.5)*2;
+    ctx.translate(Math.floor(-cam.x + shake), Math.floor(-cam.y + shake));
+
+    // Grid
+    ctx.strokeStyle = '#1a1a2e';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for(let i=0; i<=MAP_SIZE; i+=50) {
+        ctx.moveTo(i,0); ctx.lineTo(i,MAP_SIZE);
+        ctx.moveTo(0,i); ctx.lineTo(MAP_SIZE,i);
+    }
+    ctx.stroke();
+
+    // Bordes rojos
+    ctx.strokeStyle = '#e74c3c';
+    ctx.lineWidth = 8;
+    ctx.strokeRect(0,0,MAP_SIZE,MAP_SIZE);
+
+    // Partículas
+    particles.forEach(p => {
+        ctx.fillStyle = p.col;
+        ctx.fillRect(p.x-3, p.y-3, 6, 6);
+    });
+
+    // Enemigos
+    enemies.forEach(e => {
+        ctx.fillStyle = '#e74c3c';
+        ctx.beginPath(); ctx.arc(e.x,e.y,14,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#000';
+        ctx.fillRect(e.x-6,e.y-6,3,3);
+        ctx.fillRect(e.x+3,e.y-6,3,3);
+    });
+
+    // Jugador
+    ctx.fillStyle = heroType==='tank' ? '#2ecc71' : '#3498db';
+    ctx.beginPath(); ctx.arc(player.x,player.y,15,0,Math.PI*2); ctx.fill();
+    
+    // Ojos que miran hacia donde disparas/mueves
+    const lookAngle = moveVector.x||moveVector.y ? Math.atan2(moveVector.y, moveVector.x) : 0;
+    const ex = player.x + Math.cos(lookAngle)*6;
+    const ey = player.y + Math.sin(lookAngle)*6;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(ex-3, ey-3, 4, 6);
+    ctx.fillRect(ex+2, ey-3, 4, 6);
+
+    // Balas
+    ctx.fillStyle = '#f1c40f';
+    bullets.forEach(b => {
+        ctx.beginPath(); ctx.arc(b.x,b.y,5,0,Math.PI*2); ctx.fill();
+    });
+
+    ctx.restore();
+
+    // Debug joystick (opcional, quítalo si quieres)
+    // if(Object.keys(activeTouches).length && activeTouches[Object.keys(activeTouches)[0]]?.zone==='move') {
+    //     const t = Object.values(activeTouches).find(t=>t.zone==='move');
+    //     if(t) {
+    //         ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    //         ctx.beginPath(); ctx.arc(t.startX, t.startY, 60,0,Math.PI*2); ctx.stroke();
+    //         ctx.beginPath(); ctx.arc(t.x, t.y, 20,0,Math.PI*2); ctx.stroke();
+    //     }
+    // }
+}
 </script>
 </body>
 </html>
